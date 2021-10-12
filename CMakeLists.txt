@@ -1,0 +1,80 @@
+cmake_minimum_required(VERSION 3.12)
+project(cargame)
+
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_definitions(-DHAVE_STDINT_H -D_XBOX -DHAVE_STAT)
+
+if (WIN32)
+    add_definitions(-DHAVE_SLEEP -DHAVE_WINDOWS_H)
+else()
+    add_definitions(-DHAVE_NANOSLEEP -DHAVE_TIME_H)
+endif()
+
+set(GLEW 3rdparty/glew)
+set(FREEGLUT 3rdparty/FreeGLUT/freeglut/freeglut)
+set(GLM 3rdparty/glm)
+set(STB 3rdparty/stb)
+
+set(LIBTYPE STATIC)
+add_subdirectory(${GLEW})
+add_subdirectory(${FREEGLUT})
+
+include_directories(
+    ${FREEGLUT}/include
+    ${GLEW}/include 
+    ${GLM} 
+    ${STB}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+set(ENGINE_SOURCES
+    engine/graphics/shader.cpp engine/graphics/shader.hpp
+    engine/graphics/mesh/mesh_builder.cpp engine/graphics/mesh/mesh_builder.hpp
+    engine/graphics/mesh/mesh.cpp engine/graphics/mesh/mesh.hpp
+    engine/graphics/renderer.cpp engine/graphics/renderer.hpp
+    engine/graphics/texture/texture.cpp engine/graphics/texture/texture.hpp
+    engine/graphics/texture/image_texture.cpp engine/graphics/texture/image_texture.hpp
+    engine/graphics/texture/render_texture.cpp engine/graphics/texture/render_texture.hpp
+    engine/graphics/gui/gui_renderer.cpp engine/graphics/gui/gui_renderer.hpp
+    engine/input.cpp engine/input.hpp
+    engine/display.cpp engine/display.hpp
+    engine/logger.cpp engine/logger.hpp
+    engine/obj_loader.cpp engine/obj_loader.hpp
+    engine/forward.hpp
+)
+
+SET(GAMEOBJECT_SOURCES
+    gameobject/component.hpp
+    gameobject/transform.cpp gameobject/transform.hpp
+    gameobject/mesh_render.hpp
+    gameobject/camera.hpp
+    gameobject/attributes.hpp
+    gameobject/gameobject.cpp gameobject/gameobject.hpp
+    gameobject/world.cpp gameobject/world.hpp
+    gameobject/gui/control.hpp
+    gameobject/gui/button.cpp gameobject/gui/button.hpp
+    gameobject/scene.hpp
+    gameobject/forward.hpp
+)
+
+SET(GAME_SOURCES
+    game/spin.cpp game/spin.hpp
+    game/debug_camera_movement.cpp game/debug_camera_movement.hpp
+    game/debug_scene.hpp game/debug_scene.cpp
+)
+
+SET(SOURCES
+    ${ENGINE_SOURCES}
+    ${GAMEOBJECT_SOURCES}
+    ${GAME_SOURCES}
+    main.cpp
+)
+
+source_group("engine" FILES ${ENGINE_SOURCES})
+source_group("gameobject" FILES ${GAMEOBJECT_SOURCES})
+source_group("game" FILES ${GAME_SOURCES})
+
+add_executable(cargame ${SOURCES})
+target_link_libraries(cargame libglew_static freeglut_static)

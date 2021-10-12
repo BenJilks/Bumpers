@@ -1,0 +1,15 @@
+[submodule "3rdparty/FreeGLUT"]
+	path = 3rdparty/FreeGLUT
+	url = https://github.com/dcnieho/FreeGLUT
+[submodule "3rdparty/glew"]
+	path = 3rdparty/glew
+	url = https://github.com/Perlmint/glew-cmake
+[submodule "3rdparty/glm"]
+	path = 3rdparty/glm
+	url = https://github.com/g-truc/glm
+[submodule "3rdparty/stb"]
+	path = 3rdparty/stb
+	url = https://github.com/nothings/stb
+[submodule "3rdparty/openal-soft"]
+	path = 3rdparty/openal-soft
+	url = https://github.com/kcat/openal-soft
