@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(cargame)
+project(bumpers)
 
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 20)
@@ -33,15 +33,18 @@ set(ENGINE_SOURCES
     engine/graphics/shader.cpp engine/graphics/shader.hpp
     engine/graphics/mesh/mesh_builder.cpp engine/graphics/mesh/mesh_builder.hpp
     engine/graphics/mesh/mesh.cpp engine/graphics/mesh/mesh.hpp
+    engine/graphics/mesh/material.hpp
     engine/graphics/renderer.cpp engine/graphics/renderer.hpp
     engine/graphics/texture/texture.cpp engine/graphics/texture/texture.hpp
     engine/graphics/texture/image_texture.cpp engine/graphics/texture/image_texture.hpp
     engine/graphics/texture/render_texture.cpp engine/graphics/texture/render_texture.hpp
     engine/graphics/gui/gui_renderer.cpp engine/graphics/gui/gui_renderer.hpp
+    engine/assets/obj_loader.cpp engine/assets/obj_loader.hpp
+    engine/assets/mtl_loader.cpp engine/assets/mtl_loader.hpp
+    engine/assets/obj_like_utils.hpp
     engine/input.cpp engine/input.hpp
     engine/display.cpp engine/display.hpp
     engine/logger.cpp engine/logger.hpp
-    engine/obj_loader.cpp engine/obj_loader.hpp
     engine/forward.hpp
 )
 
@@ -49,6 +52,7 @@ SET(GAMEOBJECT_SOURCES
     gameobject/component.hpp
     gameobject/transform.cpp gameobject/transform.hpp
     gameobject/mesh_render.hpp
+    gameobject/light.hpp
     gameobject/camera.hpp
     gameobject/attributes.hpp
     gameobject/gameobject.cpp gameobject/gameobject.hpp
@@ -76,5 +80,6 @@ source_group("engine" FILES ${ENGINE_SOURCES})
 source_group("gameobject" FILES ${GAMEOBJECT_SOURCES})
 source_group("game" FILES ${GAME_SOURCES})
 
-add_executable(cargame ${SOURCES})
-target_link_libraries(cargame libglew_static freeglut_static)
+add_executable(bumpers ${SOURCES})
+target_link_libraries(bumpers libglew_static freeglut_static)
+

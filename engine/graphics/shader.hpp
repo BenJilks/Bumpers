@@ -23,20 +23,18 @@ namespace Engine
 		~Shader();
 
 		void bind();
-		void load_mvp(glm::mat4);
-		void load_diffuse(int slot);
-		void load_color(glm::vec4);
+		void load_matrix(const std::string &name, glm::mat4);
+		void load_int(const std::string &name, int);
+		void load_vec3(const std::string &name, glm::vec3);
+		void load_vec4(const std::string &name, glm::vec4);
+		void load_float(const std::string &name, float);
 
 	private:
 		GLuint m_vertex_shader;
 		GLuint m_fragment_shader;
 		GLuint m_program;
 
-		GLuint m_u_mvp { 0 };
-		GLuint m_u_diffuse { 0 };
-		GLuint m_u_color { 0 };
-
-		GLuint get_uniform_location(const char *name);
+		GLuint get_uniform_location(const std::string &name);
 
 		bool link();
 		std::string program_info_log() const;

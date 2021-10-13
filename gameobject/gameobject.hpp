@@ -8,7 +8,7 @@
 namespace Object
 {
 
-    enum class ItoratorDecision
+    enum class IteratorDecision
     {
         Continue,
         Break,
@@ -40,21 +40,21 @@ namespace Object
         void init();
 
         template<typename Func>
-        ItoratorDecision for_each(Func callback) 
+        IteratorDecision for_each(Func callback) 
         {
             if (!m_enabled)
-                return ItoratorDecision::Continue;
+                return IteratorDecision::Continue;
 
-            if (callback(*this) == ItoratorDecision::Break)
-                return ItoratorDecision::Break;
+            if (callback(*this) == IteratorDecision::Break)
+                return IteratorDecision::Break;
 
             for (auto& child : m_children)
             {
-                if (child->for_each(callback) == ItoratorDecision::Break)
-                    return ItoratorDecision::Break;
+                if (child->for_each(callback) == IteratorDecision::Break)
+                    return IteratorDecision::Break;
             }
 
-            return ItoratorDecision::Continue;
+            return IteratorDecision::Continue;
         }
 
         template<typename Func>
@@ -62,7 +62,7 @@ namespace Object
         {
             for (auto& child : m_children)
             {
-                if (callback(*child) == ItoratorDecision::Break)
+                if (callback(*child) == IteratorDecision::Break)
                     break;
             }
         }

@@ -18,6 +18,8 @@ namespace Game
 		DebugCameraMovement() = default;
 
 		Object::Transform* m_transform { nullptr };
+		int m_last_mouse_x { 0 };
+		int m_last_mouse_y { 0 };
 
 	};
 

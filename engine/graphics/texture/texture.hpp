@@ -10,7 +10,7 @@ namespace Engine
 	class Texture
 	{
 	public:
-		static void unbind();
+		static void unbind(int slot);
 		virtual ~Texture();
 
 		void bind(int slot) const;

@@ -20,7 +20,7 @@ void GuiRenderer::render(const Object::GameObject &gameobject)
         return;
     
     auto *mesh_render = gameobject.first<MeshRender>();
-    if (!mesh_render || &mesh_render->renderer() != this || !mesh_render->enabled())
+    if (!mesh_render || &mesh_render->renderer() != this)
         return;
 
     auto *transform = gameobject.first<Transform>();
@@ -33,12 +33,13 @@ void GuiRenderer::render(const Object::GameObject &gameobject)
     const auto global_transform = glm::scale(mat4(1.0f), vec3(to_pixel_space, 1.0f)) 
         * transform->global_transform(gameobject);
 
+    const auto &material = mesh_render->material();
 	m_shader->bind();
-	m_shader->load_diffuse(0);
-    m_shader->load_mvp(m_projection_matrix * m_view * origin * global_transform);
-	m_shader->load_color(mesh_render->color());
+	m_shader->load_int("diffuse_map", 0);
+    m_shader->load_matrix("mvp", m_projection_matrix * m_view * origin * global_transform);
+	m_shader->load_vec3("color", material.color);
 
-    mesh_render->diffuse().bind(0);
+    material.diffuse_map->bind(0);
     mesh_render->mesh().draw();
 }
 

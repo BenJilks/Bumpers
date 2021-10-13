@@ -22,12 +22,12 @@ bool Input::is_key_down(int special)
 
 bool Input::is_mouse_button_down(MouseButton button)
 {
-	return s_mouse_button_down[(size_t)button];
+	return s_mouse_button_down[(std::size_t)button];
 }
 
 bool Input::is_mouse_button_click(MouseButton button)
 {
-	return s_mouse_button_click[(size_t)button];
+	return s_mouse_button_click[(std::size_t)button];
 }
 
 int Input::mouse_x()
@@ -57,9 +57,9 @@ void Input::update_mouse_position(int x, int y)
 void Input::update_mouse_button_state(MouseButton button, bool state)
 {
 	if (state)
-		s_mouse_button_click[(size_t)button] = true;
+		s_mouse_button_click[(std::size_t)button] = true;
 
-	s_mouse_button_down[(size_t)button] = state;
+	s_mouse_button_down[(std::size_t)button] = state;
 }
 
 void Input::end_frame()

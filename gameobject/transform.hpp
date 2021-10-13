@@ -39,9 +39,10 @@ namespace Object
 
 		inline void translate(glm::vec3 offset) { m_position += offset; on_change(); }
 		inline void scale_by(glm::vec3 amount) { m_scale += amount; on_change(); }
-		inline void rotate(glm::vec3 axis, float amount) { assert(0); } // TODO
+		inline void rotate(glm::vec3 axis, float amount) { m_rotation += axis * amount; }
 
 		glm::vec3 forward() const;
+		glm::vec3 left() const;
 
 		virtual void init(GameObject&) override;
 

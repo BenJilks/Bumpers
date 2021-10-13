@@ -41,5 +41,5 @@ void RenderTexture::resize(int width, int height)
 {
     bind(0);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
-    unbind();
+    unbind(0);
 }

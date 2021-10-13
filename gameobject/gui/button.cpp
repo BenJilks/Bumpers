@@ -31,7 +31,7 @@ void Button::update(GameObject&, float delta)
 
     m_hovered = Input::mouse_x() > x - width && Input::mouse_x() < x + width 
         && Input::mouse_y() > y - height && Input::mouse_y() < y + height;
-    m_mesh_render->set_diffuse(m_hovered ? m_hover : m_normal);
+    m_mesh_render->material().diffuse_map = m_hovered ? m_hover : m_normal;
 
     if (on_click && m_hovered && Input::is_mouse_button_click(Input::MouseButton::Left))
         on_click();

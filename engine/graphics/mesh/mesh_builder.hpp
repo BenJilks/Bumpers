@@ -17,6 +17,9 @@ namespace Engine
         MeshBuilder() = default;
 
         MeshBuilder &add_vertex(glm::vec3);
+        MeshBuilder &add_normal(glm::vec3);
+        MeshBuilder &add_tangent(glm::vec3);
+        MeshBuilder &add_bitangent(glm::vec3);
         MeshBuilder &add_texture_coord(glm::vec2);
         MeshBuilder &add_indicies(std::vector<uint32_t>);
 
@@ -38,6 +41,9 @@ namespace Engine
 
     private:
         std::vector<float> m_verticies;
+        std::vector<float> m_normals;
+        std::vector<float> m_tangents;
+        std::vector<float> m_bitangents;
         std::vector<float> m_texture_coords;
         std::vector<uint32_t> m_indicies;
         bool m_is_instanced { false };

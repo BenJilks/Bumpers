@@ -1,7 +1,4 @@
-// Includes
 #include "shader.hpp"
-#include "particals/partical_driver.hpp"
-#include "gameobject/particals/partical_system.hpp"
 #include <GL/glew.h>
 #include <iostream>
 #include <fstream>
@@ -11,7 +8,6 @@
 #include <cassert>
 #include <glm/gtx/string_cast.hpp>
 using namespace Engine;
-using namespace Object;
 using namespace glm;
 
 static std::map<GLuint, std::string> load_source(const std::string &file_path)
@@ -145,7 +141,7 @@ std::string Shader::program_info_log() const
 
 	glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &info_log_size);
 	info_log.resize(info_log_size);
-	glGetProgramInfoLog(m_program, info_log_size, &info_log_size, info_log.data());
+	glGetProgramInfoLog(m_program, info_log_size, &info_log_size, (GLchar*)info_log.data());
 	return info_log;
 }
 
@@ -154,33 +150,39 @@ void Shader::bind()
 	glUseProgram(m_program);
 }
 
-void Shader::load_mvp(glm::mat4 mvp)
+void Shader::load_matrix(const std::string &name, glm::mat4 matrix)
 {
-	if (!m_u_mvp)
-		m_u_mvp = get_uniform_location("mvp");
-
-	glUniformMatrix4fv(m_u_mvp, 1, GL_FALSE, (const GLfloat*)&mvp);
+	auto location = get_uniform_location(name);
+	glUniformMatrix4fv(location, 1, GL_FALSE, (const GLfloat*)&matrix);
 }
 
-void Shader::load_diffuse(int slot)
+void Shader::load_int(const std::string &name, int i)
 {
-	if (!m_u_diffuse)
-		m_u_diffuse = get_uniform_location("diffuse");
-
-	glUniform1i(m_u_diffuse, slot);
+	auto location = get_uniform_location(name);
+	glUniform1i(location, i);
 }
 
-void Shader::load_color(vec4 color)
+void Shader::load_vec3(const std::string &name, glm::vec3 vec)
 {
-	if (!m_u_color)
-		m_u_color = get_uniform_location("color");
-
-	glUniform4fv(m_u_color, 1, (GLfloat*)&color);
+	auto location = get_uniform_location(name);
+	glUniform3fv(location, 1, (GLfloat*)&vec);
 }
 
-GLuint Shader::get_uniform_location(const char* name)
+void Shader::load_vec4(const std::string &name, glm::vec4 vec)
 {
-	return glGetUniformLocation(m_program, name);
+	auto location = get_uniform_location(name);
+	glUniform4fv(location, 1, (GLfloat*)&vec);
+}
+
+void Shader::load_float(const std::string &name, float f)
+{
+	auto location = get_uniform_location(name);
+	glUniform1f(location, f);
+}
+
+GLuint Shader::get_uniform_location(const std::string &name)
+{
+	return glGetUniformLocation(m_program, name.c_str());
 }
 
 Shader::~Shader()

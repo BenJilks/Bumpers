@@ -35,7 +35,7 @@ static void display()
         s_new_scene = nullptr;
     }
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     auto now = std::chrono::system_clock::now();
     float delta = std::chrono::duration_cast<std::chrono::milliseconds>(now - s_last_frame_time).count() / 1000.0f;
@@ -92,17 +92,17 @@ bool Display::open(std::string_view title, int width, int height)
     glutInit(&argc, argv);
 
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-    glutInitWindowSize(800, 600);
+    glutInitWindowSize(width, height);
     glutInitWindowPosition(100, 100);
     glutCreateWindow("Car Game");
 
     glutReshapeFunc(reshape);
 
-    //This initialises glew - it must be called after the window is created.
+    //This initialises GLEW - it must be called after the window is created.
     GLenum err = glewInit();
     if (GLEW_OK != err)
     {
-        std::cerr << "Error: Could not initilize glew\n";
+        std::cerr << "Error: Could not initialise GLEW\n";
         return false;
     }
 
@@ -120,9 +120,11 @@ bool Display::open(std::string_view title, int width, int height)
     glutMouseFunc(mouse_button);
     glutPassiveMotionFunc(mouse_moved);
 
-    glClearColor(0.0, 0.0, 1.0, 0.0);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     return true;
 }

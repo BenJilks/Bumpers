@@ -3,6 +3,7 @@
 #include "gameobject/scene.hpp"
 #include "gameobject/forward.hpp"
 #include "engine/forward.hpp"
+#include <memory>
 
 namespace Game
 {
@@ -19,7 +20,7 @@ namespace Game
 
     private:
         Object::GameObject *make_camera();
-        Object::GameObject *make_test_object();
+        void make_test_object();
 
         std::unique_ptr<Object::World> m_world { nullptr };
         std::shared_ptr<Engine::Renderer> m_renderer { nullptr };

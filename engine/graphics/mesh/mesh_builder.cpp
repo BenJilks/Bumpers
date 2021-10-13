@@ -1,6 +1,5 @@
 #include "mesh_builder.hpp"
 #include "mesh.hpp"
-#include "engine/physics/collision_shape.hpp"
 #include <iostream>
 using namespace glm;
 using namespace Engine;
@@ -10,6 +9,30 @@ MeshBuilder &MeshBuilder::add_vertex(vec3 position)
     m_verticies.push_back(position.x);
     m_verticies.push_back(position.y);
     m_verticies.push_back(position.z);
+    return *this;
+}
+
+MeshBuilder &MeshBuilder::add_normal(glm::vec3 normal)
+{
+    m_normals.push_back(normal.x);
+    m_normals.push_back(normal.y);
+    m_normals.push_back(normal.z);
+    return *this;
+}
+
+MeshBuilder &MeshBuilder::add_tangent(glm::vec3 tangent)
+{
+    m_tangents.push_back(tangent.x);
+    m_tangents.push_back(tangent.y);
+    m_tangents.push_back(tangent.z);
+    return *this;
+}
+
+MeshBuilder &MeshBuilder::add_bitangent(glm::vec3 bitangent)
+{
+    m_bitangents.push_back(bitangent.x);
+    m_bitangents.push_back(bitangent.y);
+    m_bitangents.push_back(bitangent.z);
     return *this;
 }
 
@@ -38,10 +61,10 @@ MeshBuilder &MeshBuilder::add_builder(const MeshBuilder &other)
 
 MeshBuilder &MeshBuilder::add_quad(glm::vec2 size, bool is_y_flipped)
 {
-    add_vertex(vec2(-size.x, -size.y, 0.0f)).add_texture_coord(vec2(0, is_y_flipped ? 1 : 0));
-    add_vertex(vec2(size.x, -size.y, 0.0f)).add_texture_coord(vec2(1, is_y_flipped ? 1 : 0));
-    add_vertex(vec2(size.x, size.y, 0.0f)).add_texture_coord(vec2(1, is_y_flipped ? 0 : 1));
-    add_vertex(vec2(-size.x, size.y, 0.0f)).add_texture_coord(vec2(0, is_y_flipped ? 0 : 1));
+    add_vertex(vec3(-size.x, -size.y, 0.0f)).add_texture_coord(vec2(0, is_y_flipped ? 1 : 0));
+    add_vertex(vec3(size.x, -size.y, 0.0f)).add_texture_coord(vec2(1, is_y_flipped ? 1 : 0));
+    add_vertex(vec3(size.x, size.y, 0.0f)).add_texture_coord(vec2(1, is_y_flipped ? 0 : 1));
+    add_vertex(vec3(-size.x, size.y, 0.0f)).add_texture_coord(vec2(0, is_y_flipped ? 0 : 1));
     add_indicies({0, 1, 2});
     add_indicies({0, 2, 3});
     return *this;
@@ -61,7 +84,7 @@ bool MeshBuilder::is_empty() const
 
 std::shared_ptr<Mesh> MeshBuilder::build() const
 {
-    // Varify mesh
+    // Verify mesh
     if (m_texture_coords.size() != 0 && m_texture_coords.size() / 2 != vertex_count())
         return nullptr;
 

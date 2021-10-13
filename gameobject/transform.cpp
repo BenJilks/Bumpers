@@ -29,10 +29,10 @@ mat4 Transform::local_inverse_transform() const
 {
 	mat4 transform(1);
 	transform = glm::scale(transform, 1.0f / m_scale);
-	transform = glm::translate(transform, -m_position);
 	transform = glm::rotate(transform, -m_rotation.x, vec3(1, 0, 0));
 	transform = glm::rotate(transform, -m_rotation.y, vec3(0, 1, 0));
 	transform = glm::rotate(transform, -m_rotation.z, vec3(0, 0, 1));
+	transform = glm::translate(transform, -m_position);
 	return transform;
 }
 
@@ -77,8 +77,16 @@ Transform::Computed Transform::computed_transform() const
 
 vec3 Transform::forward() const
 {
-	// TODO
-	assert(0);
+	auto x = -std::sin(m_rotation.y);
+	auto z = -std::cos(m_rotation.y);
+	return vec3(x, 0, z);
+}
+
+glm::vec3 Transform::left() const
+{
+	auto x = -std::sin(m_rotation.y + glm::radians(90.0f));
+	auto z = -std::cos(m_rotation.y + glm::radians(90.0f));
+	return vec3(x, 0, z);
 }
 
 void Transform::init(GameObject &gameobject)
@@ -101,6 +109,6 @@ void Transform::on_change(bool global_change)
 		if (transform)
 			transform->on_change(true);
 
-		return ItoratorDecision::Continue;
+		return IteratorDecision::Continue;
 	});
 }

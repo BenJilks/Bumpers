@@ -4,11 +4,10 @@
 using namespace Engine;
 using namespace Object;
 using namespace Game;
-using namespace glm;
 
 int main(int, char**)
 {
-    if (!Display::open("Roller-coaster", 800, 600))
+    if (!Display::open("Roller-coaster", 800 * 3, 600 * 3))
         return 1;
 
     Display::set_scene(std::make_unique<DebugScene>());

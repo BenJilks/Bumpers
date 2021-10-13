@@ -29,7 +29,7 @@ namespace Engine
         void bind_indicies(int index, std::vector<uint32_t>);
         
         GLuint m_vao;
-        std::array<GLuint, 3> m_vbo;
+        std::array<GLuint, 6> m_vbo;
         int m_count { 0 };
         int m_instance_count { 0 };
 
