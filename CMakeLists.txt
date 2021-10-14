@@ -34,7 +34,8 @@ set(ENGINE_SOURCES
     engine/graphics/mesh/mesh_builder.cpp engine/graphics/mesh/mesh_builder.hpp
     engine/graphics/mesh/mesh.cpp engine/graphics/mesh/mesh.hpp
     engine/graphics/mesh/material.hpp
-    engine/graphics/renderer.cpp engine/graphics/renderer.hpp
+    engine/graphics/renderer/renderer.cpp engine/graphics/renderer/renderer.hpp
+    engine/graphics/renderer/standard_renderer.cpp engine/graphics/renderer/standard_renderer.hpp
     engine/graphics/texture/texture.cpp engine/graphics/texture/texture.hpp
     engine/graphics/texture/image_texture.cpp engine/graphics/texture/image_texture.hpp
     engine/graphics/texture/render_texture.cpp engine/graphics/texture/render_texture.hpp

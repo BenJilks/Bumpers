@@ -6,7 +6,7 @@
 #include "engine/graphics/mesh/mesh_builder.hpp"
 #include "engine/graphics/texture/image_texture.hpp"
 #include "engine/graphics/shader.hpp"
-#include "engine/graphics/renderer.hpp"
+#include "engine/graphics/renderer/standard_renderer.hpp"
 #include "gameobject/world.hpp"
 #include "gameobject/camera.hpp"
 #include "gameobject/transform.hpp"
@@ -99,7 +99,7 @@ bool DebugScene::init()
     auto shader = Shader::construct(ASSETS + "/shaders/default.glsl");
 
     m_world = std::make_unique<World>();
-    m_renderer = std::make_shared<Renderer>(shader, 800, 600);
+    m_renderer = std::make_shared<StandardRenderer>(shader);
 
     auto *camera = make_camera();
     if (!camera)
@@ -109,6 +109,7 @@ bool DebugScene::init()
 
     m_renderer->set_camera(*camera);
     m_world->init();
+    m_renderer->on_world_updated(*m_world);
     return true;
 }
 
@@ -116,19 +117,7 @@ void DebugScene::on_render(float delta)
 {
     m_world->step_physics(delta);
     m_world->update(delta);
-
-    m_world->for_each([this](const GameObject &object)
-    {
-        m_renderer->update_lighting(object);
-        return IteratorDecision::Continue;
-    });
-
-    m_renderer->start_frame();
-    m_world->for_each([this](const GameObject &object)
-    {
-        m_renderer->render(object);
-        return IteratorDecision::Continue;
-    });
+    m_renderer->render();
 }
 
 void DebugScene::on_resize(int width, int height)

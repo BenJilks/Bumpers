@@ -40,7 +40,7 @@ namespace Object
         void init();
 
         template<typename Func>
-        IteratorDecision for_each(Func callback) 
+        IteratorDecision for_each(Func callback)
         {
             if (!m_enabled)
                 return IteratorDecision::Continue;

@@ -1,3 +1,6 @@
+// TODO: Re-implement this
+
+/*
 #include "gui_renderer.hpp"
 #include "engine/graphics/mesh/mesh.hpp"
 #include "engine/graphics/texture/texture.hpp"
@@ -12,6 +15,10 @@
 using namespace Engine;
 using namespace Object;
 using namespace glm;
+
+void GuiRenderer::start_frame()
+{
+}
 
 void GuiRenderer::render(const Object::GameObject &gameobject)
 {
@@ -49,3 +56,4 @@ void GuiRenderer::resize_viewport(int width, int height)
 	m_width = width;
 	m_height = height;
 }
+*/

@@ -23,7 +23,7 @@ namespace Game
         void make_test_object();
 
         std::unique_ptr<Object::World> m_world { nullptr };
-        std::shared_ptr<Engine::Renderer> m_renderer { nullptr };
+        std::shared_ptr<Engine::StandardRenderer> m_renderer { nullptr };
 
     };
 

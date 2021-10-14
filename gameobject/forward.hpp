@@ -10,11 +10,7 @@ namespace Object
     class Camera;
     class World;
     class Scene;
-    class Collider;
-
-    class PhysicsBody;
-    class ParticalSystem;
-    struct Partical;
+    class Light;
 
     namespace Gui
     {

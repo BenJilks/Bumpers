@@ -11,6 +11,7 @@ namespace Engine
     class RenderTexture;
     class Shader;
     class Renderer;
+    class StandardRenderer;
     class ParticalDriver;
     class ParticalRenderer;
     class GuiRenderer;
