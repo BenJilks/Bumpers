@@ -19,7 +19,7 @@ namespace Engine
 		static void unbind(int slot);
 		virtual ~Texture();
 
-		void bind(int slot) const;
+		virtual void bind(int slot) const;
 
 	protected:
 		GLuint m_texture { 0 };

@@ -32,6 +32,7 @@ Ks 1.000000 1.000000 1.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
+metallic 1.0
 illum 2
 map_Bump -bm 0.100000 /textures/bumper/metal_normal.png
 map_Kd /textures/bumper/white.png
@@ -67,7 +68,7 @@ Ks 0.744048 0.744048 0.744048
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
+metallic 0.2
 illum 2
 map_Bump /textures/wood/wood_normal.png
 map_Kd /textures/wood/wood.png
-

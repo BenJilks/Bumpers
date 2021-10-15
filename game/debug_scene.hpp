@@ -21,7 +21,7 @@ namespace Game
     private:
         Object::GameObject *make_camera();
         void make_test_object();
-        void make_skybox();
+        void make_sky_box(std::shared_ptr<Engine::Texture> sky_box_texture);
 
         std::unique_ptr<Object::World> m_world { nullptr };
 

@@ -34,12 +34,14 @@ layout (location = 1) out vec4 LightColor;
 
 uniform sampler2D diffuse_map;
 uniform sampler2D normal_map;
+uniform samplerCube sky_box;
 uniform vec3 camera_position;
 uniform vec3 color;
 uniform vec3 specular_color;
 uniform vec3 emission_color;
 uniform float normal_map_strength;
 uniform float specular_focus;
+uniform float metallic;
 
 struct PointLight
 {
@@ -78,8 +80,16 @@ void calculate_point_light(
     specular_light += pow(max(dot(view_direction, reflect_direction), 0.0), specular_focus) / att_factor;
 }
 
+vec3 calculate_metallic_color(vec3 normal, vec3 view_direction)
+{
+    vec3 reflect_direction = reflect(view_direction, normal);
+    return texture(sky_box, reflect_direction).rgb;
+}
+
 void main()
 {
+    const float ambaint_light = 0.1;
+
     vec3 normal = texture2D(normal_map, v_texture_coord).xyz;
     normal = mix(vec3(0, 0, 1), normal * 2.0 - 1.0, normal_map_strength);
     normal = normalize(v_tbn * normal);
@@ -97,16 +107,16 @@ void main()
             diffuse_light, specular_light);
     }
 
-    float ambaint_light = 0.1;
-    vec3 diffuse_color = texture2D(diffuse_map, v_texture_coord).xyz;
+    vec3 metallic_color = calculate_metallic_color(normal, view_direction);
+    vec3 diffuse_color = mix(texture2D(diffuse_map, v_texture_coord).rgb, metallic_color, metallic);
     vec3 final_color = 
         color * diffuse_color * max(diffuse_light, vec3(ambaint_light)) +
         specular_color * specular_light +
         emission_color;
-    FragColor = vec4(final_color, 1);
+    FragColor = vec4(final_color, 1.0);
 
-    if (emission_color != vec3(0, 0, 0))
-        LightColor = vec4(emission_color, 1);
+    if (emission_color != vec3(0.0, 0.0, 0.0))
+        LightColor = vec4(emission_color, 1.0);
     else
-        LightColor = vec4(0);
+        LightColor = vec4(0.0);
 }

@@ -16,6 +16,7 @@ namespace Engine
         glm::vec3 emission_color { 0, 0, 0 };
         float normal_map_strength { 1 };
         float specular_focus { 32 };
+        float metallic { 0 };
         std::shared_ptr<Texture> diffuse_map;
         std::shared_ptr<Texture> normal_map;
     };

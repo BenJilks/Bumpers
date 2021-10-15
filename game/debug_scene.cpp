@@ -100,9 +100,8 @@ void DebugScene::make_test_object()
     }
 }
 
-void DebugScene::make_skybox()
+void DebugScene::make_sky_box(std::shared_ptr<Texture> sky_box_texture)
 {
-    auto skybox_texture = CubeMapTexture::construct(ASSETS + "/textures/skybox/skybox");
     auto skybox_mesh = MeshBuilder()
         .add_sky_box(6)
         .build();
@@ -110,11 +109,13 @@ void DebugScene::make_skybox()
     auto &skybox = m_world->add_child();
     skybox.add_component<Transform>();
     skybox.add_component<MeshRender>(skybox_mesh, m_sky_box_renderer, 
-        Material { .diffuse_map = skybox_texture });
+        Material { .diffuse_map = sky_box_texture });
 }
 
 bool DebugScene::init()
 {
+    auto skybox_texture = CubeMapTexture::construct(ASSETS + "/textures/skybox/skybox");
+
     auto shader = Shader::construct(ASSETS + "/shaders/default.glsl");
     auto skybox_shader = Shader::construct(ASSETS + "/shaders/skybox.glsl");
     auto bloom_shader = Shader::construct(ASSETS + "/shaders/bloom.glsl");
@@ -122,7 +123,7 @@ bool DebugScene::init()
 
     m_world = std::make_unique<World>();
     
-    m_renderer = std::make_shared<StandardRenderer>(shader);
+    m_renderer = std::make_shared<StandardRenderer>(shader, skybox_texture);
     m_sky_box_renderer = std::make_shared<SkyBoxRenderer>(skybox_shader);
     m_view = RenderTexture::construct({ m_sky_box_renderer, m_renderer });
     m_view->add_color_texture();
@@ -136,7 +137,7 @@ bool DebugScene::init()
         return false;
 
     make_test_object();
-    make_skybox();
+    // make_sky_box(skybox_texture);
 
     m_renderer->set_camera(*camera);
     m_renderer->on_world_updated(*m_world);

@@ -11,7 +11,7 @@ namespace Engine
 	class StandardRenderer : public Renderer
 	{
 	public:
-		StandardRenderer(std::shared_ptr<Shader> shader);
+		StandardRenderer(std::shared_ptr<Shader> shader, std::shared_ptr<Texture> sky_box);
         virtual ~StandardRenderer();
 
 		virtual void on_world_updated(Object::GameObject&) final;
@@ -36,6 +36,7 @@ namespace Engine
 
 		std::vector<LightData> m_lights;
 		std::vector<MeshRenderData> m_mesh_renders;
+		std::shared_ptr<Texture> m_sky_box;
 
 	};
 

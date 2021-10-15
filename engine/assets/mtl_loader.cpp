@@ -16,6 +16,7 @@ enum class LineType
     NewMtl,
     MapKd,
     MapBump,
+    Metallic,
     Kd,
     Ks,
     Ke,
@@ -129,6 +130,8 @@ static Line parse_line(const std::string &line)
         return name_arg(type_end + 1, LineType::MapKd);
     if (type_name == "map_Bump")
         return map_args(type_end + 1, LineType::MapBump);
+    if (type_name == "metallic")
+        return float_args<1>(type_end + 1, LineType::Metallic);
     if (type_name == "Kd")
         return float_args<3>(type_end + 1, LineType::Kd);
     if (type_name == "Ks")
@@ -168,6 +171,10 @@ std::map<std::string, Material> MtlLoader::from_file(const std::string &file_pat
                 current_material->normal_map = ImageTexture::construct(ASSETS + "/" + line.name);
                 if (line.arguments.contains("bm"))
                     current_material->normal_map_strength = std::atof(line.arguments["bm"].c_str());
+                break;
+
+            case LineType::Metallic:
+                current_material->metallic = line.argsf[0];
                 break;
 
             case LineType::Kd:

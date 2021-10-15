@@ -43,3 +43,9 @@ std::shared_ptr<CubeMapTexture> CubeMapTexture::construct(const std::string &fil
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);  
     return std::shared_ptr<CubeMapTexture>(new CubeMapTexture(texture));
 }
+
+void CubeMapTexture::bind(int slot) const
+{
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture);
+}

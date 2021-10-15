@@ -17,8 +17,9 @@ using namespace glm;
 
 #define MAX_LIGHT_COUNT 10
 
-StandardRenderer::StandardRenderer(std::shared_ptr<Shader> shader)
+StandardRenderer::StandardRenderer(std::shared_ptr<Shader> shader, std::shared_ptr<Texture> sky_box)
 	: Renderer(shader)
+	, m_sky_box(sky_box)
 {
 }
 
@@ -83,6 +84,10 @@ void StandardRenderer::on_start_frame()
 	}
 	m_shader->load_int("point_light_count", light_count);
 	m_shader->load_vec3("camera_position", m_camera_position);
+
+	m_shader->load_int("diffuse_map", 0);
+	m_shader->load_int("normal_map", 1);
+	m_shader->load_int("sky_box", 2);
 }
 
 void StandardRenderer::on_render()
@@ -91,8 +96,6 @@ void StandardRenderer::on_render()
 	{
 		auto global_transform = data.transform.global_transform(data.gameobject);
 		auto &material = data.mesh_render.material();
-		m_shader->load_int("diffuse_map", 0);
-		m_shader->load_int("normal_map", 1);
 		m_shader->load_matrix("model_matrix", global_transform);
 		m_shader->load_matrix("mvp", m_projection_matrix * m_view * global_transform);
 		m_shader->load_vec3("color", material.color);
@@ -100,13 +103,17 @@ void StandardRenderer::on_render()
 		m_shader->load_vec3("emission_color", material.emission_color);
 		m_shader->load_float("normal_map_strength", material.normal_map_strength);
 		m_shader->load_float("specular_focus", material.specular_focus);
+		m_shader->load_float("metallic", material.metallic);
 
 		if (material.diffuse_map)
 			material.diffuse_map->bind(0);
 		if (material.normal_map)
 			material.normal_map->bind(1);
+		if (m_sky_box)
+		    m_sky_box->bind(2);
 		data.mesh_render.mesh().draw();
 		Texture::unbind(0);
 		Texture::unbind(1);
+		Texture::unbind(2);
 	}
 }
