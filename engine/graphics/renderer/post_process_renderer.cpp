@@ -10,7 +10,7 @@ PostProcessRenderer::PostProcessRenderer(std::shared_ptr<Shader> shader)
     : Renderer(shader)
 {
     m_full_screen_quad = MeshBuilder()
-        .add_quad(vec2(1), false)
+        .add_quad(vec2(1), true)
         .build();
 }
 
