@@ -29,7 +29,8 @@ void main()
 in vec2 v_texture_coord;
 in vec4 v_world_position;
 in mat3 v_tbn;
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 LightColor;
 
 uniform sampler2D diffuse_map;
 uniform sampler2D normal_map;
@@ -103,4 +104,9 @@ void main()
         specular_color * specular_light +
         emission_color;
     FragColor = vec4(final_color, 1);
+
+    if (emission_color != vec3(0, 0, 0))
+        LightColor = vec4(emission_color, 1);
+    else
+        LightColor = vec4(0);
 }

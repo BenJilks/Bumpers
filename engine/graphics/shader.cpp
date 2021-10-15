@@ -162,6 +162,12 @@ void Shader::load_int(const std::string &name, int i)
 	glUniform1i(location, i);
 }
 
+void Shader::load_vec2(const std::string &name, glm::vec2 vec)
+{
+	auto location = get_uniform_location(name);
+	glUniform2fv(location, 1, (GLfloat*)&vec);
+}
+
 void Shader::load_vec3(const std::string &name, glm::vec3 vec)
 {
 	auto location = get_uniform_location(name);

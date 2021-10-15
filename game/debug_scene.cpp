@@ -5,8 +5,12 @@
 #include "engine/assets/obj_loader.hpp"
 #include "engine/graphics/mesh/mesh_builder.hpp"
 #include "engine/graphics/texture/image_texture.hpp"
+#include "engine/graphics/texture/render_texture.hpp"
 #include "engine/graphics/shader.hpp"
 #include "engine/graphics/renderer/standard_renderer.hpp"
+#include "engine/graphics/renderer/blur_renderer.hpp"
+#include "engine/graphics/renderer/bloom_renderer.hpp"
+#include "engine/input.hpp"
 #include "gameobject/world.hpp"
 #include "gameobject/camera.hpp"
 #include "gameobject/transform.hpp"
@@ -97,9 +101,18 @@ void DebugScene::make_test_object()
 bool DebugScene::init()
 {
     auto shader = Shader::construct(ASSETS + "/shaders/default.glsl");
+    auto bloom_shader = Shader::construct(ASSETS + "/shaders/bloom.glsl");
+    auto blur_shader = Shader::construct(ASSETS + "/shaders/blur.glsl");
 
     m_world = std::make_unique<World>();
+    
     m_renderer = std::make_shared<StandardRenderer>(shader);
+    m_view = RenderTexture::construct(m_renderer);
+    m_view->add_color_texture();
+
+    m_bloom_renderer = std::make_shared<BloomRenderer>(
+        bloom_shader, blur_shader,
+        m_view->color_texture(0), m_view->color_texture(1));
 
     auto *camera = make_camera();
     if (!camera)
@@ -108,8 +121,9 @@ bool DebugScene::init()
     make_test_object();
 
     m_renderer->set_camera(*camera);
-    m_world->init();
     m_renderer->on_world_updated(*m_world);
+
+    m_world->init();
     return true;
 }
 
@@ -117,10 +131,14 @@ void DebugScene::on_render(float delta)
 {
     m_world->step_physics(delta);
     m_world->update(delta);
-    m_renderer->render();
+
+    m_view->render();
+    m_bloom_renderer->pre_render();
+    m_bloom_renderer->render();
 }
 
 void DebugScene::on_resize(int width, int height)
 {
-    m_renderer->resize_viewport(width, height);
+    m_view->resize(width, height);
+    m_bloom_renderer->resize_viewport(width, height);
 }

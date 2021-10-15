@@ -25,6 +25,7 @@ namespace Engine
 		void bind();
 		void load_matrix(const std::string &name, glm::mat4);
 		void load_int(const std::string &name, int);
+		void load_vec2(const std::string &name, glm::vec2);
 		void load_vec3(const std::string &name, glm::vec3);
 		void load_vec4(const std::string &name, glm::vec4);
 		void load_float(const std::string &name, float);

@@ -12,6 +12,9 @@ namespace Engine
     class Shader;
     class Renderer;
     class StandardRenderer;
+    class EmissionOnlyRenderer;
+    class BlurRenderer;
+    class BloomRenderer;
     class ParticalDriver;
     class ParticalRenderer;
     class GuiRenderer;

@@ -3,9 +3,7 @@
 #include "engine/forward.hpp"
 #include "gameobject/forward.hpp"
 #include "engine/graphics/renderer/renderer.hpp"
-#include <memory>
 #include <vector>
-#include <glm/glm.hpp>
 
 namespace Engine
 {

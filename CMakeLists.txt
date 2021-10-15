@@ -36,6 +36,9 @@ set(ENGINE_SOURCES
     engine/graphics/mesh/material.hpp
     engine/graphics/renderer/renderer.cpp engine/graphics/renderer/renderer.hpp
     engine/graphics/renderer/standard_renderer.cpp engine/graphics/renderer/standard_renderer.hpp
+    engine/graphics/renderer/post_process_renderer.cpp engine/graphics/renderer/post_process_renderer.hpp
+    engine/graphics/renderer/bloom_renderer.cpp engine/graphics/renderer/bloom_renderer.hpp
+    engine/graphics/renderer/blur_renderer.cpp engine/graphics/renderer/blur_renderer.hpp
     engine/graphics/texture/texture.cpp engine/graphics/texture/texture.hpp
     engine/graphics/texture/image_texture.cpp engine/graphics/texture/image_texture.hpp
     engine/graphics/texture/render_texture.cpp engine/graphics/texture/render_texture.hpp

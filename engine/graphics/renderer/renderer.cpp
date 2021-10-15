@@ -2,6 +2,7 @@
 #include "engine/graphics/shader.hpp"
 #include "gameobject/gameobject.hpp"
 #include "gameobject/transform.hpp"
+#include <GL/gl.h>
 using namespace Engine;
 using namespace Object;
 using namespace glm;
@@ -25,6 +26,8 @@ void Renderer::view_matrix(const GameObject &camera)
 
 void Renderer::render()
 {
+	glViewport(0, 0, m_width, m_height);
+
     if (m_camera)
 		view_matrix(*m_camera);
 	else

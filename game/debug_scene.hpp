@@ -23,7 +23,10 @@ namespace Game
         void make_test_object();
 
         std::unique_ptr<Object::World> m_world { nullptr };
+
         std::shared_ptr<Engine::StandardRenderer> m_renderer { nullptr };
+        std::shared_ptr<Engine::RenderTexture> m_view { nullptr };
+        std::shared_ptr<Engine::BloomRenderer> m_bloom_renderer { nullptr };
 
     };
 

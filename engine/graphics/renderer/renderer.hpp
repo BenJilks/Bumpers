@@ -26,6 +26,7 @@ namespace Engine
 		void resize_viewport(int width, int height);
 		void render();
 
+		virtual void pre_render() {}
 		virtual void on_world_updated(Object::GameObject&) = 0;
 
 	protected:
@@ -37,6 +38,9 @@ namespace Engine
 		glm::mat4 m_projection_matrix;
 		glm::mat4 m_view;
 		glm::vec3 m_camera_position;
+
+		inline int width() const { return m_width; }
+		inline int height() const { return m_height; }
 
 	private:
 		void view_matrix(const Object::GameObject &camera);

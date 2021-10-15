@@ -15,20 +15,23 @@ std::shared_ptr<Mesh> Mesh::construct(const MeshBuilder &builder)
     
     glGenBuffers(mesh->m_vbo.size(), mesh->m_vbo.data());
 
-    mesh->bind_buffer_data<3, GL_FLOAT>(0, builder.m_verticies);
-    mesh->bind_buffer_data<3, GL_FLOAT>(1, builder.m_normals);
-    mesh->bind_buffer_data<2, GL_FLOAT>(2, builder.m_texture_coords);
-    mesh->bind_buffer_data<3, GL_FLOAT>(3, builder.m_tangents);
-    mesh->bind_buffer_data<3, GL_FLOAT>(4, builder.m_bitangents);
-    mesh->bind_indicies(5, builder.m_indicies);
+    int index = 0;
+    if (builder.m_verticies.size() > 0)
+        mesh->bind_buffer_data<3, GL_FLOAT>(index++, builder.m_verticies);
+    if (builder.m_normals.size() > 0)
+        mesh->bind_buffer_data<3, GL_FLOAT>(index++, builder.m_normals);
+    if (builder.m_texture_coords.size() > 0)
+        mesh->bind_buffer_data<2, GL_FLOAT>(index++, builder.m_texture_coords);
+    if (builder.m_tangents.size() > 0)
+        mesh->bind_buffer_data<3, GL_FLOAT>(index++, builder.m_tangents);
+    if (builder.m_bitangents.size() > 0)
+        mesh->bind_buffer_data<3, GL_FLOAT>(index++, builder.m_bitangents);
+    mesh->bind_indicies(index++, builder.m_indicies);
 
     if (builder.m_is_instanced)
     {
-        glVertexAttribDivisor(0, 0);
-        glVertexAttribDivisor(1, 0);
-        glVertexAttribDivisor(2, 0);
-        glVertexAttribDivisor(3, 0);
-        glVertexAttribDivisor(4, 0);
+        for (int i = 0; i < index; i++)
+            glVertexAttribDivisor(i, 0);
         mesh->m_instance_count = builder.m_instance_count;
     }
 
