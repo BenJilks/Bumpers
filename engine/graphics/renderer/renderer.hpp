@@ -9,10 +9,6 @@
 namespace Engine
 {
 
-	class ComponentCollection
-	{
-	};
-
 	class Renderer
 	{
 	public:

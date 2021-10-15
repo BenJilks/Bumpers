@@ -14,10 +14,10 @@ BloomRenderer::BloomRenderer(std::shared_ptr<Shader> shader,
     , m_standard_view(standard_view)
 {
     auto blur_horizontal_renderer = std::make_shared<BlurRenderer>(blur_shader, light_view, vec2(1, 0));
-    m_blur_horizontal_view = RenderTexture::construct(blur_horizontal_renderer);
+    m_blur_horizontal_view = RenderTexture::construct({ blur_horizontal_renderer });
 
     auto blur_virtual_renderer = std::make_shared<BlurRenderer>(blur_shader, m_blur_horizontal_view, vec2(0, 1));
-    m_blur_virtual_view = RenderTexture::construct(blur_virtual_renderer);
+    m_blur_virtual_view = RenderTexture::construct({ blur_virtual_renderer });
 }
 
 BloomRenderer::~BloomRenderer()

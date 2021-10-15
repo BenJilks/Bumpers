@@ -3,7 +3,8 @@
 #include <GL/glew.h>
 using namespace Engine;
 
-std::shared_ptr<RenderTexture> RenderTexture::construct(std::shared_ptr<Renderer> renderer)
+std::shared_ptr<RenderTexture> RenderTexture::construct(
+    std::vector<std::shared_ptr<Renderer>> pipeline)
 {
     GLuint color_texture;
     glGenTextures(1, &color_texture);
@@ -26,7 +27,7 @@ std::shared_ptr<RenderTexture> RenderTexture::construct(std::shared_ptr<Renderer
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depth_texture, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    return std::shared_ptr<RenderTexture>(new RenderTexture(renderer, fbo, color_texture, depth_texture));
+    return std::shared_ptr<RenderTexture>(new RenderTexture(pipeline, fbo, color_texture, depth_texture));
 }
 
 void RenderTexture::add_color_texture()
@@ -67,12 +68,14 @@ std::shared_ptr<Texture> RenderTexture::color_texture(int index)
 
 void RenderTexture::render()
 {
-    m_renderer->pre_render();
+    for (auto &renderer : m_pipeline)
+        renderer->pre_render();
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_renderer->render();
+    for (auto &renderer : m_pipeline)
+        renderer->render();
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -81,7 +84,8 @@ void RenderTexture::resize(int width, int height)
 {
     m_width = width;
     m_height = height;
-    m_renderer->resize_viewport(width, height);
+    for (auto &renderer : m_pipeline)
+        renderer->resize_viewport(width, height);
 
     for (auto texture : m_color_textures)
     {

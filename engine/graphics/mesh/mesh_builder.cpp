@@ -43,6 +43,14 @@ MeshBuilder &MeshBuilder::add_texture_coord(vec2 texture_coord)
     return *this;
 }
 
+MeshBuilder &MeshBuilder::add_cube_texture_coord(glm::vec3 texture_coord)
+{
+    m_cube_texture_coords.push_back(texture_coord.x);
+    m_cube_texture_coords.push_back(texture_coord.y);
+    m_cube_texture_coords.push_back(texture_coord.z);
+    return *this;
+}
+
 MeshBuilder &MeshBuilder::add_indicies(std::vector<uint32_t> indicies)
 {
     m_indicies.insert(m_indicies.end(), indicies.begin(), indicies.end());
@@ -67,6 +75,59 @@ MeshBuilder &MeshBuilder::add_quad(glm::vec2 size, bool is_y_flipped)
     add_vertex(vec3(-size.x, size.y, 0.0f)).add_texture_coord(vec2(0, is_y_flipped ? 0 : 1));
     add_indicies({0, 1, 2});
     add_indicies({0, 2, 3});
+    return *this;
+}
+
+MeshBuilder &MeshBuilder::add_sky_box(float size)
+{
+    // Front
+    add_vertex(vec3(-size, -size, -size)).add_cube_texture_coord(vec3(-1, -1, -1));
+    add_vertex(vec3(size, -size, -size)).add_cube_texture_coord(vec3(1, -1, -1));
+    add_vertex(vec3(size, size, -size)).add_cube_texture_coord(vec3(1, 1, -1));
+    add_vertex(vec3(-size, size, -size)).add_cube_texture_coord(vec3(-1, 1, -1));
+    add_indicies({0, 1, 2});
+    add_indicies({0, 2, 3});
+
+    // Back
+    add_vertex(vec3(-size, -size, size)).add_cube_texture_coord(vec3(-1, -1, 1));
+    add_vertex(vec3(-size, size, size)).add_cube_texture_coord(vec3(-1, 1, 1));
+    add_vertex(vec3(size, size, size)).add_cube_texture_coord(vec3(1, 1, 1));
+    add_vertex(vec3(size, -size, size)).add_cube_texture_coord(vec3(1, -1, 1));
+    add_indicies({4 + 0, 4 + 1, 4 + 2});
+    add_indicies({4 + 0, 4 + 2, 4 + 3});
+
+    // Left
+    add_vertex(vec3(-size, -size, -size)).add_cube_texture_coord(vec3(-1, -1, -1));
+    add_vertex(vec3(-size, size, -size)).add_cube_texture_coord(vec3(-1, 1, -1));
+    add_vertex(vec3(-size, size, size)).add_cube_texture_coord(vec3(-1, 1, 1));
+    add_vertex(vec3(-size, -size, size)).add_cube_texture_coord(vec3(-1, -1, 1));
+    add_indicies({8 + 0, 8 + 1, 8 + 2});
+    add_indicies({8 + 0, 8 + 2, 8 + 3});
+
+    // Right
+    add_vertex(vec3(size, -size, -size)).add_cube_texture_coord(vec3(1, -1, -1));
+    add_vertex(vec3(size, -size, size)).add_cube_texture_coord(vec3(1, -1, 1));
+    add_vertex(vec3(size, size, size)).add_cube_texture_coord(vec3(1, 1, 1));
+    add_vertex(vec3(size, size, -size)).add_cube_texture_coord(vec3(1, 1, -1));
+    add_indicies({12 + 0, 12 + 1, 12 + 2});
+    add_indicies({12 + 0, 12 + 2, 12 + 3});
+
+    // Top
+    add_vertex(vec3(-size, size, -size)).add_cube_texture_coord(vec3(-1, 1, -1));
+    add_vertex(vec3(size, size, -size)).add_cube_texture_coord(vec3(1, 1, -1));
+    add_vertex(vec3(size, size, size)).add_cube_texture_coord(vec3(1, 1, 1));
+    add_vertex(vec3(-size, size, size)).add_cube_texture_coord(vec3(-1, 1, 1));
+    add_indicies({16 + 0, 16 + 1, 16 + 2});
+    add_indicies({16 + 0, 16 + 2, 16 + 3});
+
+    // Bottom
+    add_vertex(vec3(-size, -size, -size)).add_cube_texture_coord(vec3(-1, -1, -1));
+    add_vertex(vec3(-size, -size, size)).add_cube_texture_coord(vec3(-1, -1, 1));
+    add_vertex(vec3(size, -size, size)).add_cube_texture_coord(vec3(1, -1, 1));
+    add_vertex(vec3(size, -size, -size)).add_cube_texture_coord(vec3(1, -1, -1));
+    add_indicies({20 + 0, 20 + 1, 20 + 2});
+    add_indicies({20 + 0, 20 + 2, 20 + 3});
+
     return *this;
 }
 

@@ -21,6 +21,7 @@ namespace Engine
         MeshBuilder &add_tangent(glm::vec3);
         MeshBuilder &add_bitangent(glm::vec3);
         MeshBuilder &add_texture_coord(glm::vec2);
+        MeshBuilder &add_cube_texture_coord(glm::vec3);
         MeshBuilder &add_indicies(std::vector<uint32_t>);
 
         template<size_t size>
@@ -32,6 +33,7 @@ namespace Engine
         
         MeshBuilder &add_builder(const MeshBuilder&);
         MeshBuilder &add_quad(glm::vec2 size, bool is_y_flipped);
+        MeshBuilder &add_sky_box(float size);
         MeshBuilder &make_instanced(int count);
         bool is_empty() const;
         
@@ -45,6 +47,7 @@ namespace Engine
         std::vector<float> m_tangents;
         std::vector<float> m_bitangents;
         std::vector<float> m_texture_coords;
+        std::vector<float> m_cube_texture_coords;
         std::vector<uint32_t> m_indicies;
         bool m_is_instanced { false };
         int m_instance_count { 0 };

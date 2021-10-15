@@ -39,9 +39,11 @@ set(ENGINE_SOURCES
     engine/graphics/renderer/post_process_renderer.cpp engine/graphics/renderer/post_process_renderer.hpp
     engine/graphics/renderer/bloom_renderer.cpp engine/graphics/renderer/bloom_renderer.hpp
     engine/graphics/renderer/blur_renderer.cpp engine/graphics/renderer/blur_renderer.hpp
+    engine/graphics/renderer/sky_box_renderer.cpp engine/graphics/renderer/sky_box_renderer.hpp
     engine/graphics/texture/texture.cpp engine/graphics/texture/texture.hpp
     engine/graphics/texture/image_texture.cpp engine/graphics/texture/image_texture.hpp
     engine/graphics/texture/render_texture.cpp engine/graphics/texture/render_texture.hpp
+    engine/graphics/texture/cube_map_texture.cpp engine/graphics/texture/cube_map_texture.hpp
     engine/graphics/gui/gui_renderer.cpp engine/graphics/gui/gui_renderer.hpp
     engine/assets/obj_loader.cpp engine/assets/obj_loader.hpp
     engine/assets/mtl_loader.cpp engine/assets/mtl_loader.hpp

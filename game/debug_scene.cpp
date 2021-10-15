@@ -6,8 +6,10 @@
 #include "engine/graphics/mesh/mesh_builder.hpp"
 #include "engine/graphics/texture/image_texture.hpp"
 #include "engine/graphics/texture/render_texture.hpp"
+#include "engine/graphics/texture/cube_map_texture.hpp"
 #include "engine/graphics/shader.hpp"
 #include "engine/graphics/renderer/standard_renderer.hpp"
+#include "engine/graphics/renderer/sky_box_renderer.hpp"
 #include "engine/graphics/renderer/blur_renderer.hpp"
 #include "engine/graphics/renderer/bloom_renderer.hpp"
 #include "engine/input.hpp"
@@ -98,16 +100,31 @@ void DebugScene::make_test_object()
     }
 }
 
+void DebugScene::make_skybox()
+{
+    auto skybox_texture = CubeMapTexture::construct(ASSETS + "/textures/skybox/skybox");
+    auto skybox_mesh = MeshBuilder()
+        .add_sky_box(6)
+        .build();
+
+    auto &skybox = m_world->add_child();
+    skybox.add_component<Transform>();
+    skybox.add_component<MeshRender>(skybox_mesh, m_sky_box_renderer, 
+        Material { .diffuse_map = skybox_texture });
+}
+
 bool DebugScene::init()
 {
     auto shader = Shader::construct(ASSETS + "/shaders/default.glsl");
+    auto skybox_shader = Shader::construct(ASSETS + "/shaders/skybox.glsl");
     auto bloom_shader = Shader::construct(ASSETS + "/shaders/bloom.glsl");
     auto blur_shader = Shader::construct(ASSETS + "/shaders/blur.glsl");
 
     m_world = std::make_unique<World>();
     
     m_renderer = std::make_shared<StandardRenderer>(shader);
-    m_view = RenderTexture::construct(m_renderer);
+    m_sky_box_renderer = std::make_shared<SkyBoxRenderer>(skybox_shader);
+    m_view = RenderTexture::construct({ m_sky_box_renderer, m_renderer });
     m_view->add_color_texture();
 
     m_bloom_renderer = std::make_shared<BloomRenderer>(
@@ -119,9 +136,13 @@ bool DebugScene::init()
         return false;
 
     make_test_object();
+    make_skybox();
 
     m_renderer->set_camera(*camera);
     m_renderer->on_world_updated(*m_world);
+
+    m_sky_box_renderer->set_camera(*camera);
+    m_sky_box_renderer->on_world_updated(*m_world);
 
     m_world->init();
     return true;

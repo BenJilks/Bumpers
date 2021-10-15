@@ -21,10 +21,12 @@ namespace Game
     private:
         Object::GameObject *make_camera();
         void make_test_object();
+        void make_skybox();
 
         std::unique_ptr<Object::World> m_world { nullptr };
 
         std::shared_ptr<Engine::StandardRenderer> m_renderer { nullptr };
+        std::shared_ptr<Engine::SkyBoxRenderer> m_sky_box_renderer { nullptr };
         std::shared_ptr<Engine::RenderTexture> m_view { nullptr };
         std::shared_ptr<Engine::BloomRenderer> m_bloom_renderer { nullptr };
 
