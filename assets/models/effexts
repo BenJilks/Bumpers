@@ -1,0 +1,307 @@
+  <library_effects>
+    <effect id="MetalBase-effect">
+      <profile_COMMON>
+        <newparam sid="diamond-metal-siding_albedo_png-surface">
+          <surface type="2D">
+            <init_from>diamond-metal-siding_albedo_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="diamond-metal-siding_albedo_png-sampler">
+          <sampler2D>
+            <source>diamond-metal-siding_albedo_png-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="diamond-metal-siding_normal_png-surface">
+          <surface type="2D">
+            <init_from>diamond-metal-siding_normal_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="diamond-metal-siding_normal_png-sampler">
+          <sampler2D>
+            <source>diamond-metal-siding_normal_png-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="cart_floor_ambient_occlusion-surface">
+          <surface type="2D">
+            <init_from>cart_floor_ambient_occlusion</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="cart_floor_ambient_occlusion-sampler">
+          <sampler2D>
+            <source>cart_floor_ambient_occlusion-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <texture texture="diamond-metal-siding_albedo_png-sampler" texcoord="UVMap.001"/>
+            </diffuse>
+            <reflectivity>
+              <float sid="specular">0.7136364</float>
+            </reflectivity>
+            <metallic>
+              <float sid="metallic">0.6</float>
+            </metallic>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+          <extra>
+            <technique profile="FCOLLADA">
+              <bump bumptype="NORMALMAP">
+                <texture texture="diamond-metal-siding_normal_png-sampler" texcoord="UVMap"/>
+                <float sid="strength">0.6</float>
+              </bump>
+              <lightmap>
+                <texture texture="cart_floor_ambient_occlusion-sampler" texcoord="UVMap"/>
+              </lightmap>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="Wood-effect">
+      <profile_COMMON>
+        <newparam sid="wood_png_001-surface">
+          <surface type="2D">
+            <init_from>wood_png_001</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="wood_png_001-sampler">
+          <sampler2D>
+            <source>wood_png_001-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="wood_png_normal-surface">
+          <surface type="2D">
+            <init_from>wood_png_normal</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="wood_png_normal-sampler">
+          <sampler2D>
+            <source>wood_png_normal-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <texture texture="wood_png_001-sampler" texcoord="UVMap"/>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.4 0.4 0.4 1</color>
+              <float sid="focus">200</float>
+            </specular>
+            <metallic>
+              <float sid="metallic">0.1</float>
+            </metallic>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+          <extra>
+            <technique profile="FCOLLADA">
+              <bump bumptype="NORMALMAP">
+                <texture texture="wood_png_normal-sampler" texcoord="UVMap"/>
+                <float sid="strength">0.4</float>
+              </bump>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="RedLight-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">1 0.002010527 0.001025016 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0.8000001 0.02090242 0.03364661 1</color>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="Light-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">1 0.4837133 0.1660605 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0.8000001 0.6044256 0.1222351 1</color>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="Metal-effect">
+      <profile_COMMON>
+        <newparam sid="white_png_001-surface">
+          <surface type="2D">
+            <init_from>white_png_001</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="white_png_001-sampler">
+          <sampler2D>
+            <source>white_png_001-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <texture texture="white_png_001-sampler" texcoord="UVMap"/>
+            </diffuse>
+            <metallic>
+              <float sid="metallic">0.4</float>
+            </metallic>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="Body-effect">
+      <profile_COMMON>
+        <newparam sid="PaintWork_png-surface">
+          <surface type="2D">
+            <init_from>PaintWork_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="PaintWork_png-sampler">
+          <sampler2D>
+            <source>PaintWork_png-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="NormalMap_png-surface">
+          <surface type="2D">
+            <init_from>NormalMap_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="NormalMap_png-sampler">
+          <sampler2D>
+            <source>NormalMap_png-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="cart_ambient_occlusion-surface">
+          <surface type="2D">
+            <init_from>cart_ambient_occlusion</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="cart_ambient_occlusion-sampler">
+          <sampler2D>
+            <source>cart_ambient_occlusion-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <texture texture="PaintWork_png-sampler" texcoord="UVMap.001"/>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+          <extra>
+            <technique profile="FCOLLADA">
+              <bump bumptype="NORMALMAP">
+                <texture texture="NormalMap_png-sampler" texcoord="UVMap"/>
+                <float sid="strength">0.4</float>
+              </bump>
+              <lightmap>
+                <texture texture="cart_ambient_occlusion-sampler" texcoord="UVMap"/>
+              </lightmap>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="Rubber-effect">
+      <profile_COMMON>
+        <newparam sid="rubber_normal-surface">
+          <surface type="2D">
+            <init_from>rubber_normal</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="rubber_normal-sampler">
+          <sampler2D>
+            <source>rubber_normal-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0.151085 0.151085 0.151085 1</color>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+          <extra>
+            <technique profile="FCOLLADA">
+              <bump bumptype="NORMALMAP">
+                <texture texture="rubber_normal-sampler" texcoord="UVMap"/>
+                <float sid="strength">0.05</float>
+              </bump>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_images>
+    <image id="cart_floor_ambient_occlusion" name="cart_floor_ambient_occlusion">
+      <init_from>/textures/bumper/cart_floor_ambient_occlusion.png</init_from>
+    </image>
+    <image id="cart_ambient_occlusion" name="cart_ambient_occlusion">
+      <init_from>/textures/bumper/cart_ambient_occlusion.png</init_from>
+    </image>
+    <image id="NormalMap_png" name="NormalMap_png">
+      <init_from>/textures/bumper/NormalMap.png</init_from>
+    </image>
+    <image id="rubber_normal" name="rubber_normal">
+      <init_from>/textures/bumper/metal_normal.png</init_from>
+    </image>
+    <image id="wood_png_normal" name="wood_png_normal">
+      <init_from>/textures/wood/wood_normal.png</init_from>
+    </image>
+    <image id="PaintWork_png" name="PaintWork_png">
+      <init_from>/textures/bumper/PaintWork.png</init_from>
+    </image>
+    <image id="diamond-metal-siding_albedo_png" name="diamond-metal-siding_albedo_png">
+      <init_from>/textures/metal/diamond-metal-siding_albedo.png</init_from>
+    </image>
+    <image id="diamond-metal-siding_normal_png" name="diamond-metal-siding_normal_png">
+      <init_from>/textures/metal/diamond-metal-siding_normal-ogl.png</init_from>
+    </image>
+    <image id="white_png_001" name="white_png_001">
+      <init_from>/textures/bumper/white.png</init_from>
+    </image>
+    <image id="wood_png_001" name="wood_png_001">
+      <init_from>/textures/wood/wood.png</init_from>
+    </image>
+  </library_images>

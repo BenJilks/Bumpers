@@ -13,3 +13,6 @@
 [submodule "3rdparty/openal-soft"]
 	path = 3rdparty/openal-soft
 	url = https://github.com/kcat/openal-soft
+[submodule "3rdparty/pugixml"]
+	path = 3rdparty/pugixml
+	url = git@github.com:zeux/pugixml.git

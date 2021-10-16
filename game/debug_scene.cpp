@@ -3,6 +3,7 @@
 #include "spin.hpp"
 #include "config.hpp"
 #include "engine/assets/obj_loader.hpp"
+#include "engine/assets/collada_loader.hpp"
 #include "engine/graphics/mesh/mesh_builder.hpp"
 #include "engine/graphics/texture/image_texture.hpp"
 #include "engine/graphics/texture/render_texture.hpp"
@@ -18,6 +19,7 @@
 #include "gameobject/transform.hpp"
 #include "gameobject/mesh_render.hpp"
 #include "gameobject/light.hpp"
+#include <glm/gtx/matrix_decompose.hpp>
 #include <iostream>
 using namespace Engine;
 using namespace Object;
@@ -74,11 +76,21 @@ private:
 
 void DebugScene::make_test_object()
 {
-    auto *test_object = ObjLoader::from_file(*m_world, ASSETS + "/models/bumper.obj", 
-        [&](Object::GameObject &object, Engine::MeshBuilder &builder, ObjLoader::ModelMetaData meta_data)
+    auto *test_object = ColladaLoader::from_file(*m_world, ASSETS + "/models/bumper.dae", 
+        [&](Object::GameObject &object, Engine::MeshBuilder &builder, ColladaLoader::ModelMetaData meta_data)
     {
-        object.add_component<Transform>();
         object.add_component<MeshRender>(builder.build(), m_renderer, meta_data.material);
+
+        glm::vec3 scale;
+        glm::quat rotation;
+        glm::vec3 translation;
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        glm::decompose(meta_data.transform, scale, rotation, translation, skew, perspective);
+
+        auto &transform = object.add_component<Transform>();
+        transform.set_position(translation);
+        transform.set_scale(scale);
     });
 
     {

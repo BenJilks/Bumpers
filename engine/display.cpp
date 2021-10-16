@@ -55,11 +55,11 @@ static void idle()
 
 static void keyboard(unsigned char c, int, int)
 {
-    Input::update_key_state(c, true);
+    Input::update_key_state(std::tolower(c), true);
 }
 static void keyboard_up(unsigned char c, int, int)
 {
-    Input::update_key_state(c, false);
+    Input::update_key_state(std::tolower(c), false);
 }
 
 static void special(int key, int, int)

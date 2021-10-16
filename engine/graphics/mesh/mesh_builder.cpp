@@ -36,10 +36,21 @@ MeshBuilder &MeshBuilder::add_bitangent(glm::vec3 bitangent)
     return *this;
 }
 
-MeshBuilder &MeshBuilder::add_texture_coord(vec2 texture_coord)
+MeshBuilder &MeshBuilder::add_uv0(glm::vec2 uv0)
 {
-    m_texture_coords.push_back(texture_coord.x);
-    m_texture_coords.push_back(1.0f - texture_coord.y);
+    m_uv01.push_back(uv0.x);
+    m_uv01.push_back(1.0 - uv0.y);
+    m_uv01.push_back(0);
+    m_uv01.push_back(0);
+    return *this;
+}
+
+MeshBuilder &MeshBuilder::add_uv01(vec2 uv0, vec2 uv1)
+{
+    m_uv01.push_back(uv0.x);
+    m_uv01.push_back(1.0 - uv0.y);
+    m_uv01.push_back(uv1.x);
+    m_uv01.push_back(1.0 - uv1.y);
     return *this;
 }
 
@@ -63,16 +74,16 @@ MeshBuilder &MeshBuilder::add_builder(const MeshBuilder &other)
         m_indicies.push_back(index + vertex_count());
 
     m_verticies.insert(m_verticies.end(), other.m_verticies.begin(), other.m_verticies.end());
-    m_texture_coords.insert(m_texture_coords.end(), other.m_texture_coords.begin(), other.m_texture_coords.end());
+    m_uv01.insert(m_uv01.end(), other.m_uv01.begin(), other.m_uv01.end());
     return *this;
 }
 
 MeshBuilder &MeshBuilder::add_quad(glm::vec2 size, bool is_y_flipped)
 {
-    add_vertex(vec3(-size.x, -size.y, 0.0f)).add_texture_coord(vec2(0, is_y_flipped ? 1 : 0));
-    add_vertex(vec3(size.x, -size.y, 0.0f)).add_texture_coord(vec2(1, is_y_flipped ? 1 : 0));
-    add_vertex(vec3(size.x, size.y, 0.0f)).add_texture_coord(vec2(1, is_y_flipped ? 0 : 1));
-    add_vertex(vec3(-size.x, size.y, 0.0f)).add_texture_coord(vec2(0, is_y_flipped ? 0 : 1));
+    add_vertex(vec3(-size.x, -size.y, 0.0f)).add_uv0(vec2(0, is_y_flipped ? 1 : 0));
+    add_vertex(vec3(size.x, -size.y, 0.0f)).add_uv0(vec2(1, is_y_flipped ? 1 : 0));
+    add_vertex(vec3(size.x, size.y, 0.0f)).add_uv0(vec2(1, is_y_flipped ? 0 : 1));
+    add_vertex(vec3(-size.x, size.y, 0.0f)).add_uv0(vec2(0, is_y_flipped ? 0 : 1));
     add_indicies({0, 1, 2});
     add_indicies({0, 2, 3});
     return *this;
@@ -145,9 +156,5 @@ bool MeshBuilder::is_empty() const
 
 std::shared_ptr<Mesh> MeshBuilder::build() const
 {
-    // Verify mesh
-    if (m_texture_coords.size() != 0 && m_texture_coords.size() / 2 != vertex_count())
-        return nullptr;
-
     return Mesh::construct(*this);
 }

@@ -20,8 +20,8 @@ std::shared_ptr<Mesh> Mesh::construct(const MeshBuilder &builder)
         mesh->bind_buffer_data<3, GL_FLOAT>(index++, builder.m_verticies);
     if (builder.m_normals.size() > 0)
         mesh->bind_buffer_data<3, GL_FLOAT>(index++, builder.m_normals);
-    if (builder.m_texture_coords.size() > 0)
-        mesh->bind_buffer_data<2, GL_FLOAT>(index++, builder.m_texture_coords);
+    if (builder.m_uv01.size() > 0)
+        mesh->bind_buffer_data<4, GL_FLOAT>(index++, builder.m_uv01);
     if (builder.m_cube_texture_coords.size() > 0)
         mesh->bind_buffer_data<3, GL_FLOAT>(index++, builder.m_cube_texture_coords);
     if (builder.m_tangents.size() > 0)

@@ -186,6 +186,12 @@ void Shader::load_float(const std::string &name, float f)
 	glUniform1f(location, f);
 }
 
+void Shader::load_bool(const std::string &name, bool b)
+{
+	auto location = get_uniform_location(name);
+	glUniform1i(location, b);
+}
+
 GLuint Shader::get_uniform_location(const std::string &name)
 {
 	return glGetUniformLocation(m_program, name.c_str());

@@ -16,16 +16,19 @@ set(GLEW 3rdparty/glew)
 set(FREEGLUT 3rdparty/FreeGLUT/freeglut/freeglut)
 set(GLM 3rdparty/glm)
 set(STB 3rdparty/stb)
+set(PUGIXML 3rdparty/pugixml)
 
 set(LIBTYPE STATIC)
 add_subdirectory(${GLEW})
 add_subdirectory(${FREEGLUT})
+add_subdirectory(${PUGIXML})
 
 include_directories(
     ${FREEGLUT}/include
     ${GLEW}/include 
     ${GLM} 
     ${STB}
+    ${PUGIXML}/src
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -48,6 +51,7 @@ set(ENGINE_SOURCES
     engine/assets/obj_loader.cpp engine/assets/obj_loader.hpp
     engine/assets/mtl_loader.cpp engine/assets/mtl_loader.hpp
     engine/assets/obj_like_utils.hpp
+    engine/assets/collada_loader.cpp engine/assets/collada_loader.hpp
     engine/input.cpp engine/input.hpp
     engine/display.cpp engine/display.hpp
     engine/logger.cpp engine/logger.hpp
@@ -87,5 +91,5 @@ source_group("gameobject" FILES ${GAMEOBJECT_SOURCES})
 source_group("game" FILES ${GAME_SOURCES})
 
 add_executable(bumpers ${SOURCES})
-target_link_libraries(bumpers libglew_static freeglut_static)
+target_link_libraries(bumpers libglew_static freeglut_static pugixml-static)
 

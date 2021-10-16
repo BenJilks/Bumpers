@@ -165,7 +165,7 @@ static void parse_line(GameObject &parent, const std::string &line_str,
                 if (line.component_count > 0)
                     state.current_mesh.add_vertex(state.verticies[line.argsi[i][0] - 1]);
                 if (line.component_count > 1 && line.argsi[i][1] > 0)
-                    state.current_mesh.add_texture_coord(state.texture_coords[line.argsi[i][1] - 1]);
+                    state.current_mesh.add_uv0(state.texture_coords[line.argsi[i][1] - 1]);
                 if (line.component_count > 2)
                     state.current_mesh.add_normal(state.normals[line.argsi[i][2] - 1]);
                 

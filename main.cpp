@@ -1,6 +1,9 @@
 #include "engine/display.hpp"
 #include "engine/logger.hpp"
+#include "gameobject/world.hpp"
 #include "game/debug_scene.hpp"
+#include <iostream>
+#include <glm/gtx/string_cast.hpp>
 using namespace Engine;
 using namespace Object;
 using namespace Game;

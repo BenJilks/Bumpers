@@ -29,6 +29,7 @@ namespace Engine
 		void load_vec3(const std::string &name, glm::vec3);
 		void load_vec4(const std::string &name, glm::vec4);
 		void load_float(const std::string &name, float);
+		void load_bool(const std::string &name, bool);
 
 	private:
 		GLuint m_vertex_shader;

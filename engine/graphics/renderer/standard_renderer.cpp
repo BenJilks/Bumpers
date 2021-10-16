@@ -87,7 +87,8 @@ void StandardRenderer::on_start_frame()
 
 	m_shader->load_int("diffuse_map", 0);
 	m_shader->load_int("normal_map", 1);
-	m_shader->load_int("sky_box", 2);
+	m_shader->load_int("light_map", 2);
+	m_shader->load_int("sky_box", 3);
 }
 
 void StandardRenderer::on_render()
@@ -104,16 +105,20 @@ void StandardRenderer::on_render()
 		m_shader->load_float("normal_map_strength", material.normal_map_strength);
 		m_shader->load_float("specular_focus", material.specular_focus);
 		m_shader->load_float("metallic", material.metallic);
+		m_shader->load_bool("has_light_map", material.light_map != nullptr);
 
 		if (material.diffuse_map)
 			material.diffuse_map->bind(0);
 		if (material.normal_map)
 			material.normal_map->bind(1);
+		if (material.light_map)
+			material.light_map->bind(2);
 		if (m_sky_box)
-		    m_sky_box->bind(2);
+		    m_sky_box->bind(3);
 		data.mesh_render.mesh().draw();
 		Texture::unbind(0);
 		Texture::unbind(1);
 		Texture::unbind(2);
+		Texture::unbind(3);
 	}
 }
