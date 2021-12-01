@@ -14,7 +14,9 @@ namespace Engine::ColladaLoader
     struct ModelMetaData
     {
         Material material;
-        glm::mat4 transform;
+        glm::vec3 translation;
+        glm::vec3 scale;
+        glm::vec3 rotation;
     };
 
     Object::GameObject *from_file(

@@ -151,14 +151,24 @@
     </effect>
     <effect id="Metal-effect">
       <profile_COMMON>
-        <newparam sid="white_png_001-surface">
+        <newparam sid="worn-shiny-metal-albedo_png-surface">
           <surface type="2D">
-            <init_from>white_png_001</init_from>
+            <init_from>worn-shiny-metal-albedo_png</init_from>
           </surface>
         </newparam>
-        <newparam sid="white_png_001-sampler">
+        <newparam sid="worn-shiny-metal-albedo_png-sampler">
           <sampler2D>
-            <source>white_png_001-surface</source>
+            <source>worn-shiny-metal-albedo_png-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="worn-shiny-metal-normal_png-surface">
+          <surface type="2D">
+            <init_from>worn-shiny-metal-normal_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="worn-shiny-metal-normal_png-sampler">
+          <sampler2D>
+            <source>worn-shiny-metal-normal_png-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -167,7 +177,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <diffuse>
-              <texture texture="white_png_001-sampler" texcoord="UVMap"/>
+              <texture texture="worn-shiny-metal-albedo_png-sampler" texcoord="UVMap"/>
             </diffuse>
             <metallic>
               <float sid="metallic">0.4</float>
@@ -176,6 +186,14 @@
               <float sid="ior">1.45</float>
             </index_of_refraction>
           </lambert>
+          <extra>
+            <technique profile="FCOLLADA">
+              <bump bumptype="NORMALMAP">
+                <texture texture="worn-shiny-metal-normal_png-sampler" texcoord="UVMap"/>
+                <float sid="strength">0.6</float>
+              </bump>
+            </technique>
+          </extra>
         </technique>
       </profile_COMMON>
     </effect>
@@ -201,16 +219,6 @@
             <source>NormalMap_png-surface</source>
           </sampler2D>
         </newparam>
-        <newparam sid="cart_ambient_occlusion-surface">
-          <surface type="2D">
-            <init_from>cart_ambient_occlusion</init_from>
-          </surface>
-        </newparam>
-        <newparam sid="cart_ambient_occlusion-sampler">
-          <sampler2D>
-            <source>cart_ambient_occlusion-surface</source>
-          </sampler2D>
-        </newparam>
         <technique sid="common">
           <lambert>
             <emission>
@@ -229,9 +237,6 @@
                 <texture texture="NormalMap_png-sampler" texcoord="UVMap"/>
                 <float sid="strength">0.4</float>
               </bump>
-              <lightmap>
-                <texture texture="cart_ambient_occlusion-sampler" texcoord="UVMap"/>
-              </lightmap>
             </technique>
           </extra>
         </technique>
@@ -272,6 +277,57 @@
         </technique>
       </profile_COMMON>
     </effect>
+    <effect id="Seat-effect">
+      <profile_COMMON>
+        <newparam sid="steelplate1_albedo_png-surface">
+          <surface type="2D">
+            <init_from>steelplate1_albedo_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="steelplate1_albedo_png-sampler">
+          <sampler2D>
+            <source>steelplate1_albedo_png-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="steelplate1_normal_png-surface">
+          <surface type="2D">
+            <init_from>steelplate1_normal_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="steelplate1_normal_png-sampler">
+          <sampler2D>
+            <source>steelplate1_normal_png-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <texture texture="steelplate1_albedo_png-sampler" texcoord="UVMap"/>
+            </diffuse>
+            <metallic>
+              <float sid="metallic">0.4</float>
+            </metallic>
+            <reflectivity>
+              <float sid="specular">0.4</float>
+            </reflectivity>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+          <extra>
+            <technique profile="FCOLLADA">
+              <bump bumptype="NORMALMAP">
+                <texture texture="steelplate1_normal_png-sampler" texcoord="UVMap"/>
+                <float sid="strength">0.2</float>
+              </bump>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+    </effect>
   </library_effects>
   <library_images>
     <image id="cart_floor_ambient_occlusion" name="cart_floor_ambient_occlusion">
@@ -303,5 +359,17 @@
     </image>
     <image id="wood_png_001" name="wood_png_001">
       <init_from>/textures/wood/wood.png</init_from>
+    </image>
+    <image id="steelplate1_albedo_png" name="steelplate1_albedo_png">
+      <init_from>/textures/metal/steelplate1_albedo.png</init_from>
+    </image>
+    <image id="steelplate1_normal_png" name="steelplate1_normal_png">
+      <init_from>/textures/metal/steelplate1_normal-ogl.png</init_from>
+    </image>
+    <image id="worn-shiny-metal-albedo_png" name="worn-shiny-metal-albedo_png">
+      <init_from>/textures/metal/worn-shiny-metal-albedo.png</init_from>
+    </image>
+    <image id="worn-shiny-metal-normal_png" name="worn-shiny-metal-normal_png">
+      <init_from>/textures/metal/worn-shiny-metal-Normal-ogl.png</init_from>
     </image>
   </library_images>

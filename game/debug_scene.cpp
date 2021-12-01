@@ -19,7 +19,7 @@
 #include "gameobject/transform.hpp"
 #include "gameobject/mesh_render.hpp"
 #include "gameobject/light.hpp"
-#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <iostream>
 using namespace Engine;
 using namespace Object;
@@ -48,7 +48,7 @@ class Circle : public ComponentBase<Circle>
     friend ComponentBase<Circle>;
 
 public:
-    virtual ~Circle() final
+    virtual ~Circle()
     {
     }
 
@@ -81,16 +81,10 @@ void DebugScene::make_test_object()
     {
         object.add_component<MeshRender>(builder.build(), m_renderer, meta_data.material);
 
-        glm::vec3 scale;
-        glm::quat rotation;
-        glm::vec3 translation;
-        glm::vec3 skew;
-        glm::vec4 perspective;
-        glm::decompose(meta_data.transform, scale, rotation, translation, skew, perspective);
-
         auto &transform = object.add_component<Transform>();
-        transform.set_position(translation);
-        transform.set_scale(scale);
+        transform.set_position(meta_data.translation);
+        transform.set_scale(meta_data.scale);
+        transform.set_rotation(meta_data.rotation);
     });
 
     {
@@ -176,3 +170,4 @@ void DebugScene::on_resize(int width, int height)
     m_view->resize(width, height);
     m_bloom_renderer->resize_viewport(width, height);
 }
+

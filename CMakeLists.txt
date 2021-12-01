@@ -48,6 +48,9 @@ set(ENGINE_SOURCES
     engine/graphics/texture/render_texture.cpp engine/graphics/texture/render_texture.hpp
     engine/graphics/texture/cube_map_texture.cpp engine/graphics/texture/cube_map_texture.hpp
     engine/graphics/gui/gui_renderer.cpp engine/graphics/gui/gui_renderer.hpp
+    engine/physics/collision_shape.cpp engine/physics/collision_shape.hpp
+    engine/physics/collision_resolver.cpp engine/physics/collision_resolver.hpp
+    engine/physics/broad_phase_collision.cpp engine/physics/broad_phase_collision.hpp
     engine/assets/obj_loader.cpp engine/assets/obj_loader.hpp
     engine/assets/mtl_loader.cpp engine/assets/mtl_loader.hpp
     engine/assets/obj_like_utils.hpp
@@ -67,6 +70,8 @@ SET(GAMEOBJECT_SOURCES
     gameobject/attributes.hpp
     gameobject/gameobject.cpp gameobject/gameobject.hpp
     gameobject/world.cpp gameobject/world.hpp
+    gameobject/physics/physics_body.cpp gameobject/physics/physics_body.hpp
+    gameobject/physics/collider.cpp gameobject/physics/collider.hpp 
     gameobject/gui/control.hpp
     gameobject/gui/button.cpp gameobject/gui/button.hpp
     gameobject/scene.hpp

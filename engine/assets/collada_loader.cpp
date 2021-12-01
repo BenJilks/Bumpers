@@ -434,6 +434,30 @@ static mat4 load_matrix(const pugi::xml_node &matrix_node)
     return matrix;
 }
 
+static vec3 load_vec3(const pugi::xml_node &vec3_node)
+{
+    auto float_array = load_float_array(vec3_node);
+    return vec3(float_array[0], float_array[1], float_array[2]);
+}
+
+static vec4 load_vec4(const pugi::xml_node &vec4_node)
+{
+    auto float_array = load_float_array(vec4_node);
+    return vec4(float_array[0], float_array[1], float_array[2], float_array[3]);
+}
+
+static vec3 load_rotation(const pugi::xml_node &node_node)
+{
+    vec3 rotation;
+    for (const auto &rotate_node : node_node.children("rotate"))
+    {
+        auto data = load_vec4(rotate_node);
+        rotation += vec3(data.x, data.y, data.z) * glm::radians(data.w);
+    }
+
+    return rotation;
+}
+
 GameObject *ColladaLoader::from_file(
     GameObject &parent, const std::string &file_path,
     std::function<void(GameObject&, Engine::MeshBuilder&, ModelMetaData)> on_object)
@@ -473,7 +497,9 @@ GameObject *ColladaLoader::from_file(
             on_object(gameobject, mesh, ModelMetaData 
             {
                 .material = material,
-                .transform = load_matrix(node_node.child("matrix")),
+                .translation = load_vec3(node_node.child("translate")),
+                .scale = load_vec3(node_node.child("scale")),
+                .rotation = load_rotation(node_node),
             });
         }
     }
