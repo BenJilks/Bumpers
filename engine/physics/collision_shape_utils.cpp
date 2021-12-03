@@ -1,41 +1,42 @@
-#include "collision_shape.hpp"
-#include "gameobject/transform.hpp"
+#include "collision_shape_utils.hpp"
 #include "gameobject/gameobject.hpp"
+#include "glm/gtx/transform.hpp"
 #include <optional>
 #include <glm/glm.hpp>
 #include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/transform.hpp>
 using namespace Engine;
 using namespace Object;
 using namespace glm;
 
-static float calc_distanced_squared(vec2 point_a, vec2 point_b)
+float Engine::calc_distanced_squared(vec2 point_a, vec2 point_b)
 {
     auto x = point_a.x - point_b.x;
     auto y = point_a.y - point_b.y;
     return x * x + y * y;
 }
 
-static float max_side(vec2 vec)
+float Engine::max_side(vec2 vec)
 {
     return std::max(vec.x, vec.y);
 }
 
-static vec2 vec_from_angle(float angle)
+vec2 Engine::vec_from_angle(float angle)
 {
     return vec2(cos(angle), sin(angle));
 }
 
-static vec2 vec_3to2(vec3 vec)
+vec2 Engine::vec_3to2(vec3 vec)
 {
     return vec2(vec.x, vec.z);
 }
 
-static vec3 vec_2to3(vec2 vec)
+vec3 Engine::vec_2to3(vec2 vec)
 {
-    return vec3(vec.x, 0, vec.x);
+    return vec3(vec.x, 0, vec.y);
 }
 
-static std::vector<vec4> aabb_points(
+std::vector<vec4> Engine::aabb_points(
     const CollisionShapeAABB &aabb, const Transform::Computed &transform)
 {
     auto center = aabb.center() + vec_3to2(transform.position);
@@ -49,21 +50,27 @@ static std::vector<vec4> aabb_points(
     };
 }
 
-static std::vector<vec4> obb_points(
+std::vector<vec4> Engine::obb_points(
     const CollisionShapeOBB &obb, const Transform::Computed &transform)
 {
     auto lhs_center = obb.center();
     auto lhs_half_widths = obb.half_widths();
+
+	mat4 transform_2d(1);
+	transform_2d = glm::translate(transform_2d, vec3(transform.position.x, transform.position.z, 0));
+	transform_2d = glm::rotate(transform_2d, transform.rotation.y, vec3(0, 0, 1));
+	transform_2d = glm::scale(transform_2d, vec3(transform.scale.x, transform.scale.z, 1));
+
     return std::vector<vec4>
     {
-        transform.transform * vec4(lhs_center + vec2(-lhs_half_widths.x, lhs_half_widths.y), 0, 1),
-        transform.transform * vec4(lhs_center + lhs_half_widths, 0, 1),
-        transform.transform * vec4(lhs_center + vec2(lhs_half_widths.x, -lhs_half_widths.y), 0, 1),
-        transform.transform * vec4(lhs_center - lhs_half_widths, 0, 1),
+        transform_2d * vec4(lhs_center + vec2(-lhs_half_widths.x, lhs_half_widths.y), 0, 1),
+        transform_2d * vec4(lhs_center + lhs_half_widths, 0, 1),
+        transform_2d * vec4(lhs_center + vec2(lhs_half_widths.x, -lhs_half_widths.y), 0, 1),
+        transform_2d * vec4(lhs_center - lhs_half_widths, 0, 1),
     };
 }
 
-static std::vector<vec4> convex_polygon_points(
+std::vector<vec4> Engine::convex_polygon_points(
     const CollisionShapeConvexPolygon &convex_polygon, const Transform::Computed &transform)
 {
     std::vector<vec4> out;
@@ -74,7 +81,7 @@ static std::vector<vec4> convex_polygon_points(
     return out;
 }
 
-static std::vector<float> find_axes_from_points(const std::vector<vec4> &points)
+std::vector<float> Engine::find_axes_from_points(const std::vector<vec4> &points)
 {
     std::vector<float> axes;
     axes.reserve(points.size());
@@ -89,7 +96,7 @@ static std::vector<float> find_axes_from_points(const std::vector<vec4> &points)
     return axes;
 }
 
-static std::tuple<float, vec2, float, vec2> find_max_min_points_along_axis(const std::vector<vec4>& points, vec2 axis)
+std::tuple<float, vec2, float, vec2> Engine::find_max_min_points_along_axis(const std::vector<vec4>& points, vec2 axis)
 {
     auto min_point_along_axis = std::numeric_limits<float>::infinity();
     auto max_point_along_axis = -std::numeric_limits<float>::infinity();
@@ -271,7 +278,7 @@ inline float find_penetration(float separation_a, float separation_b)
     return std::min(-separation_a, -separation_b);
 }
 
-static CollisionShape::CollisionResult collide_convex_polygons(
+CollisionShape::CollisionResult Engine::collide_convex_polygons(
     const std::vector<vec4>& lhs_points, const std::vector<vec4>& rhs_points)
 {
     auto [lhs_face, lhs_penetration] = find_intersecting_face(lhs_points, rhs_points); 

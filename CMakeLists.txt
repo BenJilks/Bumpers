@@ -49,6 +49,7 @@ set(ENGINE_SOURCES
     engine/graphics/texture/cube_map_texture.cpp engine/graphics/texture/cube_map_texture.hpp
     engine/graphics/gui/gui_renderer.cpp engine/graphics/gui/gui_renderer.hpp
     engine/physics/collision_shape.cpp engine/physics/collision_shape.hpp
+    engine/physics/collision_shape_utils.cpp engine/physics/collision_shape_utils.hpp
     engine/physics/collision_resolver.cpp engine/physics/collision_resolver.hpp
     engine/physics/broad_phase_collision.cpp engine/physics/broad_phase_collision.hpp
     engine/assets/obj_loader.cpp engine/assets/obj_loader.hpp
@@ -81,7 +82,9 @@ SET(GAMEOBJECT_SOURCES
 SET(GAME_SOURCES
     game/spin.cpp game/spin.hpp
     game/debug_camera_movement.cpp game/debug_camera_movement.hpp
-    game/debug_scene.hpp game/debug_scene.cpp
+    game/debug_scene.cpp game/debug_scene.hpp
+    game/car_engine.cpp game/car_engine.hpp
+    game/player_controller.cpp game/player_controller.hpp
 )
 
 SET(SOURCES

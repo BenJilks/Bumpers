@@ -448,7 +448,7 @@ static vec4 load_vec4(const pugi::xml_node &vec4_node)
 
 static vec3 load_rotation(const pugi::xml_node &node_node)
 {
-    vec3 rotation;
+    vec3 rotation { 0, 0, 0 };
     for (const auto &rotate_node : node_node.children("rotate"))
     {
         auto data = load_vec4(rotate_node);
@@ -506,3 +506,4 @@ GameObject *ColladaLoader::from_file(
 
     return &model_object;
 }
+

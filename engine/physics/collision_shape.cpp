@@ -1,4 +1,5 @@
 #include "collision_shape.hpp"
+#include "collision_shape_utils.hpp"
 #include "gameobject/gameobject.hpp"
 #include "gameobject/transform.hpp"
 #include "gameobject/physics/collider.hpp"
@@ -7,8 +8,6 @@
 using namespace Engine;
 using namespace Object;
 using namespace glm;
-
-#include "collision_shape_utils.cpp"
 
 CollisionShape::~CollisionShape()
 {
@@ -43,6 +42,8 @@ static CollisionShape::CollisionResult collide_aabb_aabb(
         .is_colliding = true,
         .penetration_distance = penetration,
         .normal = normal,
+        .intersection_points = { rhs_center + normal * rhs_half_widths },
+        .intersection_point_count = 1,
     };
 }
 

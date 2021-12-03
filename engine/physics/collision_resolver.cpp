@@ -1,5 +1,6 @@
 #include "collision_resolver.hpp"
 #include "collision_shape.hpp"
+#include "collision_shape_utils.hpp"
 #include "broad_phase_collision.hpp"
 #include "gameobject/world.hpp"
 #include "gameobject/transform.hpp"
@@ -12,8 +13,6 @@
 using namespace Engine;
 using namespace Object;
 using namespace glm;
-
-#include "collision_shape_utils.cpp"
 
 vec2 cross(float s, const vec2 &a)
 {

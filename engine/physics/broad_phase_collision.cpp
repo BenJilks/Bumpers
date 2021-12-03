@@ -1,5 +1,6 @@
 #include "broad_phase_collision.hpp"
 #include "collision_shape.hpp"
+#include "collision_shape_utils.hpp"
 #include "gameobject/transform.hpp"
 #include "gameobject/gameobject.hpp"
 #include "gameobject/physics/collider.hpp"
@@ -12,8 +13,6 @@
 using namespace Engine;
 using namespace Object;
 using namespace glm;
-
-#include "collision_shape_utils.cpp"
 
 static std::pair<vec2, vec2> calculate_bounding_box(CollisionShape &shape, const Transform::Computed &transform)
 {

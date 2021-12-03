@@ -17,3 +17,4 @@ int main(int, char**)
     Display::start_main_loop();
     return 0;
 }
+

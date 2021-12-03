@@ -20,10 +20,13 @@ namespace Game
 
     private:
         Object::GameObject *make_camera();
-        void make_test_object();
+        Object::GameObject *make_bumber_car();
+        Object::GameObject *make_arena();
+        Object::GameObject *make_debug_cube();
         void make_sky_box(std::shared_ptr<Engine::Texture> sky_box_texture);
 
         std::unique_ptr<Object::World> m_world { nullptr };
+        std::unique_ptr<Engine::CollisionResolver> m_collision_resolver { nullptr };
 
         std::shared_ptr<Engine::StandardRenderer> m_renderer { nullptr };
         std::shared_ptr<Engine::SkyBoxRenderer> m_sky_box_renderer { nullptr };
@@ -33,3 +36,4 @@ namespace Game
     };
 
 }
+

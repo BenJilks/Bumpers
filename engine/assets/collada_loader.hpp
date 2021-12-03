@@ -14,9 +14,9 @@ namespace Engine::ColladaLoader
     struct ModelMetaData
     {
         Material material;
-        glm::vec3 translation;
-        glm::vec3 scale;
-        glm::vec3 rotation;
+        glm::vec3 translation { 0, 0, 0 };
+        glm::vec3 scale { 1, 1, 1 };
+        glm::vec3 rotation { 0, 0, 0 };
     };
 
     Object::GameObject *from_file(
@@ -24,3 +24,4 @@ namespace Engine::ColladaLoader
         std::function<void(Object::GameObject&, Engine::MeshBuilder&, ModelMetaData)> on_object);
     
 }
+
