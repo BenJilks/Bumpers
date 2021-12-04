@@ -22,12 +22,21 @@ namespace Object
 			glm::mat4 transform;
 		};
 
+        struct Computed2D
+        {
+            glm::vec2 position;
+            glm::vec2 scale;
+            float rotation;
+            glm::mat4 transform;
+        };
+
 		glm::mat4 local_transform() const;
 		glm::mat4 local_inverse_transform() const;
 		glm::mat4 global_transform(const GameObject &gameobject) const;
 		glm::mat4 global_inverse_transform(const GameObject &gameobject) const;
 
 		Computed computed_transform() const;
+		Computed2D computed_transform_2d() const;
 
         inline void set_position(glm::vec3 position) { m_position = position; on_change(); }
 		inline void set_scale(glm::vec3 scale) { m_scale = scale; on_change(); }

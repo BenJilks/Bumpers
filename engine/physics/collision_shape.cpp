@@ -14,16 +14,16 @@ CollisionShape::~CollisionShape()
 }
 
 static CollisionShape::CollisionResult collide_aabb_aabb(
-    const CollisionShape &lhs_shape, const Transform::Computed &lhs_transform, 
-    const CollisionShape &rhs_shape, const Transform::Computed &rhs_transform)
+    const CollisionShape &lhs_shape, const Transform::Computed2D &lhs_transform, 
+    const CollisionShape &rhs_shape, const Transform::Computed2D &rhs_transform)
 {
     auto &lhs_aabb = static_cast<const CollisionShapeAABB&>(lhs_shape);
     auto &rhs_aabb = static_cast<const CollisionShapeAABB&>(rhs_shape);
 
-    auto lhs_center = lhs_aabb.center() + vec_3to2(lhs_transform.position);
-    auto lhs_half_widths = lhs_aabb.half_widths() * vec_3to2(lhs_transform.scale);
-    auto rhs_center = rhs_aabb.center() + vec_3to2(rhs_transform.position);
-    auto rhs_half_widths = rhs_aabb.half_widths() * vec_3to2(rhs_transform.scale);
+    auto lhs_center = lhs_aabb.center() + lhs_transform.position;
+    auto lhs_half_widths = lhs_aabb.half_widths() * lhs_transform.scale;
+    auto rhs_center = rhs_aabb.center() + rhs_transform.position;
+    auto rhs_half_widths = rhs_aabb.half_widths() * rhs_transform.scale;
 
     auto penetration_x = abs(lhs_center.x - rhs_center.x) - (lhs_half_widths.x + rhs_half_widths.x);
     auto penetration_y = abs(lhs_center.y - rhs_center.y) - (lhs_half_widths.y + rhs_half_widths.y);
@@ -48,15 +48,15 @@ static CollisionShape::CollisionResult collide_aabb_aabb(
 }
 
 static CollisionShape::CollisionResult collide_circle_circle(
-    const CollisionShape& lhs_shape, const Transform::Computed& lhs_transform,
-    const CollisionShape& rhs_shape, const Transform::Computed& rhs_transform)
+    const CollisionShape& lhs_shape, const Transform::Computed2D& lhs_transform,
+    const CollisionShape& rhs_shape, const Transform::Computed2D& rhs_transform)
 {
     auto& lhs_circle = static_cast<const CollisionShapeCircle&>(lhs_shape);
     auto& rhs_circle = static_cast<const CollisionShapeCircle&>(rhs_shape);
 
-    auto lhs_center = lhs_circle.center() + vec_3to2(lhs_transform.position);
+    auto lhs_center = lhs_circle.center() + lhs_transform.position;
     auto lhs_radius = lhs_circle.radius() * max_side(lhs_transform.scale);
-    auto rhs_center = rhs_circle.center() + vec_3to2(rhs_transform.position);
+    auto rhs_center = rhs_circle.center() + rhs_transform.position;
     auto rhs_radius = rhs_circle.radius() * max_side(rhs_transform.scale);
 
     auto radius = lhs_radius + rhs_radius;
@@ -75,8 +75,8 @@ static CollisionShape::CollisionResult collide_circle_circle(
 }
 
 static CollisionShape::CollisionResult collide_aabb_circle(
-    const CollisionShape& lhs_shape, const Transform::Computed& lhs_transform,
-    const CollisionShape& rhs_shape, const Transform::Computed& rhs_transform)
+    const CollisionShape& lhs_shape, const Transform::Computed2D& lhs_transform,
+    const CollisionShape& rhs_shape, const Transform::Computed2D& rhs_transform)
 {
     return CollisionShape::CollisionResult {};
 
@@ -88,9 +88,9 @@ static CollisionShape::CollisionResult collide_aabb_circle(
     if (!bouding_result.is_colliding)
         return bouding_result;
 
-    auto lhs_center = lhs_aabb.center() + vec_3to2(lhs_transform.position);
-    auto lhs_half_widths = lhs_aabb.half_widths() * vec_3to2(lhs_transform.scale);
-    auto rhs_center = rhs_circle.center() + vec_3to2(rhs_transform.position);
+    auto lhs_center = lhs_aabb.center() + lhs_transform.position;
+    auto lhs_half_widths = lhs_aabb.half_widths() * lhs_transform.scale;
+    auto rhs_center = rhs_circle.center() + rhs_transform.position;
     auto rhs_radius = rhs_circle.radius() * max_side(rhs_transform.scale);
     auto circle_intersect_point = bouding_result.normal * rhs_radius + rhs_center;
 
@@ -113,8 +113,8 @@ static CollisionShape::CollisionResult collide_aabb_circle(
 }
 
 static CollisionShape::CollisionResult collide_aabb_obb(
-    const CollisionShape& lhs_shape, const Transform::Computed& lhs_transform,
-    const CollisionShape& rhs_shape, const Transform::Computed& rhs_transform)
+    const CollisionShape& lhs_shape, const Transform::Computed2D& lhs_transform,
+    const CollisionShape& rhs_shape, const Transform::Computed2D& rhs_transform)
 {
     auto& lhs_aabb = static_cast<const CollisionShapeAABB&>(lhs_shape);
     auto& rhs_obb = static_cast<const CollisionShapeOBB&>(rhs_shape);
@@ -125,26 +125,26 @@ static CollisionShape::CollisionResult collide_aabb_obb(
 }
 
 static CollisionShape::CollisionResult collide_obb_circle(
-    const CollisionShape& lhs_shape, const Transform::Computed& lhs_transform,
-    const CollisionShape& rhs_shape, const Transform::Computed& rhs_transform)
+    const CollisionShape& lhs_shape, const Transform::Computed2D& lhs_transform,
+    const CollisionShape& rhs_shape, const Transform::Computed2D& rhs_transform)
 {
     return CollisionShape::CollisionResult {};
     
     auto& lhs_obb = static_cast<const CollisionShapeOBB&>(lhs_shape);
     auto& rhs_circle = static_cast<const CollisionShapeCircle&>(rhs_shape);
 
-    auto inverse_rotation_matrix = glm::rotate(mat4(1), -lhs_transform.rotation.y, vec3(0, 0, 1));
-    auto rhs_center = rhs_circle.center() + vec_3to2(rhs_transform.position);
-    auto rhs_center_lhs_space = inverse_rotation_matrix * vec4(rhs_center - vec_3to2(lhs_transform.position), 0, 1);
+    auto inverse_rotation_matrix = glm::rotate(mat4(1), -lhs_transform.rotation, vec3(0, 0, 1));
+    auto rhs_center = rhs_circle.center() + rhs_transform.position;
+    auto rhs_center_lhs_space = inverse_rotation_matrix * vec4(rhs_center - lhs_transform.position, 0, 1);
     
-    auto new_lhs_transform = Transform::Computed
+    auto new_lhs_transform = Transform::Computed2D
     {
         .position = vec3(0),
         .scale = lhs_transform.scale,
-        .rotation = vec3(0),
+        .rotation = 0,
         .transform = glm::mat4(0),
     };
-    auto new_rhs_transform = Transform::Computed
+    auto new_rhs_transform = Transform::Computed2D
     {
         .position = rhs_center_lhs_space,
         .scale = rhs_transform.scale,
@@ -156,15 +156,15 @@ static CollisionShape::CollisionResult collide_obb_circle(
     if (!result.is_colliding)
         return CollisionShape::CollisionResult {};
     
-    auto rotation_matrix = glm::rotate(mat4(1), lhs_transform.rotation.y, vec3(0, 0, 1));
+    auto rotation_matrix = glm::rotate(mat4(1), lhs_transform.rotation, vec3(0, 0, 1));
     auto normal = rotation_matrix * vec4(result.normal, 0, 1);
     result.normal = vec2(normal.x, normal.y);
     return result;
 }
 
 static CollisionShape::CollisionResult collide_obb_obb(
-    const CollisionShape& lhs_shape, const Transform::Computed& lhs_transform,
-    const CollisionShape& rhs_shape, const Transform::Computed& rhs_transform)
+    const CollisionShape& lhs_shape, const Transform::Computed2D& lhs_transform,
+    const CollisionShape& rhs_shape, const Transform::Computed2D& rhs_transform)
 {
     auto& lhs_obb = static_cast<const CollisionShapeOBB&>(lhs_shape);
     auto& rhs_obb = static_cast<const CollisionShapeOBB&>(rhs_shape);
@@ -175,8 +175,8 @@ static CollisionShape::CollisionResult collide_obb_obb(
 }
 
 static CollisionShape::CollisionResult collide_aabb_convex_polygon(
-    const CollisionShape& lhs_shape, const Transform::Computed& lhs_transform,
-    const CollisionShape& rhs_shape, const Transform::Computed& rhs_transform)
+    const CollisionShape& lhs_shape, const Transform::Computed2D& lhs_transform,
+    const CollisionShape& rhs_shape, const Transform::Computed2D& rhs_transform)
 {
     auto& lhs_aabb = static_cast<const CollisionShapeAABB&>(lhs_shape);
     auto& rhs_convex_polygon = static_cast<const CollisionShapeConvexPolygon&>(rhs_shape);
@@ -187,8 +187,8 @@ static CollisionShape::CollisionResult collide_aabb_convex_polygon(
 }
 
 static CollisionShape::CollisionResult collide_obb_convex_polygon(
-    const CollisionShape& lhs_shape, const Transform::Computed& lhs_transform,
-    const CollisionShape& rhs_shape, const Transform::Computed& rhs_transform)
+    const CollisionShape& lhs_shape, const Transform::Computed2D& lhs_transform,
+    const CollisionShape& rhs_shape, const Transform::Computed2D& rhs_transform)
 {
     auto& lhs_obb = static_cast<const CollisionShapeOBB&>(lhs_shape);
     auto& rhs_convex_polygon = static_cast<const CollisionShapeConvexPolygon&>(rhs_shape);
@@ -199,13 +199,13 @@ static CollisionShape::CollisionResult collide_obb_convex_polygon(
 }
 
 static CollisionShape::CollisionResult collide_circle_convex_polygon(
-    const CollisionShape& lhs_shape, const Transform::Computed& lhs_transform,
-    const CollisionShape& rhs_shape, const Transform::Computed& rhs_transform)
+    const CollisionShape& lhs_shape, const Transform::Computed2D& lhs_transform,
+    const CollisionShape& rhs_shape, const Transform::Computed2D& rhs_transform)
 {
     auto& lhs_circle = static_cast<const CollisionShapeCircle&>(lhs_shape);
     auto& rhs_convex_polygon = static_cast<const CollisionShapeConvexPolygon&>(rhs_shape);
 
-    auto lhs_center = lhs_circle.center() + vec_3to2(lhs_transform.position);
+    auto lhs_center = lhs_circle.center() + lhs_transform.position;
     auto lhs_radius = lhs_circle.radius() * max_side(lhs_transform.scale);
 
     auto rhs_points = convex_polygon_points(rhs_convex_polygon, rhs_transform);
@@ -244,8 +244,8 @@ static CollisionShape::CollisionResult collide_circle_convex_polygon(
 }
 
 static CollisionShape::CollisionResult collide_convex_polygon_convex_polygon(
-    const CollisionShape& lhs_shape, const Transform::Computed& lhs_transform,
-    const CollisionShape& rhs_shape, const Transform::Computed& rhs_transform)
+    const CollisionShape& lhs_shape, const Transform::Computed2D& lhs_transform,
+    const CollisionShape& rhs_shape, const Transform::Computed2D& rhs_transform)
 {
     auto& lhs_convex_polygon = static_cast<const CollisionShapeConvexPolygon&>(lhs_shape);
     auto& rhs_convex_polygon = static_cast<const CollisionShapeConvexPolygon&>(rhs_shape);
@@ -256,8 +256,8 @@ static CollisionShape::CollisionResult collide_convex_polygon_convex_polygon(
 }
 
 CollisionShape::CollisionResult check_collisions_for_colliders(
-    const CollisionShape &lhs_shape, const Transform::Computed &lhs_transform,
-    const CollisionShape &rhs_shape, const Transform::Computed &rhs_transform)
+    const CollisionShape &lhs_shape, const Transform::Computed2D &lhs_transform,
+    const CollisionShape &rhs_shape, const Transform::Computed2D &rhs_transform)
 {
     auto flipped = [](CollisionShape::CollisionResult &&result)
     {
@@ -325,8 +325,8 @@ CollisionShape::CollisionResult CollisionShape::check_collisions(
     const GameObject &lhs, const Collider &lhs_collider, 
     const GameObject &rhs, const Collider &rhs_collider)
 {
-    auto lhs_transform = lhs.first<Transform>()->computed_transform();
-    auto rhs_transform = rhs.first<Transform>()->computed_transform();
+    auto lhs_transform = lhs.first<Transform>()->computed_transform_2d();
+    auto rhs_transform = rhs.first<Transform>()->computed_transform_2d();
 
     auto result = check_collisions_for_colliders(
         lhs_collider.shape(), lhs_transform, rhs_collider.shape(), rhs_transform);

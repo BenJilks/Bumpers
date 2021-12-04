@@ -1,6 +1,7 @@
 #include "collision_shape_utils.hpp"
 #include "gameobject/gameobject.hpp"
 #include "glm/gtx/transform.hpp"
+#include "glm/gtx/string_cast.hpp"
 #include <optional>
 #include <glm/glm.hpp>
 #include <glm/gtx/vector_angle.hpp>
@@ -37,10 +38,10 @@ vec3 Engine::vec_2to3(vec2 vec)
 }
 
 std::vector<vec4> Engine::aabb_points(
-    const CollisionShapeAABB &aabb, const Transform::Computed &transform)
+    const CollisionShapeAABB &aabb, const Transform::Computed2D &transform)
 {
-    auto center = aabb.center() + vec_3to2(transform.position);
-    auto half_widths = aabb.half_widths() * vec_3to2(transform.scale);
+    auto center = aabb.center() + transform.position;
+    auto half_widths = aabb.half_widths() * transform.scale;
     return std::vector<vec4>
     {
         vec4(center + vec2(-half_widths.x, half_widths.y), 0, 1),
@@ -51,27 +52,21 @@ std::vector<vec4> Engine::aabb_points(
 }
 
 std::vector<vec4> Engine::obb_points(
-    const CollisionShapeOBB &obb, const Transform::Computed &transform)
+    const CollisionShapeOBB &obb, const Transform::Computed2D &transform)
 {
-    auto lhs_center = obb.center();
-    auto lhs_half_widths = obb.half_widths();
-
-	mat4 transform_2d(1);
-	transform_2d = glm::translate(transform_2d, vec3(transform.position.x, transform.position.z, 0));
-	transform_2d = glm::rotate(transform_2d, transform.rotation.y, vec3(0, 0, 1));
-	transform_2d = glm::scale(transform_2d, vec3(transform.scale.x, transform.scale.z, 1));
-
+    auto center = obb.center();
+    auto half_widths = obb.half_widths();
     return std::vector<vec4>
     {
-        transform_2d * vec4(lhs_center + vec2(-lhs_half_widths.x, lhs_half_widths.y), 0, 1),
-        transform_2d * vec4(lhs_center + lhs_half_widths, 0, 1),
-        transform_2d * vec4(lhs_center + vec2(lhs_half_widths.x, -lhs_half_widths.y), 0, 1),
-        transform_2d * vec4(lhs_center - lhs_half_widths, 0, 1),
+        transform.transform * vec4(center + vec2(-half_widths.x, half_widths.y), 0, 1),
+        transform.transform * vec4(center + vec2(half_widths.x, half_widths.y), 0, 1),
+        transform.transform * vec4(center + vec2(half_widths.x, -half_widths.y), 0, 1),
+        transform.transform * vec4(center + vec2(-half_widths.x, -half_widths.y), 0, 1),
     };
 }
 
 std::vector<vec4> Engine::convex_polygon_points(
-    const CollisionShapeConvexPolygon &convex_polygon, const Transform::Computed &transform)
+    const CollisionShapeConvexPolygon &convex_polygon, const Transform::Computed2D &transform)
 {
     std::vector<vec4> out;
     out.reserve(convex_polygon.verticies().size());
@@ -175,7 +170,7 @@ struct Face
 
 static vec2 adjacent(const vec2 &vec)
 {
-    return vec2(vec.y, -vec.x);
+    return vec2(-vec.y, vec.x);
 }
 
 template<typename Callback>
@@ -183,12 +178,12 @@ static void for_each_face(const std::vector<vec4>& points, Callback callback)
 {
     for (int i = 0; i < points.size(); i++)
     {
-        auto &a = points[i];
-        auto &b = points[(i + 1) % points.size()];
-        auto normal = adjacent(glm::normalize(a - b));
+        const auto &a = points[i];
+        const auto &b = points[(i + 1) % points.size()];
+        auto normal = adjacent(glm::normalize(vec2(b.x, b.y) - vec2(a.x, a.y)));
         auto decision = callback(Face
         { 
-            .a = vec2(a.x, a.y), 
+            .a = vec2(a.x, a.y),
             .b = vec2(b.x, b.y),
             .normal = normal,
         });
@@ -200,14 +195,16 @@ static void for_each_face(const std::vector<vec4>& points, Callback callback)
 
 static float find_support_point(const std::vector<vec4>& points, const vec2 &axis)
 {
-    float max_point = -std::numeric_limits<float>::infinity();
+    std::optional<float> min_point = std::nullopt;
     for (const auto &point : points)
     {
-        auto point_along_axis = glm::dot(vec2(point.x, point.y), axis);
-        max_point = std::max(max_point, point_along_axis);
+        auto point_along_axis = glm::dot(axis, vec2(point.x, point.y));
+        if (!min_point || point_along_axis < *min_point)
+            min_point = point_along_axis;
     }
 
-    return max_point;
+    assert(min_point);
+    return *min_point;
 }
 
 static std::pair<std::optional<Face>, float> find_intersecting_face(
@@ -218,14 +215,15 @@ static std::pair<std::optional<Face>, float> find_intersecting_face(
 
     for_each_face(lhs_points, [&](Face face)
     {
-        auto penetration = find_support_point(rhs_points, -face.normal) - glm::dot(face.a, -face.normal);
+        auto support_point = find_support_point(rhs_points, face.normal);
+        auto penetration = glm::dot(face.normal, face.a) - support_point;
         if (penetration < 0)
         {
             min_face = std::nullopt;
             return IteratorDecision::Break;
         }
 
-        if (penetration < min_penetration)
+        if (penetration <= min_penetration)
         {
             min_penetration = penetration;
             min_face = face;
@@ -291,8 +289,8 @@ CollisionShape::CollisionResult Engine::collide_convex_polygons(
 
     const auto &reference_face = lhs_penetration > rhs_penetration ? *lhs_face : *rhs_face;
     auto incident_face = lhs_penetration > rhs_penetration ? *rhs_face : *lhs_face;
-    auto side_plane_normal = adjacent(reference_face.normal);
-
+    auto side_plane_normal = -adjacent(reference_face.normal);
+    
     auto negitive_side = -glm::dot(side_plane_normal, reference_face.a);
     if (!clip(incident_face, -side_plane_normal, negitive_side))
         return CollisionShape::CollisionResult {};
@@ -302,6 +300,7 @@ CollisionShape::CollisionResult Engine::collide_convex_polygons(
         return CollisionShape::CollisionResult {};
 
     auto ref_line = glm::dot(reference_face.normal, reference_face.a);
+
     auto separation_a = glm::dot(reference_face.normal, incident_face.a) - ref_line;
     auto separation_b = glm::dot(reference_face.normal, incident_face.b) - ref_line;
 

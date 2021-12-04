@@ -15,11 +15,11 @@ namespace Engine
     glm::vec3 vec_2to3(glm::vec2 vec);
 
     std::vector<glm::vec4> aabb_points(
-        const CollisionShapeAABB &aabb, const Object::Transform::Computed &transform);
+        const CollisionShapeAABB &aabb, const Object::Transform::Computed2D &transform);
     std::vector<glm::vec4> obb_points(
-        const CollisionShapeOBB &obb, const Object::Transform::Computed &transform);
+        const CollisionShapeOBB &obb, const Object::Transform::Computed2D &transform);
     std::vector<glm::vec4> convex_polygon_points(
-        const CollisionShapeConvexPolygon &convex_polygon, const Object::Transform::Computed &transform);
+        const CollisionShapeConvexPolygon &convex_polygon, const Object::Transform::Computed2D &transform);
 
     std::vector<float> find_axes_from_points(const std::vector<glm::vec4> &points);
     std::tuple<float, glm::vec2, float, glm::vec2> find_max_min_points_along_axis(

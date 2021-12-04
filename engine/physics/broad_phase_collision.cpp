@@ -14,22 +14,22 @@ using namespace Engine;
 using namespace Object;
 using namespace glm;
 
-static std::pair<vec2, vec2> calculate_bounding_box(CollisionShape &shape, const Transform::Computed &transform)
+static std::pair<vec2, vec2> calculate_bounding_box(CollisionShape &shape, const Transform::Computed2D &transform)
 {
     switch (shape.type())
     {
         case CollisionShape::Type::AABB:
         {
             auto aabb = static_cast<const CollisionShapeAABB&>(shape);
-            auto center = aabb.center() + vec_3to2(transform.position);
-            auto half_widths = aabb.half_widths() * vec_3to2(transform.scale);
+            auto center = aabb.center() + transform.position;
+            auto half_widths = aabb.half_widths() * transform.scale;
             return std::make_pair(center, half_widths);
         }
         
         case CollisionShape::Type::Circle:
         {
             auto circle = static_cast<const CollisionShapeCircle&>(shape);
-            auto center = circle.center() + vec_3to2(transform.position);
+            auto center = circle.center() + transform.position;
             auto half_widths = circle.radius() * transform.scale;
             return std::make_pair(center, half_widths);
         }
@@ -37,17 +37,19 @@ static std::pair<vec2, vec2> calculate_bounding_box(CollisionShape &shape, const
         case CollisionShape::Type::OBB:
         {
             auto obb = static_cast<const CollisionShapeOBB&>(shape);
-            auto center = obb.center() + vec_3to2(transform.position);
+            auto center = obb.center() + transform.position;
             // NOTE: Not accurate but fast enough to make up for it, without caching.
-            auto half_widths = obb.half_widths() * std::max(transform.scale.x, transform.scale.y) * (float)std::numbers::sqrt2;
-            return std::make_pair(center, glm::abs(half_widths));
+            auto scaled_obb_half_widths = obb.half_widths() * transform.scale;
+            auto max_obb_width = std::max(scaled_obb_half_widths.x, scaled_obb_half_widths.y);
+            auto half_widths = vec2(max_obb_width * 2.0f); //(float)std::numbers::sqrt2;
+            return std::make_pair(center, half_widths);
         }
 
         case CollisionShape::Type::ConvexPolygon:
         {
             auto &convex_polygon = static_cast<CollisionShapeConvexPolygon&>(shape);
-            auto bounding_box = convex_polygon.bounding_box(transform.scale, transform.rotation.y);
-            auto center = bounding_box.first + vec_3to2(transform.position);
+            auto bounding_box = convex_polygon.bounding_box(transform.scale, transform.rotation);
+            auto center = bounding_box.first + transform.position;
             auto half_widths = bounding_box.second;
             return std::make_pair(center, half_widths);
         }
@@ -78,8 +80,8 @@ static void check_all_colliders(CollisionResolver::CollisionObject& lhs, Collisi
     {
         for (auto *rhs_collider : rhs.object.get<Collider>())
         {
-            auto lhs_bounding_box = calculate_bounding_box(lhs_collider->shape(), lhs.transform.computed_transform());
-            auto rhs_bounding_box = calculate_bounding_box(rhs_collider->shape(), rhs.transform.computed_transform());
+            auto lhs_bounding_box = calculate_bounding_box(lhs_collider->shape(), lhs.transform.computed_transform_2d());
+            auto rhs_bounding_box = calculate_bounding_box(rhs_collider->shape(), rhs.transform.computed_transform_2d());
             
             if (are_bouding_boxes_colliding(lhs_bounding_box, rhs_bounding_box))
                 callback(lhs, *lhs_collider, rhs, *rhs_collider);

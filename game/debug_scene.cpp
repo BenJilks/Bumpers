@@ -28,6 +28,7 @@
 #include "gameobject/physics/collider.hpp"
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
+#include <limits>
 #include <memory>
 using namespace Engine;
 using namespace Object;
@@ -208,10 +209,6 @@ bool DebugScene::init()
     if (!arena)
         return false;
 
-    auto *car = make_bumber_car();
-    if (!car)
-        return false;
-
     {
         auto *cube = make_debug_cube();
         if (!cube)
@@ -222,8 +219,13 @@ bool DebugScene::init()
         cube->add_component<PhysicsBody>(vec2(1), 1, 1);
         cube->add_component<Collider>(collision_shape);
         transform.translate(vec3(0, 0, 10));
-        transform.scale_by(vec3(2, 1, 2));
+        transform.scale_by(vec3(4, 1, 4));
+        transform.rotate(vec3(0, 1, 0), 0.7853982);
     }
+
+    auto *car = make_bumber_car();
+    if (!car)
+        return false;
 
     // make_sky_box(skybox_texture);
 

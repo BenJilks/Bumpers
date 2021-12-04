@@ -48,3 +48,4 @@ void DebugCameraMovement::update(GameObject&, float delta)
     if (Engine::Input::is_key_down(GLUT_KEY_SHIFT_L))
         m_transform->translate(vec3(0, -speed, 0));
 }
+

@@ -20,7 +20,7 @@ void PhysicsBody::step_physics(GameObject&, float by)
     assert (m_transform);
 
     m_transform->translate(vec_2to3(m_velocity * by));
-    m_transform->rotate(vec3(0, 1, 0), m_angular_velocity * by);
+    m_transform->rotate(vec3(0, 1, 0), -m_angular_velocity * by);
 
     auto factor = abs(glm::dot(glm::normalize(m_velocity), glm::normalize(vec_3to2(m_transform->forward()))));
     if (!std::isnan(factor))

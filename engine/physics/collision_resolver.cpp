@@ -19,25 +19,28 @@ vec2 cross(float s, const vec2 &a)
     return vec2(-s * a.y, s * a.x);
 }
 
-static void resolve_collision(CollisionResolver::CollisionObject& lhs, CollisionResolver::CollisionObject& rhs, CollisionShape::CollisionResult result)
+static void resolve_collision(CollisionResolver::CollisionObject& lhs, CollisionResolver::CollisionObject& rhs, 
+                              CollisionShape::CollisionResult result)
 {
     assert (result.penetration_distance >= 0);
     assert (lhs.body != nullptr);
     assert (rhs.body != nullptr);
 
+    bool any_converging_velocities = false;
     for (int i = 0; i < result.intersection_point_count; i++)
     {
-        auto lhs_contact = vec_3to2(lhs.transform.position()) - result.intersection_points[0];
-        auto rhs_contact = vec_3to2(rhs.transform.position()) - result.intersection_points[0];
+        auto lhs_contact = vec_3to2(lhs.transform.position()) - result.intersection_points[i];
+        auto rhs_contact = vec_3to2(rhs.transform.position()) - result.intersection_points[i];
 
         auto relative_velocity = 
-            lhs.body->velocity() + cross(lhs.body->angular_velocity(), -lhs_contact) -
-            rhs.body->velocity() - cross(rhs.body->angular_velocity(), -rhs_contact);
+            (lhs.body->velocity() + cross(lhs.body->angular_velocity(), -lhs_contact)) -
+            (rhs.body->velocity() + cross(rhs.body->angular_velocity(), -rhs_contact));
         auto velocity_along_normal = glm::dot(relative_velocity, result.normal);
 
         // Do not resolve if velocities are separating
         if (velocity_along_normal > 0)
-            return;
+            continue;
+        any_converging_velocities = true;
         
         auto lhs_contact_dot_normal = glm::dot(lhs_contact, result.normal);
         auto rhs_contact_dot_normal = glm::dot(rhs_contact, result.normal);
@@ -73,16 +76,24 @@ static void resolve_collision(CollisionResolver::CollisionObject& lhs, Collision
             lhs.body->apply_impulse(-tangent_impulse, lhs_contact);
             rhs.body->apply_impulse(tangent_impulse, rhs_contact);
         }
-        
-        // FIXME: This is a hack to get around bad collision
-        
-        // Correct intersection
-        if (result.penetration_distance <= 0.1)
+    }
+
+    // Correct intersection
+    // if (result.penetration_distance <= 0.1)
+    if (any_converging_velocities)
+    {
+        if (!lhs.body->is_static() && !rhs.body->is_static())
         {
-            if (lhs.body->mass() != std::numeric_limits<float>::infinity())
-                lhs.transform.translate(vec_2to3(result.normal * result.penetration_distance));
-            else if (rhs.body->mass() != std::numeric_limits<float>::infinity())
-                rhs.transform.translate(vec_2to3(-result.normal * result.penetration_distance));
+            lhs.transform.translate(vec_2to3(result.normal * result.penetration_distance / 2.0f));
+            rhs.transform.translate(vec_2to3(-result.normal * result.penetration_distance / 2.0f));
+        }
+        else if (!lhs.body->is_static())
+        {
+            lhs.transform.translate(vec_2to3(result.normal * result.penetration_distance));
+        }
+        else if (!rhs.body->is_static())
+        {
+            rhs.transform.translate(vec_2to3(-result.normal * result.penetration_distance));
         }
     }
 }

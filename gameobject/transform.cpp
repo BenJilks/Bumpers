@@ -1,7 +1,10 @@
 #include "transform.hpp"
 #include "gameobject.hpp"
+#include "engine/physics/collision_shape_utils.hpp"
+#include "glm/gtx/string_cast.hpp"
 #include <iostream>
 #include <glm/gtx/transform.hpp>
+using namespace Engine;
 using namespace Object;
 using namespace glm;
 
@@ -75,6 +78,22 @@ Transform::Computed Transform::computed_transform() const
 	};
 }
 
+Transform::Computed2D Transform::computed_transform_2d() const
+{
+	mat4 transform_2d(1);
+	transform_2d = glm::translate(transform_2d, vec3(vec_3to2(m_position), 0));
+	transform_2d = glm::rotate(transform_2d, -m_rotation.y, vec3(0, 0, 1));
+	transform_2d = glm::scale(transform_2d, vec3(vec_3to2(m_scale), 0));
+
+	return Computed2D
+	{
+		vec_3to2(m_position),
+		vec_3to2(m_scale),
+		-m_rotation.y,
+		transform_2d,
+	};
+}
+
 vec3 Transform::forward() const
 {
 	auto x = -std::sin(m_rotation.y);
@@ -112,3 +131,4 @@ void Transform::on_change(bool global_change)
 		return IteratorDecision::Continue;
 	});
 }
+

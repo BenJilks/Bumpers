@@ -34,9 +34,9 @@ void CarEngine::update(Object::GameObject&, float delta)
         m_physics_body->apply_force(vec_3to2(m_transform->forward()) * speed);
 
     if (is_action_enabled(Action::TurnLeft))
-        m_wheel_direction = std::min(m_wheel_direction + s_turn_speed * delta, s_max_turn_direction);
-    else if (is_action_enabled(Action::TurnRight))
         m_wheel_direction = std::max(m_wheel_direction - s_turn_speed * delta, -s_max_turn_direction);
+    else if (is_action_enabled(Action::TurnRight))
+        m_wheel_direction = std::min(m_wheel_direction + s_turn_speed * delta, s_max_turn_direction);
     else
         m_wheel_direction *= 1.0f - (10.0f * delta);
 }
