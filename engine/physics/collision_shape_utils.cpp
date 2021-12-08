@@ -37,10 +37,16 @@ vec3 Engine::vec_2to3(vec2 vec)
     return vec3(vec.x, 0, vec.y);
 }
 
+vec2 Engine::transform_by(vec2 position, const Transform::Computed2D &transform)
+{
+    auto result = transform.transform * vec4(position, 0, 1);
+    return vec2(result.x, result.y);
+}
+
 std::vector<vec4> Engine::aabb_points(
     const CollisionShapeAABB &aabb, const Transform::Computed2D &transform)
 {
-    auto center = aabb.center() + transform.position;
+    auto center = transform_by(aabb.center(), transform);
     auto half_widths = aabb.half_widths() * transform.scale;
     return std::vector<vec4>
     {

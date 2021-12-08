@@ -22,11 +22,15 @@ vec2 cross(float s, const vec2 &a)
 static void resolve_collision(CollisionResolver::CollisionObject& lhs, CollisionResolver::CollisionObject& rhs, 
                               CollisionShape::CollisionResult result)
 {
-    assert (result.penetration_distance >= 0);
+    // assert (result.penetration_distance >= 0);
     assert (lhs.body != nullptr);
     assert (rhs.body != nullptr);
 
     bool any_converging_velocities = false;
+    float total_velocity = lhs.body->speed() + rhs.body->speed();
+    float lhs_velocity_factor = lhs.body->speed() / total_velocity;
+    float rhs_velocity_factor = rhs.body->speed() / total_velocity;
+
     for (int i = 0; i < result.intersection_point_count; i++)
     {
         auto lhs_contact = vec_3to2(lhs.transform.position()) - result.intersection_points[i];
@@ -51,11 +55,10 @@ static void resolve_collision(CollisionResolver::CollisionObject& lhs, Collision
             rhs_contact_dot_normal*rhs_contact_dot_normal * (1.0 / rhs.body->inertia());
 
         // Calculate impulse
-        float restitution = 0; //min(A.restitution, B.restitution)
+        float restitution = std::min(lhs.body->restitution(), rhs.body->restitution());
         float impulse_scalar = 
             ((1 + restitution) * velocity_along_normal)
-            / inverse_mass_part
-            / result.intersection_point_count;
+            / inverse_mass_part;
 
         // Apply impulse
         auto impulse = impulse_scalar * result.normal;
@@ -68,8 +71,7 @@ static void resolve_collision(CollisionResolver::CollisionObject& lhs, Collision
         {
             auto tangent_velocity_normal = glm::normalize(tangent_velocity);
             float tangent_impulse_scalar = glm::dot(relative_velocity, tangent_velocity_normal)
-                / inverse_mass_part
-                / result.intersection_point_count;
+                / inverse_mass_part;
 
             // Apply friction impulse
             auto tangent_impulse = tangent_impulse_scalar * tangent_velocity_normal * 0.2f;
@@ -79,22 +81,10 @@ static void resolve_collision(CollisionResolver::CollisionObject& lhs, Collision
     }
 
     // Correct intersection
-    // if (result.penetration_distance <= 0.1)
     if (any_converging_velocities)
     {
-        if (!lhs.body->is_static() && !rhs.body->is_static())
-        {
-            lhs.transform.translate(vec_2to3(result.normal * result.penetration_distance / 2.0f));
-            rhs.transform.translate(vec_2to3(-result.normal * result.penetration_distance / 2.0f));
-        }
-        else if (!lhs.body->is_static())
-        {
-            lhs.transform.translate(vec_2to3(result.normal * result.penetration_distance));
-        }
-        else if (!rhs.body->is_static())
-        {
-            rhs.transform.translate(vec_2to3(-result.normal * result.penetration_distance));
-        }
+        lhs.transform.translate(vec_2to3(result.normal * result.penetration_distance * lhs_velocity_factor));
+        rhs.transform.translate(vec_2to3(-result.normal * result.penetration_distance * rhs_velocity_factor));
     }
 }
 

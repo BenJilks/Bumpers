@@ -12,8 +12,8 @@ using namespace Object;
 using namespace Game;
 using namespace glm;
 
-static constexpr float s_turn_speed = 10.0f;
-static constexpr float s_max_turn_direction = 1.0f;
+static constexpr float s_turn_speed = 15.0f;
+static constexpr float s_max_turn_direction = 2.0f;
 
 void CarEngine::init(Object::GameObject &gameobject)
 {
@@ -26,7 +26,7 @@ void CarEngine::init(Object::GameObject &gameobject)
 
 void CarEngine::update(Object::GameObject&, float delta)
 {
-    float speed = 5.0f * delta;
+    float speed = 40.0f * delta;
     m_physics_body->apply_torque(m_wheel_direction * m_physics_body->speed() * delta);
     if (is_action_enabled(Action::Forward))
         m_physics_body->apply_force(-vec_3to2(m_transform->forward()) * speed);

@@ -66,7 +66,7 @@ void StandardRenderer::on_world_updated(Object::GameObject &world)
 glm::mat4 StandardRenderer::projection_matrix(int width, int height)
 {
 	float aspect_ratio = (float)width / (float)height;
-	return glm::perspective(70.0f, aspect_ratio, 0.1f, 100.0f);
+	return glm::perspective(70.0f, aspect_ratio, 0.1f, 1000.0f);
 }
 
 void StandardRenderer::on_start_frame()

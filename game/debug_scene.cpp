@@ -1,5 +1,6 @@
 #include "debug_scene.hpp"
 #include "debug_camera_movement.hpp"
+#include "engine/graphics/mesh/material.hpp"
 #include "game/car_engine.hpp"
 #include "game/player_controller.hpp"
 #include "gameobject/forward.hpp"
@@ -99,12 +100,15 @@ GameObject *DebugScene::make_bumber_car()
     if (!bumber_car)
         return nullptr;
 
-    auto test_collision_shape = std::make_shared<CollisionShapeOBB>(vec2(0), vec2(1.71153, 3.6299));
+    auto front_collider = std::make_shared<CollisionShapeCircle>(vec2(0, 2.02552), 1.65037);
+    auto body_collider = std::make_shared<CollisionShapeOBB>(vec2(0), vec2(1.71153, 1.95445));
+    auto back_collider = std::make_shared<CollisionShapeCircle>(vec2(0, -1.95445), 1.65037);
     bumber_car->add_component<Transform>();
-    bumber_car->add_component<PhysicsBody>(vec2(15, 1), 1, 0.2f);
-    bumber_car->add_component<Collider>(test_collision_shape);
+    bumber_car->add_component<PhysicsBody>(vec2(6, 4), 1, 1, 0.2f);
+    bumber_car->add_component<Collider>(front_collider);
+    bumber_car->add_component<Collider>(body_collider);
+    bumber_car->add_component<Collider>(back_collider);
     bumber_car->add_component<CarEngine>();
-    bumber_car->add_component<PlayerController>();
     return bumber_car;
 }
 
@@ -129,21 +133,17 @@ GameObject *DebugScene::make_arena()
     // arena->add_component<PhysicsBody>(vec2(1), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
     // arena->add_component<Collider>(collision_shape);
 
+    for (auto z : { -0.499666, 23.3924, 47.3231, -24.331, -48.2455 })
     {
-        auto &test_light = arena->add_child();
-        auto &test_light_transform = test_light.add_component<Transform>();
-        test_light.add_component<Light>(vec3(1, 0, 0));
-        test_light.add_component<Circle>(0);
-        test_light_transform.translate(vec3(0, -6, 0));
-    }
-
-    {
-        auto &test_light = arena->add_child();
-        auto &test_light_transform = test_light.add_component<Transform>();
-        test_light.add_component<Light>(vec3(0, 1, 0));
-        test_light.add_component<Circle>(glm::radians(180.0f));
-
-        test_light_transform.translate(vec3(0, -6, 0));
+        auto &light_a = arena->add_child();
+        auto &light_a_transform = light_a.add_component<Transform>();
+        light_a.add_component<Light>(vec3(1.0f, 0.8f, 0.8f));
+        light_a_transform.translate(vec3(-14.0093, 12.9745, z));
+        
+        auto &light_b = arena->add_child();
+        auto &light_b_transform = light_b.add_component<Transform>();
+        light_b.add_component<Light>(vec3(1.0f, 0.8f, 0.8f));
+        light_b_transform.translate(vec3(14.0093, 12.9745, z));
     }
 
     return arena;
@@ -209,23 +209,18 @@ bool DebugScene::init()
     if (!arena)
         return false;
 
-    {
-        auto *cube = make_debug_cube();
-        if (!cube)
-            return false;
+    auto *bumber_car_template = make_bumber_car();
+    if (!bumber_car_template)
+        return false;
 
-        auto collision_shape = std::make_shared<CollisionShapeOBB>(vec2(0), vec2(0.5f));
-        auto &transform = cube->add_component<Transform>();
-        cube->add_component<PhysicsBody>(vec2(1), 1, 1);
-        cube->add_component<Collider>(collision_shape);
-        transform.translate(vec3(0, 0, 10));
-        transform.scale_by(vec3(4, 1, 4));
-        transform.rotate(vec3(0, 1, 0), 0.7853982);
+    for (int i = -2; i < 2; i++)
+    {
+        auto &ai = bumber_car_template->clone(*m_world);
+        ai.first<Transform>()->translate(vec3(i * 5, 0, 10));
     }
 
-    auto *car = make_bumber_car();
-    if (!car)
-        return false;
+    auto *player = bumber_car_template;
+    player->add_component<PlayerController>();
 
     // make_sky_box(skybox_texture);
 

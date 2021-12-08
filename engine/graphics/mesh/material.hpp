@@ -12,7 +12,7 @@ namespace Engine
     {
         std::string name;
         glm::vec3 color { 1, 1, 1 };
-        glm::vec3 specular_color { 1, 1, 1 };
+        glm::vec3 specular_color { 0, 0, 0 };
         glm::vec3 emission_color { 0, 0, 0 };
         float normal_map_strength { 0 };
         float specular_focus { 32 };

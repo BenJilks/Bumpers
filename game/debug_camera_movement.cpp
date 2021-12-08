@@ -20,7 +20,7 @@ void DebugCameraMovement::update(GameObject&, float delta)
 {
     assert(m_transform);
 
-    float speed = 4.0f * delta;
+    float speed = 10.0f * delta;
     float sensitivity = 0.3f * delta;
 
     auto delta_mouse_x = m_last_mouse_x - Engine::Input::mouse_x();

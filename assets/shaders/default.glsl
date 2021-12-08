@@ -64,14 +64,16 @@ void calculate_directional_light(
     vec3 normal, vec3 view_direction,
     inout vec3 diffuse_light, inout vec3 specular_light)
 {
+    const vec3 sun_color = vec3(0, 0, 0);
+
     vec3 light_direction = normalize(vec3(0.4, -1, 0));
     float intensity = 0.3;
 
     float angle_from_light = dot(-normal, light_direction);
-    diffuse_light += vec3(1, 1, 1) * max(angle_from_light, 0.0) * intensity;
+    diffuse_light += sun_color * max(angle_from_light, 0.0) * intensity;
 
     vec3 reflect_direction = reflect(light_direction, -normal);
-    specular_light += vec3(1, 1, 1) * pow(max(dot(view_direction, reflect_direction), 0.0), specular_focus) * intensity;
+    specular_light += sun_color * pow(max(dot(view_direction, reflect_direction), 0.0), specular_focus) * intensity;
 }
 
 void calculate_point_lights(
@@ -81,9 +83,9 @@ void calculate_point_lights(
     for (int i = 0; i < point_light_count; i++)
     {
         PointLight light = point_lights[i];
-        vec3 to_light_direction = normalize(light.position - v_world_position.xyz);
+        vec3 to_light_direction = -normalize(light.position - v_world_position.xyz);
         float distance_to_light = length(light.position - v_world_position.xyz);
-        float att_factor = 1.0 + (0.04 * distance_to_light) + (0.02 * (distance_to_light*distance_to_light));
+        float att_factor = 1.0 + (0.04 * distance_to_light) + (0.018 * (distance_to_light*distance_to_light));
         float angle_from_light = dot(-normal, to_light_direction);
         diffuse_light += light.color * (max(angle_from_light, 0.0) / att_factor);
 
@@ -101,7 +103,7 @@ vec3 calculate_metallic_color(vec3 normal, vec3 view_direction)
 
 void main()
 {
-    const float ambaint_light = 0.1;
+    const float ambaint_light = 0.05;
 
     // Compute normal map
     vec3 normal = texture2D(normal_map, v_uv0).xyz;
@@ -120,7 +122,7 @@ void main()
 
     // Apply light map, if we have one
     if (has_light_map)
-        diffuse_light *= texture2D(light_map, v_uv1).xyz;
+        diffuse_light *= texture2D(light_map, v_uv1).rgb;
 
     // Compute final pixel color
     vec3 metallic_color = calculate_metallic_color(normal, view_direction);
@@ -132,3 +134,4 @@ void main()
     FragColor = vec4(final_color, 1.0);
     LightColor = vec4(emission_color, 1.0);
 }
+

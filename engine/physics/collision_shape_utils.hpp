@@ -13,6 +13,7 @@ namespace Engine
 
     glm::vec2 vec_3to2(glm::vec3 vec);
     glm::vec3 vec_2to3(glm::vec2 vec);
+    glm::vec2 transform_by(glm::vec2 position, const Object::Transform::Computed2D &transform);
 
     std::vector<glm::vec4> aabb_points(
         const CollisionShapeAABB &aabb, const Object::Transform::Computed2D &transform);

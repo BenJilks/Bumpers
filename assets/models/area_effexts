@@ -1,0 +1,388 @@
+  <library_effects>
+    <effect id="Wood-effect">
+      <profile_COMMON>
+        <newparam sid="wood_png_001-surface">
+          <surface type="2D">
+            <init_from>wood_png_001</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="wood_png_001-sampler">
+          <sampler2D>
+            <source>wood_png_001-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="floor_normal-surface">
+          <surface type="2D">
+            <init_from>floor_normal</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="floor_normal-sampler">
+          <sampler2D>
+            <source>floor_normal-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="floor-lightmap-surface">
+          <surface>
+            <init_from>floor_lightmap</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="floor-lightmap-sampler">
+          <sampler2D>
+            <source>floor-lightmap-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <texture texture="wood_png_001-sampler" texcoord="UVMap"/>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.5 0.5 0.5 1</color>
+              <float sid="focus">32</float>
+            </specular>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+          <extra>
+            <technique profile="FCOLLADA">
+              <bump bumptype="NORMALMAP">
+                <texture texture="floor_normal-sampler" texcoord="UVMap"/>
+                <float sid="strength">0.6</float>
+              </bump>
+              <lightmap>
+                <texture texture="floor-lightmap-sampler" texcoord="LightMap"/>
+              </lightmap>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="Grass-effect">
+      <profile_COMMON>
+        <newparam sid="Grass001_2K_Color_jpg-surface">
+          <surface type="2D">
+            <init_from>Grass001_2K_Color_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="Grass001_2K_Color_jpg-sampler">
+          <sampler2D>
+            <source>Grass001_2K_Color_jpg-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <texture texture="Grass001_2K_Color_jpg-sampler" texcoord="UVMap"/>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="Supports-effect">
+      <profile_COMMON>
+        <newparam sid="support-surface">
+          <surface type="2D">
+            <init_from>support_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="support-sampler">
+          <sampler2D>
+            <source>support-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="support_normal-surface">
+          <surface type="2D">
+            <init_from>support_normal</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="support_normal-sampler">
+          <sampler2D>
+            <source>support_normal-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="support_lightmap-surface">
+          <surface type="2D">
+            <init_from>support_lightmap</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="support_lightmap-sampler">
+          <sampler2D>
+            <source>support_lightmap-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <texture texture="support-sampler" texcoord="UVMap"/>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+          <extra>
+            <technique profile="FCOLLADA">
+              <bump bumptype="NORMALMAP">
+                <texture texture="support_normal-sampler" texcoord="UVMap"/>
+                <float sid="strength">0.6</float>
+              </bump>
+              <lightmap>
+                <texture texture="support_lightmap-sampler" texcoord="LightMap"/>
+              </lightmap>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="Roof-effect">
+      <profile_COMMON>
+        <newparam sid="roof_png-surface">
+          <surface type="2D">
+            <init_from>roof_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="roof_png-sampler">
+          <sampler2D>
+            <source>roof_png-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="roof-lightmap-surface">
+          <surface>
+            <init_from>roof_lightmap</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="roof-lightmap-sampler">
+          <sampler2D>
+            <source>roof-lightmap-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <texture texture="roof_png-sampler" texcoord="LightMap"/>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+          <extra>
+            <technique profile="FCOLLADA">
+              <lightmap>
+                <texture texture="roof-lightmap-sampler" texcoord="UVMap"/>
+              </lightmap>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="Fence-effect">
+      <profile_COMMON>
+        <newparam sid="fence_normal-surface">
+          <surface>
+            <init_from>fence_normal</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="fence_normal-sampler">
+          <sampler2D>
+            <source>fence_normal-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0.8 0.8 0.8 1</color>
+            </diffuse>
+            <metallic>
+              <float sid="metallic">0.4</float>
+            </metallic>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+          <extra>
+            <technique profile="FCOLLADA">
+              <bump bumptype="NORMALMAP">
+                <texture texture="fence_normal-sampler" texcoord="UVMap"/>
+                <float sid="strength">0.6</float>
+              </bump>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="Ledge-effect">
+      <profile_COMMON>
+        <newparam sid="brick_jpg-surface">
+          <surface type="2D">
+            <init_from>brick_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="brick_jpg-sampler">
+          <sampler2D>
+            <source>brick_jpg-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="ledge_lightmap-surface">
+          <surface type="2D">
+            <init_from>ledge_lightmap</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="ledge_lightmap-sampler">
+          <sampler2D>
+            <source>ledge_lightmap-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="ledge_normal-surface">
+          <surface type="2D">
+            <init_from>ledge_normal</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="ledge_normal-sampler">
+          <sampler2D>
+            <source>ledge_normal-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <texture texture="brick_jpg-sampler" texcoord="UVMap"/>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.5 0.5 0.5 1</color>
+              <float sid="focus">32</float>
+            </specular>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+          <extra>
+            <technique profile="FCOLLADA">
+              <bump bumptype="NORMALMAP">
+                <texture texture="ledge_normal-sampler" texcoord="UVMap"/>
+                <float sid="strength">0.6</float>
+              </bump>
+              <lightmap>
+                <texture texture="ledge_lightmap-sampler" texcoord="LightMap"/>
+              </lightmap>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="BlulbHolder-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0 0 0 1</color>
+            </diffuse>
+            <reflectivity>
+              <float sid="specular">0.297619</float>
+            </reflectivity>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="Bulb-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0.7991034 0.701102 0.4507859 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0.8000001 0.7013978 0.449774 1</color>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="Cable-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0.01599497 0.01599497 0.01599497 1</color>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_images>
+    <image id="wood_png_001" name="wood_png_001">
+      <init_from>/textures/roof/Asphalt007_2K_Color.jpg</init_from>
+    </image>
+    <image id="Grass001_2K_Color_jpg" name="Grass001_2K_Color_jpg">
+      <init_from>/textures/roof/Grass001_2K_Color.jpg</init_from>
+    </image>
+    <image id="floor_normal" name="floor_normal">
+      <init_from>/textures/roof/Asphalt007_2K_NormalGL.jpg</init_from>
+    </image>
+    <image id="brick_jpg" name="brick_jpg">
+      <init_from>/textures/roof/agedplanks1-albedo.png</init_from>
+    </image>
+    <image id="ledge_normal" name="ledge_normal">
+      <init_from>/textures/roof/agedplanks1-normal4-unity.png</init_from>
+    </image>
+    <image id="ledge_lightmap" name="ledge_lightmap">
+      <init_from>/textures/roof/ledge_lightmap.png</init_from>
+    </image>
+    <image id="support_png" name="support_png">
+      <init_from>/textures/roof/support.png</init_from>
+    </image>
+    <image id="support_normal" name="support_normal">
+      <init_from>/textures/roof/support_normal.png</init_from>
+    </image>
+    <image id="worn-shiny-metal-albedo_png" name="worn-shiny-metal-albedo_png">
+      <init_from>/textures/metal/worn-shiny-metal-albedo.png</init_from>
+    </image>
+    <image id="roof_png" name="roof_png">
+      <init_from>/textures/roof/roof.png</init_from>
+    </image>
+    <image id="roof_lightmap" name="roof_lightmap">
+      <init_from>/textures/roof/roof_lightmap.png</init_from>
+    </image>
+    <image id="floor_lightmap" name="floor_lightmap">
+      <init_from>/textures/roof/floor_lightmap.png</init_from>
+    </image>
+    <image id="fence_normal" name="fence_normal">
+      <init_from>/textures/metal/worn-shiny-metal-Normal-ogl.png</init_from>
+    </image>
+  </library_images>

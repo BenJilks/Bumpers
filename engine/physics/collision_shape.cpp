@@ -3,8 +3,14 @@
 #include "gameobject/gameobject.hpp"
 #include "gameobject/transform.hpp"
 #include "gameobject/physics/collider.hpp"
+#include "glm/geometric.hpp"
+#include "glm/gtx/dual_quaternion.hpp"
+#include "glm/gtx/quaternion.hpp"
+#include "glm/matrix.hpp"
+#include <glm/gtx/transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
+#include <numbers>
 using namespace Engine;
 using namespace Object;
 using namespace glm;
@@ -20,14 +26,15 @@ static CollisionShape::CollisionResult collide_aabb_aabb(
     auto &lhs_aabb = static_cast<const CollisionShapeAABB&>(lhs_shape);
     auto &rhs_aabb = static_cast<const CollisionShapeAABB&>(rhs_shape);
 
-    auto lhs_center = lhs_aabb.center() + lhs_transform.position;
+    auto lhs_center = transform_by(lhs_aabb.center(), lhs_transform);
     auto lhs_half_widths = lhs_aabb.half_widths() * lhs_transform.scale;
-    auto rhs_center = rhs_aabb.center() + rhs_transform.position;
+    auto rhs_center = transform_by(rhs_aabb.center(), rhs_transform);
     auto rhs_half_widths = rhs_aabb.half_widths() * rhs_transform.scale;
 
     auto penetration_x = abs(lhs_center.x - rhs_center.x) - (lhs_half_widths.x + rhs_half_widths.x);
-    auto penetration_y = abs(lhs_center.y - rhs_center.y) - (lhs_half_widths.y + rhs_half_widths.y);
     if (penetration_x > 0) return CollisionShape::CollisionResult {};
+    
+    auto penetration_y = abs(lhs_center.y - rhs_center.y) - (lhs_half_widths.y + rhs_half_widths.y);
     if (penetration_y > 0) return CollisionShape::CollisionResult {};
 
     vec2 normal(0, 0);
@@ -54,9 +61,9 @@ static CollisionShape::CollisionResult collide_circle_circle(
     auto& lhs_circle = static_cast<const CollisionShapeCircle&>(lhs_shape);
     auto& rhs_circle = static_cast<const CollisionShapeCircle&>(rhs_shape);
 
-    auto lhs_center = lhs_circle.center() + lhs_transform.position;
+    auto lhs_center = transform_by(lhs_circle.center(), lhs_transform);
     auto lhs_radius = lhs_circle.radius() * max_side(lhs_transform.scale);
-    auto rhs_center = rhs_circle.center() + rhs_transform.position;
+    auto rhs_center = transform_by(rhs_circle.center(), rhs_transform);
     auto rhs_radius = rhs_circle.radius() * max_side(rhs_transform.scale);
 
     auto radius = lhs_radius + rhs_radius;
@@ -71,6 +78,8 @@ static CollisionShape::CollisionResult collide_circle_circle(
         .is_colliding = true,
         .penetration_distance = penetration,
         .normal = normal,
+        .intersection_points = { lhs_center + normal * lhs_radius },
+        .intersection_point_count = 1,
     };
 }
 
@@ -88,9 +97,9 @@ static CollisionShape::CollisionResult collide_aabb_circle(
     if (!bouding_result.is_colliding)
         return bouding_result;
 
-    auto lhs_center = lhs_aabb.center() + lhs_transform.position;
+    auto lhs_center = transform_by(lhs_aabb.center(), lhs_transform);
     auto lhs_half_widths = lhs_aabb.half_widths() * lhs_transform.scale;
-    auto rhs_center = rhs_circle.center() + rhs_transform.position;
+    auto rhs_center = transform_by(rhs_circle.center(), rhs_transform);
     auto rhs_radius = rhs_circle.radius() * max_side(rhs_transform.scale);
     auto circle_intersect_point = bouding_result.normal * rhs_radius + rhs_center;
 
@@ -109,6 +118,8 @@ static CollisionShape::CollisionResult collide_aabb_circle(
         .is_colliding = true,
         .penetration_distance = penetration,
         .normal = normal,
+        .intersection_points = { circle_intersect_point },
+        .intersection_point_count = 1,
     };
 }
 
@@ -128,38 +139,54 @@ static CollisionShape::CollisionResult collide_obb_circle(
     const CollisionShape& lhs_shape, const Transform::Computed2D& lhs_transform,
     const CollisionShape& rhs_shape, const Transform::Computed2D& rhs_transform)
 {
-    return CollisionShape::CollisionResult {};
-    
     auto& lhs_obb = static_cast<const CollisionShapeOBB&>(lhs_shape);
     auto& rhs_circle = static_cast<const CollisionShapeCircle&>(rhs_shape);
 
-    auto inverse_rotation_matrix = glm::rotate(mat4(1), -lhs_transform.rotation, vec3(0, 0, 1));
-    auto rhs_center = rhs_circle.center() + rhs_transform.position;
-    auto rhs_center_lhs_space = inverse_rotation_matrix * vec4(rhs_center - lhs_transform.position, 0, 1);
-    
-    auto new_lhs_transform = Transform::Computed2D
-    {
-        .position = vec3(0),
-        .scale = lhs_transform.scale,
-        .rotation = 0,
-        .transform = glm::mat4(0),
-    };
-    auto new_rhs_transform = Transform::Computed2D
-    {
-        .position = rhs_center_lhs_space,
-        .scale = rhs_transform.scale,
-        .rotation = rhs_transform.rotation,
-        .transform = glm::mat4(0),
-    };
+    mat4 to_lhs_space(1);
+    to_lhs_space = glm::scale(to_lhs_space, vec3(1.0f / lhs_transform.scale, 0));
+    to_lhs_space = glm::rotate(to_lhs_space, -lhs_transform.rotation, vec3(0, 0, 1));
+    to_lhs_space = glm::translate(to_lhs_space, vec3(-(lhs_transform.position + lhs_obb.center()), 0));
 
-    auto result = collide_aabb_circle(lhs_shape, new_lhs_transform, rhs_shape, new_rhs_transform);
-    if (!result.is_colliding)
+    auto lhs_half_widths = lhs_obb.half_widths();
+    auto rhs_center = transform_by(rhs_circle.center(), rhs_transform);
+    auto rhs_radius = rhs_circle.radius() * max_side(rhs_transform.scale);
+    auto rhs_center_in_lhs_space = vec2(to_lhs_space * vec4(rhs_center, 0, 1));
+
+    auto distance_to_center_sqaured = glm::length2(rhs_center_in_lhs_space);
+    auto lhs_radius = max_side(lhs_half_widths);
+    if (distance_to_center_sqaured > (lhs_radius + rhs_radius) * (lhs_radius + rhs_radius))
+        return CollisionShape::CollisionResult {};
+
+    auto direction_to_center = -glm::normalize(rhs_center_in_lhs_space);
+    auto circle_intersect_point = rhs_center_in_lhs_space + direction_to_center * rhs_radius;
+
+    auto penetration_x = std::abs(circle_intersect_point.x) - lhs_half_widths.x;
+    if (penetration_x > 0)
         return CollisionShape::CollisionResult {};
     
-    auto rotation_matrix = glm::rotate(mat4(1), lhs_transform.rotation, vec3(0, 0, 1));
-    auto normal = rotation_matrix * vec4(result.normal, 0, 1);
-    result.normal = vec2(normal.x, normal.y);
-    return result;
+    auto penetration_y = std::abs(circle_intersect_point.y) - lhs_half_widths.y;
+    if (penetration_y > 0)
+        return CollisionShape::CollisionResult {};
+
+    vec2 normal_lhs_space(0, 0);
+    if (penetration_x < penetration_y)
+        normal_lhs_space = vec2(0, rhs_center_in_lhs_space.y > 0 ? -1 : 1);
+    if (penetration_x > penetration_y)
+        normal_lhs_space = vec2(rhs_center_in_lhs_space.x > 0 ? -1 : 1, 0);
+
+    auto normal = vec2(glm::rotate(mat4(1), lhs_transform.rotation, vec3(0, 0, 1)) * vec4(normal_lhs_space, 0, 1));
+    auto intersection_point = vec2(lhs_transform.transform * vec4(normal * lhs_obb.half_widths() + lhs_obb.center(), 0, 1));
+    auto penetration = penetration_x < penetration_y
+        ? -penetration_y * lhs_transform.scale.y
+        : -penetration_x * lhs_transform.scale.x;
+    return CollisionShape::CollisionResult
+    {
+        .is_colliding = true,
+        .penetration_distance = penetration,
+        .normal = normal,
+        .intersection_points = { intersection_point },
+        .intersection_point_count = 1,
+    };
 }
 
 static CollisionShape::CollisionResult collide_obb_obb(

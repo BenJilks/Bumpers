@@ -23,12 +23,14 @@ void PhysicsBody::step_physics(GameObject&, float by)
     m_transform->rotate(vec3(0, 1, 0), -m_angular_velocity * by);
 
     auto factor = abs(glm::dot(glm::normalize(m_velocity), glm::normalize(vec_3to2(m_transform->forward()))));
-    if (!std::isnan(factor))
+    if (!std::isnan(factor) && !std::isinf(factor))
     {
         auto friction = factor * m_friction.y + (1.0 - factor) * m_friction.x;
         m_velocity *= 1.0 - (friction * by);
     }
-    m_angular_velocity *= 1.0 - 0.05;
+    m_angular_velocity *= 1.0 - 0.1;
+
+    assert(!std::isnan(m_velocity.x));
 }
 
 void PhysicsBody::apply_impulse(glm::vec2 impulse, glm::vec2 contact_point)

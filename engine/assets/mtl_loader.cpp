@@ -203,3 +203,4 @@ std::map<std::string, Material> MtlLoader::from_file(const std::string &file_pat
 
     return lib;
 }
+

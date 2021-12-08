@@ -21,7 +21,7 @@ static std::pair<vec2, vec2> calculate_bounding_box(CollisionShape &shape, const
         case CollisionShape::Type::AABB:
         {
             auto aabb = static_cast<const CollisionShapeAABB&>(shape);
-            auto center = aabb.center() + transform.position;
+            auto center = transform_by(aabb.center(), transform);
             auto half_widths = aabb.half_widths() * transform.scale;
             return std::make_pair(center, half_widths);
         }
@@ -29,7 +29,7 @@ static std::pair<vec2, vec2> calculate_bounding_box(CollisionShape &shape, const
         case CollisionShape::Type::Circle:
         {
             auto circle = static_cast<const CollisionShapeCircle&>(shape);
-            auto center = circle.center() + transform.position;
+            auto center = transform_by(circle.center(), transform);
             auto half_widths = circle.radius() * transform.scale;
             return std::make_pair(center, half_widths);
         }
@@ -37,11 +37,11 @@ static std::pair<vec2, vec2> calculate_bounding_box(CollisionShape &shape, const
         case CollisionShape::Type::OBB:
         {
             auto obb = static_cast<const CollisionShapeOBB&>(shape);
-            auto center = obb.center() + transform.position;
+            auto center = transform_by(obb.center(), transform);
             // NOTE: Not accurate but fast enough to make up for it, without caching.
             auto scaled_obb_half_widths = obb.half_widths() * transform.scale;
             auto max_obb_width = std::max(scaled_obb_half_widths.x, scaled_obb_half_widths.y);
-            auto half_widths = vec2(max_obb_width * 2.0f); //(float)std::numbers::sqrt2;
+            auto half_widths = vec2(max_obb_width * (float)std::numbers::sqrt2);
             return std::make_pair(center, half_widths);
         }
 
