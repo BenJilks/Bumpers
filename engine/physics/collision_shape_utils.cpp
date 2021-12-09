@@ -1,6 +1,7 @@
 #include "collision_shape_utils.hpp"
 #include "gameobject/gameobject.hpp"
 #include "glm/gtx/transform.hpp"
+#include "glm/gtx/quaternion.hpp"
 #include "glm/gtx/string_cast.hpp"
 #include <optional>
 #include <glm/glm.hpp>
@@ -62,24 +63,19 @@ std::vector<vec4> Engine::obb_points(
 {
     auto center = obb.center();
     auto half_widths = obb.half_widths();
+
+    auto to_world_space_transform =
+        glm::translate(vec3(center, 0)) *
+        glm::rotate(obb.rotation(), vec3(0, 0, 1)) *
+        transform.transform;
+    
     return std::vector<vec4>
     {
-        transform.transform * vec4(center + vec2(-half_widths.x, half_widths.y), 0, 1),
-        transform.transform * vec4(center + vec2(half_widths.x, half_widths.y), 0, 1),
-        transform.transform * vec4(center + vec2(half_widths.x, -half_widths.y), 0, 1),
-        transform.transform * vec4(center + vec2(-half_widths.x, -half_widths.y), 0, 1),
+        to_world_space_transform * vec4(-half_widths.x, half_widths.y, 0, 1),
+        to_world_space_transform * vec4(half_widths.x, half_widths.y, 0, 1),
+        to_world_space_transform * vec4(half_widths.x, -half_widths.y, 0, 1),
+        to_world_space_transform * vec4(-half_widths.x, -half_widths.y, 0, 1),
     };
-}
-
-std::vector<vec4> Engine::convex_polygon_points(
-    const CollisionShapeConvexPolygon &convex_polygon, const Transform::Computed2D &transform)
-{
-    std::vector<vec4> out;
-    out.reserve(convex_polygon.verticies().size());
-
-    for (const auto &vertex : convex_polygon.verticies())
-        out.push_back(transform.transform * vec4(vertex, 0, 1));
-    return out;
 }
 
 std::vector<float> Engine::find_axes_from_points(const std::vector<vec4> &points)

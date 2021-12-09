@@ -85,6 +85,7 @@ SET(GAME_SOURCES
     game/debug_scene.cpp game/debug_scene.hpp
     game/car_engine.cpp game/car_engine.hpp
     game/player_controller.cpp game/player_controller.hpp
+    game/ai.cpp game/ai.hpp
 )
 
 SET(SOURCES

@@ -1,8 +1,9 @@
 #include "debug_scene.hpp"
 #include "debug_camera_movement.hpp"
+#include "car_engine.hpp"
+#include "player_controller.hpp"
+#include "ai.hpp"
 #include "engine/graphics/mesh/material.hpp"
-#include "game/car_engine.hpp"
-#include "game/player_controller.hpp"
 #include "gameobject/forward.hpp"
 #include "spin.hpp"
 #include "config.hpp"
@@ -128,10 +129,23 @@ GameObject *DebugScene::make_arena()
     if (!arena)
         return nullptr;
     
-    // auto collision_shape = std::make_shared<CollisionShapeAABB>(vec2(0, 4), vec2(10, 1));
-    // arena->add_component<Transform>();
-    // arena->add_component<PhysicsBody>(vec2(1), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
-    // arena->add_component<Collider>(collision_shape);
+    arena->add_component<Transform>();
+    arena->add_component<PhysicsBody>(vec2(1), 0.5, std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
+
+    auto add_collider = [&](vec2 position, vec2 scale, float rotation = 0)
+    {
+        arena->add_component<Collider>(std::make_shared<CollisionShapeOBB>(position, scale, rotation));
+    };
+
+    add_collider(vec2(0, 46.4112), vec2(13.411, 3.18407));
+    add_collider(vec2(0, -46.4112), vec2(13.411, 3.18407));
+    add_collider(vec2(28.79, 0), vec2(3.51, 31.6541));
+    add_collider(vec2(-28.79, 0), vec2(3.51, 31.6541));
+
+    add_collider(vec2(21.1239, 39.0009), vec2(3.51, 31.6541), glm::radians(45.0f));
+    add_collider(vec2(-21.1239, 39.0009), vec2(3.51, 31.6541), glm::radians(-45.0f));
+    add_collider(vec2(-21.1239, -39.0009), vec2(3.51, 31.6541), glm::radians(45.0f));
+    add_collider(vec2(21.1239, -39.0009), vec2(3.51, 31.6541), glm::radians(-45.0f));
 
     for (auto z : { -0.499666, 23.3924, 47.3231, -24.331, -48.2455 })
     {
@@ -216,6 +230,7 @@ bool DebugScene::init()
     for (int i = -2; i < 2; i++)
     {
         auto &ai = bumber_car_template->clone(*m_world);
+        ai.add_component<AI>();
         ai.first<Transform>()->translate(vec3(i * 5, 0, 10));
     }
 

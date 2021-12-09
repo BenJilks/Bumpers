@@ -6,6 +6,7 @@
 #include <cmath>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
+#include <limits>
 using namespace Engine;
 using namespace Object;
 using namespace glm;
@@ -35,8 +36,10 @@ void PhysicsBody::step_physics(GameObject&, float by)
 
 void PhysicsBody::apply_impulse(glm::vec2 impulse, glm::vec2 contact_point)
 {
-    apply_force(1.0f / m_mass * impulse);
-    apply_torque(1.0f / m_inertia * glm::dot(contact_point, vec2(-impulse.y, impulse.x)));
+    if (m_mass != std::numeric_limits<float>::infinity())
+        apply_force(1.0f / m_mass * impulse);
+    if (m_inertia != std::numeric_limits<float>::infinity())
+        apply_torque(1.0f / m_inertia * glm::dot(contact_point * vec2(-1, 1), vec2(impulse.y, impulse.x)));
 }
 
 float PhysicsBody::speed() const

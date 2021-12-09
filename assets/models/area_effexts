@@ -210,8 +210,15 @@
             <diffuse>
               <color sid="diffuse">0.8 0.8 0.8 1</color>
             </diffuse>
+            <diffuse>
+              <color sid="diffuse">1.0 0.5 0.5 1</color>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.5 0.5 0.5 1</color>
+              <float sid="focus">32</float>
+            </specular>
             <metallic>
-              <float sid="metallic">0.4</float>
+              <float sid="metallic">0.2</float>
             </metallic>
             <index_of_refraction>
               <float sid="ior">1.45</float>

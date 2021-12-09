@@ -44,15 +44,6 @@ static std::pair<vec2, vec2> calculate_bounding_box(CollisionShape &shape, const
             auto half_widths = vec2(max_obb_width * (float)std::numbers::sqrt2);
             return std::make_pair(center, half_widths);
         }
-
-        case CollisionShape::Type::ConvexPolygon:
-        {
-            auto &convex_polygon = static_cast<CollisionShapeConvexPolygon&>(shape);
-            auto bounding_box = convex_polygon.bounding_box(transform.scale, transform.rotation);
-            auto center = bounding_box.first + transform.position;
-            auto half_widths = bounding_box.second;
-            return std::make_pair(center, half_widths);
-        }
     }
     
     assert (false);

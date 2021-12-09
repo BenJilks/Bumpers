@@ -74,7 +74,7 @@ static void resolve_collision(CollisionResolver::CollisionObject& lhs, Collision
                 / inverse_mass_part;
 
             // Apply friction impulse
-            auto tangent_impulse = tangent_impulse_scalar * tangent_velocity_normal * 0.2f;
+            auto tangent_impulse = tangent_impulse_scalar * tangent_velocity_normal * 0.05f;
             lhs.body->apply_impulse(-tangent_impulse, lhs_contact);
             rhs.body->apply_impulse(tangent_impulse, rhs_contact);
         }

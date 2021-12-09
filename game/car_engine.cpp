@@ -27,7 +27,8 @@ void CarEngine::init(Object::GameObject &gameobject)
 void CarEngine::update(Object::GameObject&, float delta)
 {
     float speed = 40.0f * delta;
-    m_physics_body->apply_torque(m_wheel_direction * m_physics_body->speed() * delta);
+    // m_physics_body->apply_torque(m_wheel_direction * m_physics_body->speed() * delta);
+    m_physics_body->apply_torque(m_wheel_direction * 5.0 * delta);
     if (is_action_enabled(Action::Forward))
         m_physics_body->apply_force(-vec_3to2(m_transform->forward()) * speed);
     else if (is_action_enabled(Action::Reverse))
