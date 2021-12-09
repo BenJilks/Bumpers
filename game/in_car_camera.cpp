@@ -1,6 +1,6 @@
 #include "in_car_camera.hpp"
 #include "gameobject/gameobject.hpp"
-#include "gameobject/physics/physics_body.hpp"
+#include "gameobject/physics/physics_body_2d.hpp"
 #include "gameobject/transform.hpp"
 #include "engine/input.hpp"
 #include "glm/trigonometric.hpp"
@@ -16,7 +16,7 @@ void InCarCamera::init(GameObject &gameobject)
 {
     m_transform = gameobject.first<Transform>();
     m_player_transform = m_player->first<Transform>();
-    m_player_body = m_player->first<PhysicsBody>();
+    m_player_body = m_player->first<PhysicsBody2D>();
     assert(m_transform);
 }
 

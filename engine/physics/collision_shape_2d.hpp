@@ -11,10 +11,10 @@
 namespace Engine
 {
 
-    class CollisionShape
+    class CollisionShape2D
     {
     public:
-        virtual ~CollisionShape();
+        virtual ~CollisionShape2D();
         
         struct CollisionResult
         {
@@ -27,8 +27,8 @@ namespace Engine
         };
 
         static CollisionResult check_collisions(
-            const Object::GameObject& lhs, const Object::Collider& lhs_collider, 
-            const Object::GameObject& rhs, const Object::Collider& rhs_collider);
+            const Object::GameObject& lhs, const Object::Collider2D& lhs_collider, 
+            const Object::GameObject& rhs, const Object::Collider2D& rhs_collider);
 
         enum class Type
         {
@@ -41,10 +41,10 @@ namespace Engine
 
     };
 
-    class CollisionShapeAABB : public CollisionShape
+    class CollisionShapeAABB2D : public CollisionShape2D
     {
     public:
-        CollisionShapeAABB(glm::vec2 center, glm::vec2 half_widths)
+        CollisionShapeAABB2D(glm::vec2 center, glm::vec2 half_widths)
             : m_center(center)
             , m_half_widths(half_widths)
         {
@@ -60,11 +60,11 @@ namespace Engine
 
     };
 
-    class CollisionShapeOBB : public CollisionShapeAABB
+    class CollisionShapeOBB2D : public CollisionShapeAABB2D
     {
     public:
-        CollisionShapeOBB(glm::vec2 center, glm::vec2 half_widths, float rotation = 0)
-            : CollisionShapeAABB(center, half_widths)
+        CollisionShapeOBB2D(glm::vec2 center, glm::vec2 half_widths, float rotation = 0)
+            : CollisionShapeAABB2D(center, half_widths)
             , m_rotation(rotation)
         {
         }
@@ -77,10 +77,10 @@ namespace Engine
 
     };
 
-    class CollisionShapeCircle : public CollisionShape
+    class CollisionShapeCircle2D : public CollisionShape2D
     {
     public:
-        CollisionShapeCircle(glm::vec2 center, float radius)
+        CollisionShapeCircle2D(glm::vec2 center, float radius)
             : m_center(center)
             , m_radius(radius)
         {

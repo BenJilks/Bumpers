@@ -1,4 +1,4 @@
-#include "collision_shape_utils.hpp"
+#include "collision_shape_utils_2d.hpp"
 #include "gameobject/gameobject.hpp"
 #include "glm/gtx/transform.hpp"
 #include "glm/gtx/quaternion.hpp"
@@ -45,7 +45,7 @@ vec2 Engine::transform_by(vec2 position, const Transform::Computed2D &transform)
 }
 
 std::vector<vec4> Engine::aabb_points(
-    const CollisionShapeAABB &aabb, const Transform::Computed2D &transform)
+    const CollisionShapeAABB2D &aabb, const Transform::Computed2D &transform)
 {
     auto center = transform_by(aabb.center(), transform);
     auto half_widths = aabb.half_widths() * transform.scale;
@@ -59,7 +59,7 @@ std::vector<vec4> Engine::aabb_points(
 }
 
 std::vector<vec4> Engine::obb_points(
-    const CollisionShapeOBB &obb, const Transform::Computed2D &transform)
+    const CollisionShapeOBB2D &obb, const Transform::Computed2D &transform)
 {
     auto center = obb.center();
     auto half_widths = obb.half_widths();
@@ -117,7 +117,7 @@ std::tuple<float, vec2, float, vec2> Engine::find_max_min_points_along_axis(cons
     return std::make_tuple(min_point_along_axis, min_point, max_point_along_axis, max_point);
 };
 
-static CollisionShape::CollisionResult collide_convex_polygons_with_axes(
+static CollisionShape2D::CollisionResult collide_convex_polygons_with_axes(
     const std::vector<vec4> &lhs_points, const std::vector<vec4> &rhs_points, std::vector<float> axes)
 {
     auto is_axis_overlapping = [&](vec2 axis)
@@ -127,15 +127,15 @@ static CollisionShape::CollisionResult collide_convex_polygons_with_axes(
 
         float lhs_penetration = lhs_max - rhs_min;
         if (lhs_penetration < 0)
-            return CollisionShape::CollisionResult {};
+            return CollisionShape2D::CollisionResult {};
         
         float rhs_penetration = rhs_max - lhs_min;
         if (rhs_penetration < 0)
-            return CollisionShape::CollisionResult {};
+            return CollisionShape2D::CollisionResult {};
 
         auto penetration = std::min(lhs_penetration, rhs_penetration);
         auto normal = lhs_penetration > rhs_penetration ? axis : -axis;
-        return CollisionShape::CollisionResult
+        return CollisionShape2D::CollisionResult
         {
             .is_colliding = true,
             .penetration_distance = penetration,
@@ -143,7 +143,7 @@ static CollisionShape::CollisionResult collide_convex_polygons_with_axes(
         };
     };
 
-    CollisionShape::CollisionResult min_result
+    CollisionShape2D::CollisionResult min_result
     {
         .penetration_distance = std::numeric_limits<float>::infinity(),
     };
@@ -155,7 +155,7 @@ static CollisionShape::CollisionResult collide_convex_polygons_with_axes(
     {
         auto result = is_axis_overlapping(vec_from_angle(axis));
         if (!result.is_colliding)
-            return CollisionShape::CollisionResult {};
+            return CollisionShape2D::CollisionResult {};
 
         if (result.penetration_distance < min_result.penetration_distance)
             min_result = result;
@@ -278,16 +278,16 @@ inline float find_penetration(float separation_a, float separation_b)
     return std::min(-separation_a, -separation_b);
 }
 
-CollisionShape::CollisionResult Engine::collide_convex_polygons(
+CollisionShape2D::CollisionResult Engine::collide_convex_polygons(
     const std::vector<vec4>& lhs_points, const std::vector<vec4>& rhs_points)
 {
     auto [lhs_face, lhs_penetration] = find_intersecting_face(lhs_points, rhs_points); 
     if (!lhs_face)
-        return CollisionShape::CollisionResult {};
+        return CollisionShape2D::CollisionResult {};
 
     auto [rhs_face, rhs_penetration] = find_intersecting_face(rhs_points, lhs_points);
     if (!rhs_face)
-        return CollisionShape::CollisionResult {};
+        return CollisionShape2D::CollisionResult {};
 
     const auto &reference_face = lhs_penetration > rhs_penetration ? *lhs_face : *rhs_face;
     auto incident_face = lhs_penetration > rhs_penetration ? *rhs_face : *lhs_face;
@@ -295,11 +295,11 @@ CollisionShape::CollisionResult Engine::collide_convex_polygons(
     
     auto negitive_side = -glm::dot(side_plane_normal, reference_face.a);
     if (!clip(incident_face, -side_plane_normal, negitive_side))
-        return CollisionShape::CollisionResult {};
+        return CollisionShape2D::CollisionResult {};
 
     auto positive_side = glm::dot(side_plane_normal, reference_face.b);
     if (!clip(incident_face, side_plane_normal, positive_side))
-        return CollisionShape::CollisionResult {};
+        return CollisionShape2D::CollisionResult {};
 
     auto ref_line = glm::dot(reference_face.normal, reference_face.a);
 
@@ -308,7 +308,7 @@ CollisionShape::CollisionResult Engine::collide_convex_polygons(
 
     auto normal = lhs_penetration > rhs_penetration ? incident_face.normal : -incident_face.normal;
     auto penetration = find_penetration(separation_a, separation_b);
-    auto result = CollisionShape::CollisionResult
+    auto result = CollisionShape2D::CollisionResult
     {
         .is_colliding = true,
         .penetration_distance = penetration,

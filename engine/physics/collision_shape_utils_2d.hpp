@@ -1,5 +1,5 @@
 #pragma one
-#include "engine/physics/collision_shape.hpp"
+#include "engine/physics/collision_shape_2d.hpp"
 #include "gameobject/transform.hpp"
 #include <glm/glm.hpp>
 #include <vector>
@@ -16,15 +16,15 @@ namespace Engine
     glm::vec2 transform_by(glm::vec2 position, const Object::Transform::Computed2D &transform);
 
     std::vector<glm::vec4> aabb_points(
-        const CollisionShapeAABB &aabb, const Object::Transform::Computed2D &transform);
+        const CollisionShapeAABB2D &aabb, const Object::Transform::Computed2D &transform);
     std::vector<glm::vec4> obb_points(
-        const CollisionShapeOBB &obb, const Object::Transform::Computed2D &transform);
+        const CollisionShapeOBB2D &obb, const Object::Transform::Computed2D &transform);
 
     std::vector<float> find_axes_from_points(const std::vector<glm::vec4> &points);
     std::tuple<float, glm::vec2, float, glm::vec2> find_max_min_points_along_axis(
         const std::vector<glm::vec4>& points, glm::vec2 axis);
 
-    CollisionShape::CollisionResult collide_convex_polygons(
+    CollisionShape2D::CollisionResult collide_convex_polygons(
         const std::vector<glm::vec4>& lhs_points, const std::vector<glm::vec4>& rhs_points);
 
 }

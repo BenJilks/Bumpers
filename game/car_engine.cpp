@@ -1,10 +1,10 @@
 #include "car_engine.hpp"
-#include "engine/physics/collision_shape_utils.hpp"
-#include "gameobject/physics/physics_body.hpp"
+#include "engine/physics/collision_shape_utils_2d.hpp"
+#include "gameobject/physics/physics_body_2d.hpp"
 #include "gameobject/gameobject.hpp"
 #include "gameobject/transform.hpp"
 #include "gameobject/attributes.hpp"
-#include "gameobject/physics/collider.hpp"
+#include "gameobject/physics/collider_2d.hpp"
 #include <glm/glm.hpp>
 #include <iostream>
 using namespace Engine;
@@ -17,9 +17,9 @@ static constexpr float s_max_turn_direction = 2.0f;
 
 void CarEngine::init(Object::GameObject &gameobject)
 {
-    m_physics_body = gameobject.first<PhysicsBody>();
+    m_physics_body = gameobject.first<PhysicsBody2D>();
     m_transform = gameobject.first<Transform>();
-    m_collider = gameobject.first<Collider>();
+    m_collider = gameobject.first<Collider2D>();
 
     m_action_enabled.fill(false);
 }

@@ -27,7 +27,7 @@ namespace Game
         Object::GameObject *m_player { nullptr };
 		Object::Transform *m_transform { nullptr };
 		Object::Transform *m_player_transform { nullptr };
-		Object::PhysicsBody *m_player_body { nullptr };
+		Object::PhysicsBody2D *m_player_body { nullptr };
 
         glm::vec2 m_last_velocity { 0, 0 };
         glm::vec3 m_head_offset { 0, 0, 0 };

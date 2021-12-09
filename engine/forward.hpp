@@ -19,8 +19,8 @@ namespace Engine
     class ParticalRenderer;
     class GuiRenderer;
 
-    class CollisionResolver;
-    class CollisionShape;
+    class CollisionResolver2D;
+    class CollisionShape2D;
 
     namespace Audio
     {

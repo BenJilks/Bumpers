@@ -37,9 +37,9 @@ namespace Game
         float m_wheel_direction { 0 };
         std::array<bool, (size_t)Action::Count> m_action_enabled { };
 
-        Object::PhysicsBody *m_physics_body { nullptr };
+        Object::PhysicsBody2D *m_physics_body { nullptr };
         Object::Transform *m_transform { nullptr };
-        Object::Collider* m_collider { nullptr };
+        Object::Collider2D *m_collider { nullptr };
 
     };
 

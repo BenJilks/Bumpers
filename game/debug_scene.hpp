@@ -27,7 +27,7 @@ namespace Game
         void make_sky_box(std::shared_ptr<Engine::Texture> sky_box_texture);
 
         std::unique_ptr<Object::World> m_world { nullptr };
-        std::unique_ptr<Engine::CollisionResolver> m_collision_resolver { nullptr };
+        std::unique_ptr<Engine::CollisionResolver2D> m_collision_resolver { nullptr };
 
         std::shared_ptr<Engine::StandardRenderer> m_renderer { nullptr };
         std::shared_ptr<Engine::SkyBoxRenderer> m_sky_box_renderer { nullptr };

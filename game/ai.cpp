@@ -2,7 +2,7 @@
 #include "gameobject/gameobject.hpp"
 #include "gameobject/transform.hpp"
 #include "engine/input.hpp"
-#include "engine/physics/collision_shape_utils.hpp"
+#include "engine/physics/collision_shape_utils_2d.hpp"
 #include "glm/geometric.hpp"
 #include "glm/gtx/string_cast.hpp"
 #include <cassert>

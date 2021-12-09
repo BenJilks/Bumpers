@@ -1,6 +1,6 @@
 #include "transform.hpp"
 #include "gameobject.hpp"
-#include "engine/physics/collision_shape_utils.hpp"
+#include "engine/physics/collision_shape_utils_2d.hpp"
 #include "glm/gtx/string_cast.hpp"
 #include <iostream>
 #include <glm/gtx/transform.hpp>

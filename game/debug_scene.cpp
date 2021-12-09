@@ -20,16 +20,16 @@
 #include "engine/graphics/renderer/sky_box_renderer.hpp"
 #include "engine/graphics/renderer/blur_renderer.hpp"
 #include "engine/graphics/renderer/bloom_renderer.hpp"
-#include "engine/physics/collision_shape.hpp"
-#include "engine/physics/collision_resolver.hpp"
+#include "engine/physics/collision_shape_2d.hpp"
+#include "engine/physics/collision_resolver_2d.hpp"
 #include "engine/input.hpp"
 #include "gameobject/world.hpp"
 #include "gameobject/camera.hpp"
 #include "gameobject/transform.hpp"
 #include "gameobject/mesh_render.hpp"
 #include "gameobject/light.hpp"
-#include "gameobject/physics/physics_body.hpp"
-#include "gameobject/physics/collider.hpp"
+#include "gameobject/physics/physics_body_2d.hpp"
+#include "gameobject/physics/collider_2d.hpp"
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
 #include <limits>
@@ -113,14 +113,14 @@ GameObject *DebugScene::make_bumber_car()
     if (!bumber_car)
         return nullptr;
 
-    auto front_collider = std::make_shared<CollisionShapeCircle>(vec2(0, 2.02552), 1.65037);
-    auto body_collider = std::make_shared<CollisionShapeOBB>(vec2(0), vec2(1.71153, 1.95445));
-    auto back_collider = std::make_shared<CollisionShapeCircle>(vec2(0, -1.95445), 1.65037);
+    auto front_collider = std::make_shared<CollisionShapeCircle2D>(vec2(0, 2.02552), 1.65037);
+    auto body_collider = std::make_shared<CollisionShapeOBB2D>(vec2(0), vec2(1.71153, 1.95445));
+    auto back_collider = std::make_shared<CollisionShapeCircle2D>(vec2(0, -1.95445), 1.65037);
     bumber_car->add_component<Transform>();
-    bumber_car->add_component<PhysicsBody>(vec2(6, 4), 1, 1, 0.2f);
-    bumber_car->add_component<Collider>(front_collider);
-    bumber_car->add_component<Collider>(body_collider);
-    bumber_car->add_component<Collider>(back_collider);
+    bumber_car->add_component<PhysicsBody2D>(vec2(6, 4), 1, 1, 0.2f);
+    bumber_car->add_component<Collider2D>(front_collider);
+    bumber_car->add_component<Collider2D>(body_collider);
+    bumber_car->add_component<Collider2D>(back_collider);
     bumber_car->add_component<CarEngine>();
     return bumber_car;
 }
@@ -142,11 +142,11 @@ GameObject *DebugScene::make_arena()
         return nullptr;
     
     arena->add_component<Transform>();
-    arena->add_component<PhysicsBody>(vec2(1), 0.5, std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
+    arena->add_component<PhysicsBody2D>(vec2(1), 0.5, std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
 
     auto add_collider = [&](vec2 position, vec2 scale, float rotation = 0)
     {
-        arena->add_component<Collider>(std::make_shared<CollisionShapeOBB>(position, scale, rotation));
+        arena->add_component<Collider2D>(std::make_shared<CollisionShapeOBB2D>(position, scale, rotation));
     };
 
     add_collider(vec2(0, 46.4112), vec2(13.411, 3.18407));
@@ -216,7 +216,7 @@ bool DebugScene::init()
     auto blur_shader = Shader::construct(ASSETS + "/shaders/blur.glsl");
 
     m_world = std::make_unique<World>();
-    m_collision_resolver = std::make_unique<CollisionResolver>();
+    m_collision_resolver = std::make_unique<CollisionResolver2D>();
     
     m_renderer = std::make_shared<StandardRenderer>(shader, skybox_texture);
     m_sky_box_renderer = std::make_shared<SkyBoxRenderer>(skybox_shader);

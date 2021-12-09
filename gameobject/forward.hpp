@@ -11,8 +11,8 @@ namespace Object
     class World;
     class Scene;
     class Light;
-    class Collider;
-    class PhysicsBody;
+    class Collider2D;
+    class PhysicsBody2D;
 
     namespace Gui
     {

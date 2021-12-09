@@ -7,9 +7,9 @@
 namespace Object
 {
 
-    class PhysicsBody : public ComponentBase<PhysicsBody>
+    class PhysicsBody2D : public ComponentBase<PhysicsBody2D>
     {
-        friend ComponentBase<PhysicsBody>;
+        friend ComponentBase<PhysicsBody2D>;
 
     public:
         virtual void init(GameObject&) final;
@@ -31,8 +31,8 @@ namespace Object
         inline bool is_static() const { return m_mass == std::numeric_limits<float>::infinity(); }
 
     private:
-        PhysicsBody(const PhysicsBody&) = default;
-        PhysicsBody(glm::vec2 friction, float restitution, float mass, float inertia)
+        PhysicsBody2D(const PhysicsBody2D&) = default;
+        PhysicsBody2D(glm::vec2 friction, float restitution, float mass, float inertia)
             : m_velocity()
             , m_angular_velocity(0)
             , m_friction(friction)
@@ -55,3 +55,4 @@ namespace Object
     };
 
 }
+

@@ -1,8 +1,8 @@
-#include "collision_shape.hpp"
-#include "collision_shape_utils.hpp"
+#include "collision_shape_2d.hpp"
+#include "collision_shape_utils_2d.hpp"
 #include "gameobject/gameobject.hpp"
 #include "gameobject/transform.hpp"
-#include "gameobject/physics/collider.hpp"
+#include "gameobject/physics/collider_2d.hpp"
 #include "glm/geometric.hpp"
 #include "glm/gtx/dual_quaternion.hpp"
 #include "glm/gtx/quaternion.hpp"
@@ -15,16 +15,16 @@ using namespace Engine;
 using namespace Object;
 using namespace glm;
 
-CollisionShape::~CollisionShape()
+CollisionShape2D::~CollisionShape2D()
 {
 }
 
-static CollisionShape::CollisionResult collide_aabb_aabb(
-    const CollisionShape &lhs_shape, const Transform::Computed2D &lhs_transform, 
-    const CollisionShape &rhs_shape, const Transform::Computed2D &rhs_transform)
+static CollisionShape2D::CollisionResult collide_aabb_aabb(
+    const CollisionShape2D &lhs_shape, const Transform::Computed2D &lhs_transform, 
+    const CollisionShape2D &rhs_shape, const Transform::Computed2D &rhs_transform)
 {
-    auto &lhs_aabb = static_cast<const CollisionShapeAABB&>(lhs_shape);
-    auto &rhs_aabb = static_cast<const CollisionShapeAABB&>(rhs_shape);
+    auto &lhs_aabb = static_cast<const CollisionShapeAABB2D&>(lhs_shape);
+    auto &rhs_aabb = static_cast<const CollisionShapeAABB2D&>(rhs_shape);
 
     auto lhs_center = transform_by(lhs_aabb.center(), lhs_transform);
     auto lhs_half_widths = lhs_aabb.half_widths() * lhs_transform.scale;
@@ -32,10 +32,10 @@ static CollisionShape::CollisionResult collide_aabb_aabb(
     auto rhs_half_widths = rhs_aabb.half_widths() * rhs_transform.scale;
 
     auto penetration_x = abs(lhs_center.x - rhs_center.x) - (lhs_half_widths.x + rhs_half_widths.x);
-    if (penetration_x > 0) return CollisionShape::CollisionResult {};
+    if (penetration_x > 0) return CollisionShape2D::CollisionResult {};
     
     auto penetration_y = abs(lhs_center.y - rhs_center.y) - (lhs_half_widths.y + rhs_half_widths.y);
-    if (penetration_y > 0) return CollisionShape::CollisionResult {};
+    if (penetration_y > 0) return CollisionShape2D::CollisionResult {};
 
     vec2 normal(0, 0);
     if (penetration_x < penetration_y)
@@ -44,7 +44,7 @@ static CollisionShape::CollisionResult collide_aabb_aabb(
         normal = vec2(lhs_center.x < rhs_center.x ? -1 : 1, 0);
 
     auto penetration = abs(penetration_x * normal.x + penetration_y * normal.y);
-    return CollisionShape::CollisionResult 
+    return CollisionShape2D::CollisionResult 
     {
         .is_colliding = true,
         .penetration_distance = penetration,
@@ -54,12 +54,12 @@ static CollisionShape::CollisionResult collide_aabb_aabb(
     };
 }
 
-static CollisionShape::CollisionResult collide_circle_circle(
-    const CollisionShape& lhs_shape, const Transform::Computed2D& lhs_transform,
-    const CollisionShape& rhs_shape, const Transform::Computed2D& rhs_transform)
+static CollisionShape2D::CollisionResult collide_circle_circle(
+    const CollisionShape2D& lhs_shape, const Transform::Computed2D& lhs_transform,
+    const CollisionShape2D& rhs_shape, const Transform::Computed2D& rhs_transform)
 {
-    auto& lhs_circle = static_cast<const CollisionShapeCircle&>(lhs_shape);
-    auto& rhs_circle = static_cast<const CollisionShapeCircle&>(rhs_shape);
+    auto& lhs_circle = static_cast<const CollisionShapeCircle2D&>(lhs_shape);
+    auto& rhs_circle = static_cast<const CollisionShapeCircle2D&>(rhs_shape);
 
     auto lhs_center = transform_by(lhs_circle.center(), lhs_transform);
     auto lhs_radius = lhs_circle.radius() * max_side(lhs_transform.scale);
@@ -69,11 +69,11 @@ static CollisionShape::CollisionResult collide_circle_circle(
     auto radius = lhs_radius + rhs_radius;
     auto distanced_squared = calc_distanced_squared(lhs_center, rhs_center);
     if (distanced_squared > radius*radius)
-        return CollisionShape::CollisionResult {};
+        return CollisionShape2D::CollisionResult {};
 
     auto normal = glm::normalize(lhs_center - rhs_center);
     auto penetration = abs(sqrt(distanced_squared) - radius);
-    return CollisionShape::CollisionResult
+    return CollisionShape2D::CollisionResult
     {
         .is_colliding = true,
         .penetration_distance = penetration,
@@ -83,16 +83,16 @@ static CollisionShape::CollisionResult collide_circle_circle(
     };
 }
 
-static CollisionShape::CollisionResult collide_aabb_circle(
-    const CollisionShape& lhs_shape, const Transform::Computed2D& lhs_transform,
-    const CollisionShape& rhs_shape, const Transform::Computed2D& rhs_transform)
+static CollisionShape2D::CollisionResult collide_aabb_circle(
+    const CollisionShape2D& lhs_shape, const Transform::Computed2D& lhs_transform,
+    const CollisionShape2D& rhs_shape, const Transform::Computed2D& rhs_transform)
 {
-    return CollisionShape::CollisionResult {};
+    return CollisionShape2D::CollisionResult {};
 
-    auto& lhs_aabb = static_cast<const CollisionShapeAABB&>(lhs_shape);
-    auto& rhs_circle = static_cast<const CollisionShapeCircle&>(rhs_shape);
+    auto& lhs_aabb = static_cast<const CollisionShapeAABB2D&>(lhs_shape);
+    auto& rhs_circle = static_cast<const CollisionShapeCircle2D&>(rhs_shape);
 
-    CollisionShapeCircle bounding_circle(lhs_aabb.center(), lhs_aabb.half_widths().length());
+    CollisionShapeCircle2D bounding_circle(lhs_aabb.center(), lhs_aabb.half_widths().length());
     auto bouding_result = collide_circle_circle(bounding_circle, lhs_transform, rhs_circle, rhs_transform);
     if (!bouding_result.is_colliding)
         return bouding_result;
@@ -105,15 +105,15 @@ static CollisionShape::CollisionResult collide_aabb_circle(
 
     auto penetration_x = abs(circle_intersect_point.x - lhs_center.x) - lhs_half_widths.x;
     if (penetration_x > 0)
-        return CollisionShape::CollisionResult {};
+        return CollisionShape2D::CollisionResult {};
 
     auto penetration_y = abs(circle_intersect_point.y - lhs_center.y) - lhs_half_widths.y;
     if (penetration_y > 0)
-        return CollisionShape::CollisionResult {};
+        return CollisionShape2D::CollisionResult {};
 
     auto normal = bouding_result.normal;
     auto penetration = abs(penetration_x * normal.x + penetration_y * normal.y);
-    return CollisionShape::CollisionResult
+    return CollisionShape2D::CollisionResult
     {
         .is_colliding = true,
         .penetration_distance = penetration,
@@ -123,24 +123,24 @@ static CollisionShape::CollisionResult collide_aabb_circle(
     };
 }
 
-static CollisionShape::CollisionResult collide_aabb_obb(
-    const CollisionShape& lhs_shape, const Transform::Computed2D& lhs_transform,
-    const CollisionShape& rhs_shape, const Transform::Computed2D& rhs_transform)
+static CollisionShape2D::CollisionResult collide_aabb_obb(
+    const CollisionShape2D& lhs_shape, const Transform::Computed2D& lhs_transform,
+    const CollisionShape2D& rhs_shape, const Transform::Computed2D& rhs_transform)
 {
-    auto& lhs_aabb = static_cast<const CollisionShapeAABB&>(lhs_shape);
-    auto& rhs_obb = static_cast<const CollisionShapeOBB&>(rhs_shape);
+    auto& lhs_aabb = static_cast<const CollisionShapeAABB2D&>(lhs_shape);
+    auto& rhs_obb = static_cast<const CollisionShapeOBB2D&>(rhs_shape);
 
     auto lhs_points = aabb_points(lhs_aabb, lhs_transform);
     auto rhs_points = obb_points(rhs_obb, rhs_transform);
     return collide_convex_polygons(lhs_points, rhs_points);
 }
 
-static CollisionShape::CollisionResult collide_obb_circle(
-    const CollisionShape& lhs_shape, const Transform::Computed2D& lhs_transform,
-    const CollisionShape& rhs_shape, const Transform::Computed2D& rhs_transform)
+static CollisionShape2D::CollisionResult collide_obb_circle(
+    const CollisionShape2D& lhs_shape, const Transform::Computed2D& lhs_transform,
+    const CollisionShape2D& rhs_shape, const Transform::Computed2D& rhs_transform)
 {
-    auto& lhs_obb = static_cast<const CollisionShapeOBB&>(lhs_shape);
-    auto& rhs_circle = static_cast<const CollisionShapeCircle&>(rhs_shape);
+    auto& lhs_obb = static_cast<const CollisionShapeOBB2D&>(lhs_shape);
+    auto& rhs_circle = static_cast<const CollisionShapeCircle2D&>(rhs_shape);
 
     mat4 to_lhs_space(1);
     to_lhs_space = glm::rotate(to_lhs_space, -lhs_obb.rotation(), vec3(0, 0, 1));
@@ -157,7 +157,7 @@ static CollisionShape::CollisionResult collide_obb_circle(
     auto distance_to_center_sqaured = glm::length2(rhs_center_in_lhs_space);
     auto lhs_radius = max_side(lhs_half_widths);
     if (distance_to_center_sqaured > (lhs_radius + rhs_radius) * (lhs_radius + rhs_radius))
-        return CollisionShape::CollisionResult {};
+        return CollisionShape2D::CollisionResult {};
 
     auto direction_to_center = -glm::normalize(rhs_center_in_lhs_space);
     auto circle_intersect_point = rhs_center_in_lhs_space + direction_to_center * rhs_radius;
@@ -165,7 +165,7 @@ static CollisionShape::CollisionResult collide_obb_circle(
     auto penetration_x = std::abs(circle_intersect_point.x) - lhs_half_widths.x;
     auto penetration_y = std::abs(circle_intersect_point.y) - lhs_half_widths.y;
     if (penetration_x > 0 || penetration_y > 0)
-        return CollisionShape::CollisionResult {};
+        return CollisionShape2D::CollisionResult {};
 
     vec2 normal_lhs_space(0, 0);
     if (penetration_x < penetration_y)
@@ -184,7 +184,7 @@ static CollisionShape::CollisionResult collide_obb_circle(
     auto penetration = penetration_x < penetration_y
         ? -penetration_y * lhs_transform.scale.y
         : -penetration_x * lhs_transform.scale.x;
-    return CollisionShape::CollisionResult
+    return CollisionShape2D::CollisionResult
     {
         .is_colliding = true,
         .penetration_distance = penetration,
@@ -194,23 +194,23 @@ static CollisionShape::CollisionResult collide_obb_circle(
     };
 }
 
-static CollisionShape::CollisionResult collide_obb_obb(
-    const CollisionShape& lhs_shape, const Transform::Computed2D& lhs_transform,
-    const CollisionShape& rhs_shape, const Transform::Computed2D& rhs_transform)
+static CollisionShape2D::CollisionResult collide_obb_obb(
+    const CollisionShape2D& lhs_shape, const Transform::Computed2D& lhs_transform,
+    const CollisionShape2D& rhs_shape, const Transform::Computed2D& rhs_transform)
 {
-    auto& lhs_obb = static_cast<const CollisionShapeOBB&>(lhs_shape);
-    auto& rhs_obb = static_cast<const CollisionShapeOBB&>(rhs_shape);
+    auto& lhs_obb = static_cast<const CollisionShapeOBB2D&>(lhs_shape);
+    auto& rhs_obb = static_cast<const CollisionShapeOBB2D&>(rhs_shape);
 
     auto lhs_points = obb_points(lhs_obb, lhs_transform);
     auto rhs_points = obb_points(rhs_obb, rhs_transform);
     return collide_convex_polygons(lhs_points, rhs_points);
 }
 
-CollisionShape::CollisionResult check_collisions_for_colliders(
-    const CollisionShape &lhs_shape, const Transform::Computed2D &lhs_transform,
-    const CollisionShape &rhs_shape, const Transform::Computed2D &rhs_transform)
+CollisionShape2D::CollisionResult check_collisions_for_colliders(
+    const CollisionShape2D &lhs_shape, const Transform::Computed2D &lhs_transform,
+    const CollisionShape2D &rhs_shape, const Transform::Computed2D &rhs_transform)
 {
-    auto flipped = [](CollisionShape::CollisionResult &&result)
+    auto flipped = [](CollisionShape2D::CollisionResult &&result)
     {
         result.normal = -result.normal;
         return result;
@@ -218,34 +218,34 @@ CollisionShape::CollisionResult check_collisions_for_colliders(
     
     switch (lhs_shape.type())
     {
-        case CollisionShape::Type::AABB:
+        case CollisionShape2D::Type::AABB:
             switch (rhs_shape.type())
             {
-                case CollisionShape::Type::AABB:
+                case CollisionShape2D::Type::AABB:
                     return collide_aabb_aabb(lhs_shape, lhs_transform, rhs_shape, rhs_transform);
-                case CollisionShape::Type::OBB:
+                case CollisionShape2D::Type::OBB:
                     return collide_aabb_obb(lhs_shape, lhs_transform, rhs_shape, rhs_transform);
-                case CollisionShape::Type::Circle:
+                case CollisionShape2D::Type::Circle:
                     return collide_aabb_circle(lhs_shape, lhs_transform, rhs_shape, rhs_transform);
             }
-        case CollisionShape::Type::OBB:
+        case CollisionShape2D::Type::OBB:
             switch (rhs_shape.type())
             {
-                case CollisionShape::Type::AABB:
+                case CollisionShape2D::Type::AABB:
                     return flipped(collide_aabb_obb(rhs_shape, rhs_transform, lhs_shape, lhs_transform));
-                case CollisionShape::Type::OBB:
+                case CollisionShape2D::Type::OBB:
                     return collide_obb_obb(lhs_shape, lhs_transform, rhs_shape, rhs_transform);
-                case CollisionShape::Type::Circle:
+                case CollisionShape2D::Type::Circle:
                     return collide_obb_circle(lhs_shape, lhs_transform, rhs_shape, rhs_transform);
             }
-        case CollisionShape::Type::Circle:
+        case CollisionShape2D::Type::Circle:
             switch (rhs_shape.type())
             {
-                case CollisionShape::Type::AABB:
+                case CollisionShape2D::Type::AABB:
                     return flipped(collide_aabb_circle(rhs_shape, rhs_transform, lhs_shape, lhs_transform));
-                case CollisionShape::Type::OBB:
+                case CollisionShape2D::Type::OBB:
                     return flipped(collide_obb_circle(rhs_shape, rhs_transform, lhs_shape, lhs_transform));
-                case CollisionShape::Type::Circle:
+                case CollisionShape2D::Type::Circle:
                     return collide_circle_circle(lhs_shape, lhs_transform, rhs_shape, rhs_transform);
             }
     }
@@ -253,9 +253,9 @@ CollisionShape::CollisionResult check_collisions_for_colliders(
     assert (false);
 }
 
-CollisionShape::CollisionResult CollisionShape::check_collisions(
-    const GameObject &lhs, const Collider &lhs_collider, 
-    const GameObject &rhs, const Collider &rhs_collider)
+CollisionShape2D::CollisionResult CollisionShape2D::check_collisions(
+    const GameObject &lhs, const Collider2D &lhs_collider, 
+    const GameObject &rhs, const Collider2D &rhs_collider)
 {
     auto lhs_transform = lhs.first<Transform>()->computed_transform_2d();
     auto rhs_transform = rhs.first<Transform>()->computed_transform_2d();

@@ -1,11 +1,11 @@
-#include "collision_resolver.hpp"
-#include "collision_shape.hpp"
-#include "collision_shape_utils.hpp"
-#include "broad_phase_collision.hpp"
+#include "collision_resolver_2d.hpp"
+#include "collision_shape_2d.hpp"
+#include "collision_shape_utils_2d.hpp"
+#include "broad_phase_collision_2d.hpp"
 #include "gameobject/world.hpp"
 #include "gameobject/transform.hpp"
-#include "gameobject/physics/physics_body.hpp"
-#include "gameobject/physics/collider.hpp"
+#include "gameobject/physics/physics_body_2d.hpp"
+#include "gameobject/physics/collider_2d.hpp"
 #include <vector>
 #include <iostream>
 #include <set>
@@ -19,8 +19,8 @@ vec2 cross(float s, const vec2 &a)
     return vec2(-s * a.y, s * a.x);
 }
 
-static void resolve_collision(CollisionResolver::CollisionObject& lhs, CollisionResolver::CollisionObject& rhs, 
-                              CollisionShape::CollisionResult result)
+static void resolve_collision(CollisionResolver2D::CollisionObject& lhs, CollisionResolver2D::CollisionObject& rhs, 
+                              CollisionShape2D::CollisionResult result)
 {
     // assert (result.penetration_distance >= 0);
     assert (lhs.body != nullptr);
@@ -88,13 +88,13 @@ static void resolve_collision(CollisionResolver::CollisionObject& lhs, Collision
     }
 }
 
-void CollisionResolver::resolve(Object::World &world)
+void CollisionResolver2D::resolve(Object::World &world)
 {
     // TODO: This can be cached
     std::vector<CollisionObject> collision_objects;
     world.for_each([&collision_objects](GameObject &object)
     {
-        auto colliders = object.get<Collider>();
+        auto colliders = object.get<Collider2D>();
         if (colliders.size() == 0)
             return IteratorDecision::Continue;
         
@@ -106,16 +106,16 @@ void CollisionResolver::resolve(Object::World &world)
         if (!transform)
             return IteratorDecision::Continue;
         
-        auto *body = object.first<PhysicsBody>();
+        auto *body = object.first<PhysicsBody2D>();
         collision_objects.push_back(CollisionObject {object, *transform, body});
         return IteratorDecision::Continue;
     });
 
     // TODO: This should be split into broad and narrow phases
-    BroadPhaseCollision::for_each_narrow_phase_pair(collision_objects, [](
-        CollisionObject &lhs, Collider &lhs_collider, CollisionObject &rhs, Collider &rhs_collider)
+    BroadPhaseCollision2D::for_each_narrow_phase_pair(collision_objects, [](
+        CollisionObject &lhs, Collider2D &lhs_collider, CollisionObject &rhs, Collider2D &rhs_collider)
     {
-        auto result = CollisionShape::check_collisions(lhs.object, lhs_collider, rhs.object, rhs_collider);
+        auto result = CollisionShape2D::check_collisions(lhs.object, lhs_collider, rhs.object, rhs_collider);
         if (result.is_colliding)
         {
             if (lhs.body != nullptr && rhs.body != nullptr)
