@@ -73,6 +73,7 @@ SET(GAMEOBJECT_SOURCES
     gameobject/world.cpp gameobject/world.hpp
     gameobject/physics/physics_body_2d.cpp gameobject/physics/physics_body_2d.hpp
     gameobject/physics/collider_2d.cpp gameobject/physics/collider_2d.hpp 
+    gameobject/physics/box_bounds_3d.cpp gameobject/physics/box_bounds_3d.hpp 
     gameobject/gui/control.hpp
     gameobject/gui/button.cpp gameobject/gui/button.hpp
     gameobject/scene.hpp

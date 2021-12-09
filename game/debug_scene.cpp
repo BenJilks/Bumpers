@@ -3,6 +3,7 @@
 #include "car_engine.hpp"
 #include "game/in_car_camera.hpp"
 #include "gameobject/gameobject.hpp"
+#include "gameobject/physics/box_bounds_3d.hpp"
 #include "player_controller.hpp"
 #include "ai.hpp"
 #include "engine/graphics/mesh/material.hpp"
@@ -39,6 +40,33 @@ using namespace Object;
 using namespace Game;
 using namespace glm;
 
+const std::vector<BoxBounds3D::Box> bounding_boxes =
+{
+    { vec3(27.2268, 2.78474, 0), vec3(1.044855, 4.06174, 32.9089) },
+    { vec3(-27.6395, 2.78474, 4.52736), vec3(1.044855, 4.06174, 27.1582) },
+    { vec3(1.02131, 2.78474, -45.4816), vec3(14.2001, 4.06174, 1.006829) },
+    { vec3(1.02131, 2.78474, 45.4816), vec3(14.2001, 4.06174, 1.0068297) },
+
+    { vec3(21.3328, 2.78474, 38.4206), vec3(6.01089, 4.06174, 6.88848) },
+    { vec3(-20.059, 2.78474, 38.8872), vec3(6.83231, 4.06174, 6.33768) },
+    { vec3(-20.059, 2.78474, -38.8989), vec3(6.83231, 4.06174, 6.33768) },
+    { vec3(21.1664, 2.78474, -38.7045), vec3(6.01089, 4.06174, 6.88848) },
+
+    { vec3(-28.867, 8.32688, 46.8004), vec3(1.4763, 8.31515, 1.4763) },
+    { vec3(-28.867, 8.32688, 23.2155), vec3(1.4763, 8.31515, 1.4763) },
+    { vec3(-28.867, 8.32688, -0.7390), vec3(1.4763, 8.31515, 1.4763) },
+    { vec3(-28.867, 8.32688, -24.493), vec3(1.4763, 8.31515, 1.4763) },
+    { vec3(-28.867, 8.32688, -48.320), vec3(1.4763, 8.31515, 1.4763) },
+
+    { vec3(28.867, 8.32688, 46.8004), vec3(1.4763, 8.31515, 1.4763) },
+    { vec3(28.867, 8.32688, 23.2155), vec3(1.4763, 8.31515, 1.4763) },
+    { vec3(28.867, 8.32688, -0.7390), vec3(1.4763, 8.31515, 1.4763) },
+    { vec3(28.867, 8.32688, -24.493), vec3(1.4763, 8.31515, 1.4763) },
+    { vec3(28.867, 8.32688, -48.320), vec3(1.4763, 8.31515, 1.4763) },
+
+    { vec3(0, 28.867, -0.626996), vec3(33.6523, 15.1126, 51.9021) },
+};
+
 DebugScene::DebugScene()
 {
 }
@@ -53,6 +81,7 @@ Object::GameObject *DebugScene::make_cameras(GameObject &player)
     auto &free_camera_transform = free_camera.add_component<Transform>();
     free_camera.add_component<Camera>();
     free_camera.add_component<DebugCameraMovement>();
+    free_camera.add_component<BoxBounds3D>(bounding_boxes);
     free_camera_transform.translate(vec3(0, 4, 0));
 
     auto &in_car_camera = m_world->add_child();
