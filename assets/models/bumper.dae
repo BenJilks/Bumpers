@@ -194,6 +194,10 @@
             <metallic>
               <float sid="metallic">0.4</float>
             </metallic>
+            <specular>
+              <color sid="specular">0.4 0.4 0.4 1</color>
+              <float sid="focus">100</float>
+            </specular>
             <index_of_refraction>
               <float sid="ior">1.45</float>
             </index_of_refraction>
@@ -239,6 +243,13 @@
             <diffuse>
               <texture texture="PaintWork_png-sampler" texcoord="UVMap.001"/>
             </diffuse>
+            <metallic>
+              <float sid="metallic">0.2</float>
+            </metallic>
+            <specular>
+              <color sid="specular">0.4 0.4 0.4 1</color>
+              <float sid="focus">100</float>
+            </specular>
             <index_of_refraction>
               <float sid="ior">1.45</float>
             </index_of_refraction>
@@ -274,6 +285,10 @@
             <diffuse>
               <color sid="diffuse">0.151085 0.151085 0.151085 1</color>
             </diffuse>
+            <specular>
+              <color sid="specular">0.4 0.4 0.4 1</color>
+              <float sid="focus">100</float>
+            </specular>
             <index_of_refraction>
               <float sid="ior">1.45</float>
             </index_of_refraction>

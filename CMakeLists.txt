@@ -82,6 +82,7 @@ SET(GAMEOBJECT_SOURCES
 SET(GAME_SOURCES
     game/spin.cpp game/spin.hpp
     game/debug_camera_movement.cpp game/debug_camera_movement.hpp
+    game/in_car_camera.cpp game/in_car_camera.hpp
     game/debug_scene.cpp game/debug_scene.hpp
     game/car_engine.cpp game/car_engine.hpp
     game/player_controller.cpp game/player_controller.hpp

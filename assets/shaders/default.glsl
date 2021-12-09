@@ -85,7 +85,7 @@ void calculate_point_lights(
         PointLight light = point_lights[i];
         vec3 to_light_direction = -normalize(light.position - v_world_position.xyz);
         float distance_to_light = length(light.position - v_world_position.xyz);
-        float att_factor = 1.0 + (0.04 * distance_to_light) + (0.018 * (distance_to_light*distance_to_light));
+        float att_factor = 1.0 + (0.04 * distance_to_light) + (0.016 * (distance_to_light*distance_to_light));
         float angle_from_light = dot(-normal, to_light_direction);
         diffuse_light += light.color * (max(angle_from_light, 0.0) / att_factor);
 

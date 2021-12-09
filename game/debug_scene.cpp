@@ -1,6 +1,8 @@
 #include "debug_scene.hpp"
 #include "debug_camera_movement.hpp"
 #include "car_engine.hpp"
+#include "game/in_car_camera.hpp"
+#include "gameobject/gameobject.hpp"
 #include "player_controller.hpp"
 #include "ai.hpp"
 #include "engine/graphics/mesh/material.hpp"
@@ -45,13 +47,23 @@ DebugScene::~DebugScene()
 {
 }
 
-Object::GameObject *DebugScene::make_camera()
+Object::GameObject *DebugScene::make_cameras(GameObject &player)
 {
-    auto &camera = m_world->add_child();
-    camera.add_component<Transform>();
-    camera.add_component<Camera>();
-    camera.add_component<DebugCameraMovement>();
-    return &camera;
+    auto &free_camera = m_world->add_child();
+    auto &free_camera_transform = free_camera.add_component<Transform>();
+    free_camera.add_component<Camera>();
+    free_camera.add_component<DebugCameraMovement>();
+    free_camera_transform.translate(vec3(0, 4, 0));
+
+    auto &in_car_camera = m_world->add_child();
+    in_car_camera.add_component<Transform>();
+    in_car_camera.add_component<Camera>();
+    in_car_camera.add_component<InCarCamera>(&player);
+
+    m_free_camera = &free_camera;
+    m_in_car_camera = &in_car_camera;
+
+    return &free_camera;
 }
 
 class Circle : public ComponentBase<Circle>
@@ -215,10 +227,6 @@ bool DebugScene::init()
         bloom_shader, blur_shader,
         m_view->color_texture(0), m_view->color_texture(1));
 
-    auto *camera = make_camera();
-    if (!camera)
-        return false;
-
     auto *arena = make_arena();
     if (!arena)
         return false;
@@ -236,6 +244,10 @@ bool DebugScene::init()
 
     auto *player = bumber_car_template;
     player->add_component<PlayerController>();
+
+    auto *camera = make_cameras(*player);
+    if (!camera)
+        return false;
 
     // make_sky_box(skybox_texture);
 
@@ -258,6 +270,11 @@ void DebugScene::on_render(float delta)
     m_view->render();
     m_bloom_renderer->pre_render();
     m_bloom_renderer->render();
+
+    if (Input::is_key_down('1'))
+        m_renderer->set_camera(*m_in_car_camera);
+    if (Input::is_key_down('2'))
+        m_renderer->set_camera(*m_free_camera);
 }
 
 void DebugScene::on_resize(int width, int height)
