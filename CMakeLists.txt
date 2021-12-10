@@ -47,14 +47,10 @@ set(ENGINE_SOURCES
     engine/graphics/texture/image_texture.cpp engine/graphics/texture/image_texture.hpp
     engine/graphics/texture/render_texture.cpp engine/graphics/texture/render_texture.hpp
     engine/graphics/texture/cube_map_texture.cpp engine/graphics/texture/cube_map_texture.hpp
-    engine/graphics/gui/gui_renderer.cpp engine/graphics/gui/gui_renderer.hpp
     engine/physics/collision_shape_2d.cpp engine/physics/collision_shape_2d.hpp
     engine/physics/collision_shape_utils_2d.cpp engine/physics/collision_shape_utils_2d.hpp
     engine/physics/collision_resolver_2d.cpp engine/physics/collision_resolver_2d.hpp
     engine/physics/broad_phase_collision_2d.cpp engine/physics/broad_phase_collision_2d.hpp
-    engine/assets/obj_loader.cpp engine/assets/obj_loader.hpp
-    engine/assets/mtl_loader.cpp engine/assets/mtl_loader.hpp
-    engine/assets/obj_like_utils.hpp
     engine/assets/collada_loader.cpp engine/assets/collada_loader.hpp
     engine/assets/thread_pool.cpp engine/assets/thread_pool.hpp
     engine/input.cpp engine/input.hpp
@@ -75,17 +71,14 @@ SET(GAMEOBJECT_SOURCES
     gameobject/physics/physics_body_2d.cpp gameobject/physics/physics_body_2d.hpp
     gameobject/physics/collider_2d.cpp gameobject/physics/collider_2d.hpp 
     gameobject/physics/box_bounds_3d.cpp gameobject/physics/box_bounds_3d.hpp 
-    gameobject/gui/control.hpp
-    gameobject/gui/button.cpp gameobject/gui/button.hpp
     gameobject/scene.hpp
     gameobject/forward.hpp
 )
 
 SET(GAME_SOURCES
-    game/spin.cpp game/spin.hpp
-    game/debug_camera_movement.cpp game/debug_camera_movement.hpp
+    game/free_camera.cpp game/free_camera.hpp
     game/in_car_camera.cpp game/in_car_camera.hpp
-    game/debug_scene.cpp game/debug_scene.hpp
+    game/bumper_cars_scene.cpp game/bumper_cars_scene.hpp
     game/car_engine.cpp game/car_engine.hpp
     game/player_controller.cpp game/player_controller.hpp
     game/ai.cpp game/ai.hpp

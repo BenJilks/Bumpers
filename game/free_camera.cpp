@@ -1,4 +1,4 @@
-#include "debug_camera_movement.hpp"
+#include "free_camera.hpp"
 #include "gameobject/gameobject.hpp"
 #include "gameobject/transform.hpp"
 #include "engine/input.hpp"
@@ -10,13 +10,13 @@ using namespace Object;
 using namespace Game;
 using namespace glm;
 
-void DebugCameraMovement::init(GameObject &gameobject)
+void FreeCamera::init(GameObject &gameobject)
 {
     m_transform = gameobject.first<Transform>();
     assert(m_transform);
 }
 
-void DebugCameraMovement::update(GameObject&, float delta)
+void FreeCamera::update(GameObject&, float delta)
 {
     assert(m_transform);
 

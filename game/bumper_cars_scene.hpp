@@ -10,11 +10,11 @@
 namespace Game
 {
 
-    class DebugScene : public Object::Scene
+    class BumberCarsScene : public Object::Scene
     {
     public:
-        DebugScene();
-        ~DebugScene();
+        BumberCarsScene();
+        ~BumberCarsScene();
 
         virtual bool init() final;
         virtual void on_render(float delta) final;

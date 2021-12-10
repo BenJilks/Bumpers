@@ -6,6 +6,7 @@
 #include <pugixml.hpp>
 #include <iostream>
 #include <memory>
+#include <map>
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 using namespace Engine;

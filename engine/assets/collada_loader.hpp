@@ -2,7 +2,7 @@
 
 #include "gameobject/forward.hpp"
 #include "engine/forward.hpp"
-#include "mtl_loader.hpp"
+#include "engine/graphics/mesh/material.hpp"
 #include <string>
 #include <functional>
 #include <optional>
