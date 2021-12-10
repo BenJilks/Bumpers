@@ -5,6 +5,7 @@
 #include "gameobject/forward.hpp"
 #include "engine/forward.hpp"
 #include <memory>
+#include <glm/glm.hpp>
 
 namespace Game
 {
@@ -24,6 +25,7 @@ namespace Game
         Object::GameObject *make_bumber_car();
         Object::GameObject *make_arena();
         Object::GameObject *make_debug_cube();
+        void make_ai(Object::GameObject &car_template, glm::vec3 position, glm::vec3 color);
         void make_sky_box(std::shared_ptr<Engine::Texture> sky_box_texture);
 
         std::unique_ptr<Object::World> m_world { nullptr };

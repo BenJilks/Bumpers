@@ -40,6 +40,9 @@ namespace Game
         Object::PhysicsBody2D *m_physics_body { nullptr };
         Object::Transform *m_transform { nullptr };
         Object::Collider2D *m_collider { nullptr };
+        
+        Object::Transform *m_wheel_transform { nullptr };
+        Object::Transform *m_wheel_support_transform { nullptr };
 
     };
 

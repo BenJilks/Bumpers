@@ -2,6 +2,7 @@
 #include "debug_camera_movement.hpp"
 #include "car_engine.hpp"
 #include "game/in_car_camera.hpp"
+#include "gameobject/attributes.hpp"
 #include "gameobject/gameobject.hpp"
 #include "gameobject/physics/box_bounds_3d.hpp"
 #include "player_controller.hpp"
@@ -132,6 +133,7 @@ GameObject *DebugScene::make_bumber_car()
         [&](Object::GameObject &object, Engine::MeshBuilder &builder, ColladaLoader::ModelMetaData meta_data)
     {
         object.add_component<MeshRender>(builder.build(), m_renderer, meta_data.material);
+        object.add_component<Attributes>(meta_data.name);
 
         auto &transform = object.add_component<Transform>();
         transform.set_position(meta_data.translation);
@@ -235,6 +237,32 @@ void DebugScene::make_sky_box(std::shared_ptr<Texture> sky_box_texture)
         Material { .diffuse_map = sky_box_texture });
 }
 
+static void set_bumper_car_color(GameObject &car, vec3 color)
+{
+    car.for_each([&color](GameObject &object)
+    {
+        auto *attributes = object.first<Attributes>();
+        if (!attributes)
+            return IteratorDecision::Continue;
+        if (!attributes->has("Cart"))
+            return IteratorDecision::Continue;
+
+        auto *mesh_render = object.first<MeshRender>();
+        assert (mesh_render);
+
+        mesh_render->material().color = color;
+        return IteratorDecision::Break;
+    });
+}
+
+void DebugScene::make_ai(GameObject &car_template, vec3 position, vec3 color)
+{
+    auto &ai = car_template.clone(*m_world);
+    ai.add_component<AI>();
+    ai.first<Transform>()->translate(position);
+    set_bumper_car_color(ai, color);
+}
+
 bool DebugScene::init()
 {
     auto skybox_texture = CubeMapTexture::construct(ASSETS + "/textures/skybox/skybox");
@@ -264,15 +292,18 @@ bool DebugScene::init()
     if (!bumber_car_template)
         return false;
 
-    for (int i = -2; i < 2; i++)
-    {
-        auto &ai = bumber_car_template->clone(*m_world);
-        ai.add_component<AI>();
-        ai.first<Transform>()->translate(vec3(i * 5, 0, 10));
-    }
+    constexpr vec3 colors[] = 
+    { 
+        vec3(0.2, 1.0, 0.2), vec3(0.8, 0.5, 1.0),
+        vec3(1.0, 1.0, 0.2), vec3(0.2, 1.0, 1.0),
+    };
+
+    for (int i = 0; i < 4; i++)
+        make_ai(*bumber_car_template, vec3((i - 2) * 5, 0, 10), colors[i]);
 
     auto *player = bumber_car_template;
     player->add_component<PlayerController>();
+    set_bumper_car_color(*player, vec3(1, 0.2, 0.2));
 
     auto *camera = make_cameras(*player);
     if (!camera)

@@ -483,6 +483,8 @@ GameObject *ColladaLoader::from_file(
     {
         for (const auto &node_node : visual_scene_node.children("node"))
         {
+            const auto name = node_node.attribute("name").value();
+
             const auto &instance_geometry_node = node_node.child("instance_geometry");
             const auto &mesh_id = instance_geometry_node.attribute("url");
             const auto &material_id = instance_geometry_node
@@ -494,8 +496,9 @@ GameObject *ColladaLoader::from_file(
             auto &mesh = mesh_library[parse_id_selector(mesh_id)];
             auto &material = material_library[parse_id_selector(material_id)];
             auto &gameobject = model_object.add_child();
-            on_object(gameobject, mesh, ModelMetaData 
+            on_object(gameobject, mesh, ModelMetaData
             {
+                .name = name,
                 .material = material,
                 .translation = load_vec3(node_node.child("translate")),
                 .scale = load_vec3(node_node.child("scale")),

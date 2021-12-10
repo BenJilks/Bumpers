@@ -13,6 +13,7 @@ namespace Engine::ColladaLoader
     
     struct ModelMetaData
     {
+        std::string name;
         Material material;
         glm::vec3 translation { 0, 0, 0 };
         glm::vec3 scale { 1, 1, 1 };
