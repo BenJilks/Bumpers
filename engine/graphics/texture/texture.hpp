@@ -21,9 +21,13 @@ namespace Engine
 
 		virtual void bind(int slot) const;
 
+        inline bool has_loaded() const { return m_has_loaded; }
+
 	protected:
 		GLuint m_texture { 0 };
+        bool m_has_loaded { false };
 
 	};
 
 }
+

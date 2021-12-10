@@ -1,6 +1,7 @@
 #include "debug_scene.hpp"
 #include "debug_camera_movement.hpp"
 #include "car_engine.hpp"
+#include "engine/assets/thread_pool.hpp"
 #include "game/in_car_camera.hpp"
 #include "gameobject/attributes.hpp"
 #include "gameobject/gameobject.hpp"
@@ -340,6 +341,7 @@ bool DebugScene::init()
     m_sky_box_renderer->on_world_updated(*m_world);
 
     m_world->init();
+    ThreadPool::finished_loading();
     return true;
 }
 

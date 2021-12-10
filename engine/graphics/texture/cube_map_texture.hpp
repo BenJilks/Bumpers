@@ -2,6 +2,7 @@
 
 #include "texture.hpp"
 #include <string>
+#include <vector>
 
 namespace Engine
 {
@@ -14,10 +15,12 @@ namespace Engine
         virtual void bind(int slot) const final;
 
     private:
-        CubeMapTexture(GLuint texture)
+        CubeMapTexture(int texture)
             : Texture(texture)
         {
         }
+
+        mutable std::vector<std::tuple<uint8_t*, int, int>> m_data;
 
     };
 

@@ -56,6 +56,7 @@ set(ENGINE_SOURCES
     engine/assets/mtl_loader.cpp engine/assets/mtl_loader.hpp
     engine/assets/obj_like_utils.hpp
     engine/assets/collada_loader.cpp engine/assets/collada_loader.hpp
+    engine/assets/thread_pool.cpp engine/assets/thread_pool.hpp
     engine/input.cpp engine/input.hpp
     engine/display.cpp engine/display.hpp
     engine/logger.cpp engine/logger.hpp
@@ -102,5 +103,5 @@ source_group("gameobject" FILES ${GAMEOBJECT_SOURCES})
 source_group("game" FILES ${GAME_SOURCES})
 
 add_executable(bumpers ${SOURCES})
-target_link_libraries(bumpers libglew_static freeglut_static pugixml-static)
+target_link_libraries(bumpers libglew_static freeglut_static pugixml-static pthread)
 

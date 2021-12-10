@@ -30,6 +30,7 @@ namespace Engine
             , m_color_textures({ color_texture })
             , m_depth_texture(depth_texture)
         {
+            m_has_loaded = true;
         }
 
         std::vector<std::shared_ptr<Renderer>> m_pipeline;
@@ -43,3 +44,4 @@ namespace Engine
     };
 
 }
+

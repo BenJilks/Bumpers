@@ -11,12 +11,19 @@ namespace Engine
     public:
 		static std::shared_ptr<ImageTexture> construct(const std::string &file_path);
 
+        virtual void bind(int slot) const final;
+
     private:
-        ImageTexture(GLuint texture)
+        ImageTexture(int texture)
             : Texture(texture)
         {
         }
 
+        mutable uint8_t *m_data { nullptr };
+        int m_width { 0 };
+        int m_height { 0 };
+
     };
 
 }
+

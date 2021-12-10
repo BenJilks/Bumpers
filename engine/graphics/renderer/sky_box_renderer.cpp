@@ -73,7 +73,7 @@ void SkyBoxRenderer::on_render()
 		m_shader->load_int("diffuse_map", 0);
 		m_shader->load_matrix("mvp", m_projection_matrix * m_view * global_transform);
 
-		if (material.diffuse_map)
+		if (material.diffuse_map && material.diffuse_map->has_loaded())
 			material.diffuse_map->bind(0);
 		data.mesh_render.mesh().draw();
 		Texture::unbind(0);

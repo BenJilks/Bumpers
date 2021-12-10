@@ -107,14 +107,15 @@ void StandardRenderer::on_render()
 		m_shader->load_float("metallic", material.metallic);
 		m_shader->load_bool("has_light_map", material.light_map != nullptr);
 
-		if (material.diffuse_map)
+		if (material.diffuse_map && material.diffuse_map->has_loaded())
 			material.diffuse_map->bind(0);
-		if (material.normal_map)
+		if (material.normal_map && material.normal_map->has_loaded())
 			material.normal_map->bind(1);
-		if (material.light_map)
+		if (material.light_map && material.light_map->has_loaded())
 			material.light_map->bind(2);
-		if (m_sky_box)
+		if (m_sky_box && m_sky_box->has_loaded())
 		    m_sky_box->bind(3);
+
 		data.mesh_render.mesh().draw();
 		Texture::unbind(0);
 		Texture::unbind(1);

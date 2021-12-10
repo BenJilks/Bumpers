@@ -1,4 +1,5 @@
 #include "display.hpp"
+#include "engine/assets/thread_pool.hpp"
 #include "input.hpp"
 #include "gameobject/scene.hpp"
 #include <GL/glew.h>
