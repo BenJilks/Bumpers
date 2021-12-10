@@ -64,7 +64,7 @@ void calculate_directional_light(
     vec3 normal, vec3 view_direction,
     inout vec3 diffuse_light, inout vec3 specular_light)
 {
-    const vec3 sun_color = vec3(0, 0, 0);
+    const vec3 sun_color = vec3(0.1, 0.1, 0.2);
 
     vec3 light_direction = normalize(vec3(0.4, -1, 0));
     float intensity = 0.3;

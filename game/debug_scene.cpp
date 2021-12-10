@@ -190,17 +190,39 @@ GameObject *DebugScene::make_arena()
     add_collider(vec2(-21.1239, -39.0009), vec2(3.51, 31.6541), glm::radians(45.0f));
     add_collider(vec2(21.1239, -39.0009), vec2(3.51, 31.6541), glm::radians(-45.0f));
 
-    for (auto z : { -0.499666, 23.3924, 47.3231, -24.331, -48.2455 })
+    constexpr vec3 colors[] =
     {
+        vec3(1.0f, 0.5f, 0.5f), vec3(0.5f, 1.0f, 0.5f),
+        vec3(0.5f, 0.5f, 1.0f), vec3(1.0f, 1.0f, 0.5f),
+        vec3(0.5f, 1.0f, 1.0f), vec3(1.0f, 0.5f, 1.0f),
+        vec3(1.0f, 1.0f, 1.0f), vec3(0.8f, 0.6f, 0.4f),
+        vec3(1.0f, 0.8f, 0.8f), vec3(0.5f, 1.0f, 0.5f),
+    };
+
+    constexpr auto z_offsets = std::array
+    {
+        -0.499666, 23.3924, 47.3231, -24.331, -48.2455,
+    };
+
+    for (int i = 0; i < z_offsets.size(); i++)
+    {
+#if 0
+        const auto &color_a = colors[i*2+0];
+        const auto &color_b = colors[i*2+1];
+#else
+        const auto &color_a = vec3(1.0f, 0.8f, 0.8f);
+        const auto &color_b = vec3(1.0f, 0.8f, 0.8f);
+#endif
+
         auto &light_a = arena->add_child();
         auto &light_a_transform = light_a.add_component<Transform>();
-        light_a.add_component<Light>(vec3(1.0f, 0.8f, 0.8f));
-        light_a_transform.translate(vec3(-14.0093, 12.9745, z));
+        light_a.add_component<Light>(color_a);
+        light_a_transform.translate(vec3(-14.0093, 12.9745, z_offsets[i]));
         
         auto &light_b = arena->add_child();
         auto &light_b_transform = light_b.add_component<Transform>();
-        light_b.add_component<Light>(vec3(1.0f, 0.8f, 0.8f));
-        light_b_transform.translate(vec3(14.0093, 12.9745, z));
+        light_b.add_component<Light>(color_b);
+        light_b_transform.translate(vec3(14.0093, 12.9745, z_offsets[i]));
     }
 
     return arena;
