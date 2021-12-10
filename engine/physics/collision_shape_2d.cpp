@@ -3,13 +3,8 @@
 #include "gameobject/gameobject.hpp"
 #include "gameobject/transform.hpp"
 #include "gameobject/physics/collider_2d.hpp"
-#include "glm/geometric.hpp"
-#include "glm/gtx/dual_quaternion.hpp"
 #include "glm/gtx/quaternion.hpp"
-#include "glm/matrix.hpp"
 #include <glm/gtx/transform.hpp>
-#include <glm/gtx/string_cast.hpp>
-#include <iostream>
 #include <numbers>
 using namespace Engine;
 using namespace Object;
@@ -263,11 +258,5 @@ CollisionShape2D::CollisionResult CollisionShape2D::check_collisions(
     auto result = check_collisions_for_colliders(
         lhs_collider.shape(), lhs_transform, rhs_collider.shape(), rhs_transform);
     return result;
-}
-
-static vec2 rotate(vec2 vec, float angle)
-{
-    vec4 result = glm::rotate(mat4(1), angle, vec3(0, 0, 1)) * vec4(vec, 0, 1);
-    return vec2(result.x, result.y);
 }
 

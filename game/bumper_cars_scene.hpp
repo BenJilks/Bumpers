@@ -3,6 +3,7 @@
 #include "gameobject/gameobject.hpp"
 #include "gameobject/scene.hpp"
 #include "gameobject/forward.hpp"
+#include "engine/physics/collision_resolver_2d.hpp"
 #include "engine/forward.hpp"
 #include <memory>
 #include <glm/glm.hpp>
@@ -13,8 +14,13 @@ namespace Game
     class BumberCarsScene : public Object::Scene
     {
     public:
-        BumberCarsScene();
-        ~BumberCarsScene();
+        BumberCarsScene()
+        {
+        }
+
+        ~BumberCarsScene()
+        {
+        }
 
         virtual bool init() final;
         virtual void on_render(float delta) final;

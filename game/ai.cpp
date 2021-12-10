@@ -1,12 +1,8 @@
 #include "ai.hpp"
 #include "gameobject/gameobject.hpp"
 #include "gameobject/transform.hpp"
-#include "engine/input.hpp"
 #include "engine/physics/collision_shape_utils_2d.hpp"
-#include "glm/geometric.hpp"
-#include "glm/gtx/string_cast.hpp"
 #include <cassert>
-#include <cstdlib>
 using namespace Game;
 using namespace Object;
 using namespace Engine;

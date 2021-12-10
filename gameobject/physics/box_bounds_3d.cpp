@@ -10,7 +10,7 @@ void BoxBounds3D::init(GameObject &gameobject)
     m_transform = gameobject.first<Transform>();
 }
 
-void BoxBounds3D::step_physics(GameObject&, float by)
+void BoxBounds3D::update(GameObject&, float by)
 {
     assert (m_transform);
 

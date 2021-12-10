@@ -20,7 +20,7 @@ namespace Object
         };
 
         virtual void init(GameObject&) final;
-        virtual void step_physics(GameObject&, float by) final;
+        virtual void update(GameObject&, float by) final;
         
     private:
         BoxBounds3D(const BoxBounds3D&) = default;

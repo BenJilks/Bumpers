@@ -61,16 +61,16 @@ set(ENGINE_SOURCES
 
 SET(GAMEOBJECT_SOURCES
     gameobject/component.hpp
-    gameobject/transform.cpp gameobject/transform.hpp
     gameobject/mesh_render.hpp
     gameobject/light.hpp
     gameobject/camera.hpp
     gameobject/attributes.hpp
+    gameobject/transform.cpp gameobject/transform.hpp
     gameobject/gameobject.cpp gameobject/gameobject.hpp
-    gameobject/world.cpp gameobject/world.hpp
     gameobject/physics/physics_body_2d.cpp gameobject/physics/physics_body_2d.hpp
     gameobject/physics/collider_2d.cpp gameobject/physics/collider_2d.hpp 
     gameobject/physics/box_bounds_3d.cpp gameobject/physics/box_bounds_3d.hpp 
+    gameobject/world.hpp
     gameobject/scene.hpp
     gameobject/forward.hpp
 )

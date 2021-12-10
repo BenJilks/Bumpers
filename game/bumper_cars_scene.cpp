@@ -1,17 +1,13 @@
 #include "bumper_cars_scene.hpp"
 #include "car_engine.hpp"
-#include "engine/assets/thread_pool.hpp"
-#include "game/free_camera.hpp"
-#include "game/in_car_camera.hpp"
-#include "gameobject/attributes.hpp"
-#include "gameobject/gameobject.hpp"
-#include "gameobject/physics/box_bounds_3d.hpp"
 #include "player_controller.hpp"
 #include "ai.hpp"
-#include "engine/graphics/mesh/material.hpp"
-#include "gameobject/forward.hpp"
 #include "config.hpp"
+#include "free_camera.hpp"
+#include "in_car_camera.hpp"
+#include "engine/assets/thread_pool.hpp"
 #include "engine/assets/collada_loader.hpp"
+#include "engine/graphics/mesh/material.hpp"
 #include "engine/graphics/mesh/mesh_builder.hpp"
 #include "engine/graphics/texture/image_texture.hpp"
 #include "engine/graphics/texture/render_texture.hpp"
@@ -24,6 +20,10 @@
 #include "engine/physics/collision_shape_2d.hpp"
 #include "engine/physics/collision_resolver_2d.hpp"
 #include "engine/input.hpp"
+#include "gameobject/attributes.hpp"
+#include "gameobject/gameobject.hpp"
+#include "gameobject/physics/box_bounds_3d.hpp"
+#include "gameobject/forward.hpp"
 #include "gameobject/world.hpp"
 #include "gameobject/camera.hpp"
 #include "gameobject/transform.hpp"
@@ -31,8 +31,6 @@
 #include "gameobject/light.hpp"
 #include "gameobject/physics/physics_body_2d.hpp"
 #include "gameobject/physics/collider_2d.hpp"
-#include <glm/gtx/string_cast.hpp>
-#include <iostream>
 #include <limits>
 #include <memory>
 using namespace Engine;
@@ -67,14 +65,6 @@ const std::vector<BoxBounds3D::Box> bounding_boxes =
     { vec3(0, 28.867, -0.626996), vec3(33.6523, 15.1126, 51.9021) },
 };
 
-BumberCarsScene::BumberCarsScene()
-{
-}
-
-BumberCarsScene::~BumberCarsScene()
-{
-}
-
 Object::GameObject *BumberCarsScene::make_cameras(GameObject &player)
 {
     auto &free_camera = m_world->add_child();
@@ -94,37 +84,6 @@ Object::GameObject *BumberCarsScene::make_cameras(GameObject &player)
 
     return &free_camera;
 }
-
-class Circle : public ComponentBase<Circle>
-{
-    friend ComponentBase<Circle>;
-
-public:
-    virtual ~Circle()
-    {
-    }
-
-    virtual void update(GameObject &gameobject, float delta) 
-    {
-        m_time += delta;
-
-        auto *transform = gameobject.first<Transform>();
-        auto x = std::sin(m_time + m_offset) * 6.0f;
-        auto z = std::cos(m_time + m_offset) * 6.0f;
-        transform->set_position(vec3(x, transform->position().y, z));
-    }
-
-private:
-    Circle(const Circle&) = default;
-    Circle(float offset)
-        : m_offset(offset)
-    {
-    }
-
-    float m_time { 0 };
-    float m_offset { 0 };
-
-};
 
 GameObject *BumberCarsScene::make_bumber_car()
 {
