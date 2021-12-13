@@ -2,12 +2,7 @@
 #include "gameobject/gameobject.hpp"
 #include "gameobject/physics/physics_body_2d.hpp"
 #include "gameobject/transform.hpp"
-#include "engine/input.hpp"
-#include "glm/trigonometric.hpp"
-#include <GL/freeglut.h>
-#include <glm/gtx/string_cast.hpp>
 #include <cassert>
-#include <iostream>
 using namespace Object;
 using namespace Game;
 using namespace glm;

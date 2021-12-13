@@ -42,8 +42,9 @@ namespace Game
         std::shared_ptr<Engine::RenderTexture> m_view { nullptr };
         std::shared_ptr<Engine::BloomRenderer> m_bloom_renderer { nullptr };
 
-        Object::GameObject *m_free_camera { nullptr };
         Object::GameObject *m_in_car_camera { nullptr };
+        Object::GameObject *m_look_at_camera { nullptr };
+        Object::GameObject *m_free_camera { nullptr };
 
     };
 

@@ -76,8 +76,9 @@ SET(GAMEOBJECT_SOURCES
 )
 
 SET(GAME_SOURCES
-    game/free_camera.cpp game/free_camera.hpp
     game/in_car_camera.cpp game/in_car_camera.hpp
+    game/look_at_camera.cpp game/look_at_camera.hpp
+    game/free_camera.cpp game/free_camera.hpp
     game/bumper_cars_scene.cpp game/bumper_cars_scene.hpp
     game/car_engine.cpp game/car_engine.hpp
     game/player_controller.cpp game/player_controller.hpp

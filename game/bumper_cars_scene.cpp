@@ -3,8 +3,9 @@
 #include "player_controller.hpp"
 #include "ai.hpp"
 #include "config.hpp"
-#include "free_camera.hpp"
 #include "in_car_camera.hpp"
+#include "look_at_camera.hpp"
+#include "free_camera.hpp"
 #include "engine/assets/thread_pool.hpp"
 #include "engine/assets/collada_loader.hpp"
 #include "engine/graphics/mesh/material.hpp"
@@ -67,6 +68,17 @@ const std::vector<BoxBounds3D::Box> bounding_boxes =
 
 Object::GameObject *BumberCarsScene::make_cameras(GameObject &player)
 {
+    auto &in_car_camera = m_world->add_child();
+    in_car_camera.add_component<Transform>();
+    in_car_camera.add_component<Camera>();
+    in_car_camera.add_component<InCarCamera>(&player);
+
+    auto &look_at_camera = m_world->add_child();
+    auto &look_at_camera_transform = look_at_camera.add_component<Transform>();
+    look_at_camera.add_component<Camera>();
+    look_at_camera.add_component<LookAtCamera>(&player);
+    look_at_camera_transform.translate(vec3(-27.2537f, 5.0f, -15.7789f));
+
     auto &free_camera = m_world->add_child();
     auto &free_camera_transform = free_camera.add_component<Transform>();
     free_camera.add_component<Camera>();
@@ -74,15 +86,10 @@ Object::GameObject *BumberCarsScene::make_cameras(GameObject &player)
     free_camera.add_component<BoxBounds3D>(bounding_boxes);
     free_camera_transform.translate(vec3(0, 4, 0));
 
-    auto &in_car_camera = m_world->add_child();
-    in_car_camera.add_component<Transform>();
-    in_car_camera.add_component<Camera>();
-    in_car_camera.add_component<InCarCamera>(&player);
-
-    m_free_camera = &free_camera;
     m_in_car_camera = &in_car_camera;
-
-    return &free_camera;
+    m_look_at_camera = &look_at_camera;
+    m_free_camera = &free_camera;
+    return &in_car_camera;
 }
 
 GameObject *BumberCarsScene::make_bumber_car()
@@ -315,6 +322,8 @@ void BumberCarsScene::on_render(float delta)
     if (Input::is_key_down('1'))
         m_renderer->set_camera(*m_in_car_camera);
     if (Input::is_key_down('2'))
+        m_renderer->set_camera(*m_look_at_camera);
+    if (Input::is_key_down('3'))
         m_renderer->set_camera(*m_free_camera);
 }
 
