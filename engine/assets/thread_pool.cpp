@@ -12,7 +12,7 @@ using namespace Engine;
 #include <functional>
 #include <cstdlib>
 
-constexpr int THREAD_COUNT = 2;
+constexpr int THREAD_COUNT = 4;
 constexpr int TIMEOUT = 100;
 
 static std::vector<std::function<void()>> s_task_queue;
