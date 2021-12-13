@@ -21,6 +21,8 @@ namespace Object
 		{
 		}
 
+		Attributes(const Attributes&) = default;
+
 		std::set<std::string> m_attributes;
 
 	};

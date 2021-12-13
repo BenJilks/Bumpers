@@ -2,7 +2,7 @@
 #include "engine/graphics/shader.hpp"
 #include "gameobject/gameobject.hpp"
 #include "gameobject/transform.hpp"
-#include <GL/gl.h>
+#include <GL/glew.h>
 using namespace Engine;
 using namespace Object;
 using namespace glm;

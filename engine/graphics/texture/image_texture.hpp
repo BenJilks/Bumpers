@@ -19,6 +19,8 @@ namespace Engine
         {
         }
 
+        std::string m_name;
+
         mutable uint8_t *m_data { nullptr };
         int m_width { 0 };
         int m_height { 0 };

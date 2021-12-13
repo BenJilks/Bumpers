@@ -98,5 +98,9 @@ source_group("gameobject" FILES ${GAMEOBJECT_SOURCES})
 source_group("game" FILES ${GAME_SOURCES})
 
 add_executable(bumpers ${SOURCES})
-target_link_libraries(bumpers libglew_static freeglut_static pugixml-static pthread)
 
+if (WIN32)
+    target_link_libraries(bumpers libglew_static freeglut_static pugixml-static)
+else()
+    target_link_libraries(bumpers libglew_static freeglut_static pugixml-static pthread)
+endif()

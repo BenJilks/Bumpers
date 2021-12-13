@@ -3,12 +3,16 @@
 #include <array>
 #include <cstdint>
 #include <cstring>
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <memory>
 #include <stb_image.h>
 #include <iostream>
 #include <tuple>
 using namespace Engine;
+
+#ifdef WIN32
+#include <Windows.h>
+#endif
 
 constexpr std::array s_face_names = 
 { 
@@ -31,12 +35,18 @@ std::shared_ptr<CubeMapTexture> CubeMapTexture::construct(const std::string &fil
 
     auto texture = std::shared_ptr<CubeMapTexture>(new CubeMapTexture(texture_id));
     auto texture_weak = std::weak_ptr<CubeMapTexture>(texture);
-    ThreadPool::queue_task([file_path_prefix, texture_weak]()
+
+    // FIXME: We leak a little bit of memory here, as Windows doesn't like freeing 
+    //        memory from a non-main thread.
+    char* file_path_prefix_copy = new char[file_path_prefix.size() + 1];
+    strcpy(file_path_prefix_copy, file_path_prefix.c_str());
+
+    ThreadPool::queue_task([file_path_prefix_copy, texture_weak]()
     {
         std::vector<std::tuple<uint8_t*, int, int>> faces;
         for (int i = 0; i < s_face_names.size(); i++)
         {
-            auto file_path = file_path_prefix + "_" + s_face_names[i] + ".jpg";
+            auto file_path = std::string(file_path_prefix_copy) + "_" + s_face_names[i] + ".jpg";
 
             int width, height, channels;
             uint8_t *data = stbi_load(file_path.c_str(), &width, &height, &channels, 0);
@@ -54,7 +64,15 @@ std::shared_ptr<CubeMapTexture> CubeMapTexture::construct(const std::string &fil
             return;
 
         texture->m_data = faces;
-        texture->m_has_loaded = true;
+
+#ifdef WIN32
+        WaitForSingleObject(texture->m_loader_thread_mutex, INFINITE);
+        texture->m_has_data_loaded = true;
+        ReleaseMutex(texture->m_loader_thread_mutex);
+#else
+        std::lock_guard<std::mutex> guard(texture->m_loader_thread_mutex);
+        texture->m_has_data_loaded = true;
+#endif
     });
 
     return texture;
@@ -65,7 +83,15 @@ void CubeMapTexture::bind(int slot) const
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture);
 
-    if (!m_data.empty())
+    if (m_has_loaded)
+        return;
+
+#ifdef WIN32
+    WaitForSingleObject(m_loader_thread_mutex, INFINITE);
+#else
+    std::lock_guard<std::mutex> guard(m_loader_thread_mutex);
+#endif
+    if (m_has_data_loaded)
     {
         for (int i = 0; i < m_data.size(); i++)
         {
@@ -75,6 +101,11 @@ void CubeMapTexture::bind(int slot) const
             stbi_image_free(data);
         }
         m_data.clear();
+        m_has_loaded = true;
     }
+
+#ifdef WIN32
+    ReleaseMutex(m_loader_thread_mutex);
+#endif
 }
 

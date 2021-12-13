@@ -1,4 +1,4 @@
-#pragma one
+#pragma once
 #include "engine/physics/collision_shape_2d.hpp"
 #include "gameobject/transform.hpp"
 #include <glm/glm.hpp>
