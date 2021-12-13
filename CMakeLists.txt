@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(bumpers)
 
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-DHAVE_STDINT_H -D_XBOX -DHAVE_STAT)
@@ -19,6 +19,7 @@ set(STB 3rdparty/stb)
 set(PUGIXML 3rdparty/pugixml)
 
 set(LIBTYPE STATIC)
+set(FREEGLUT_BUILD_DEMOS OFF CACHE BOOL "Build FreeGLUT demos." FORCE)
 add_subdirectory(${GLEW})
 add_subdirectory(${FREEGLUT})
 add_subdirectory(${PUGIXML})

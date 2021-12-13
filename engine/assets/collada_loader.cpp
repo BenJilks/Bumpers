@@ -282,7 +282,7 @@ static void load_lambert(
     else if (diffuse_node.child("color"))
     {
         // FIXME: Extremely hacky
-        material.diffuse_map = ImageTexture::construct(ASSETS + "/textures/bumper/white.png");
+        material.diffuse_map = ImageTexture::construct(ASSETS + "/textures/bumper/white.jpg");
         material.color = load_color(diffuse_node
             .child("color"));
     }
