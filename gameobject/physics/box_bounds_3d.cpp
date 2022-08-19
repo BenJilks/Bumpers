@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2022, Ben Jilks <benjyjilks@gmail.com>
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #include "box_bounds_3d.hpp"
 #include "gameobject/gameobject.hpp"
 #include "gameobject/transform.hpp"

@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2022, Ben Jilks <benjyjilks@gmail.com>
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #include "collada_loader.hpp"
 #include "engine/graphics/mesh/mesh_builder.hpp"
 #include "engine/graphics/texture/image_texture.hpp"

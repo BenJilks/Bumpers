@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2022, Ben Jilks <benjyjilks@gmail.com>
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #include "car_engine.hpp"
 #include "engine/physics/collision_shape_utils_2d.hpp"
 #include "gameobject/physics/physics_body_2d.hpp"

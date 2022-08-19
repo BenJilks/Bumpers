@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2022, Ben Jilks <benjyjilks@gmail.com>
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #include "broad_phase_collision_2d.hpp"
 #include "collision_shape_2d.hpp"
 #include "collision_shape_utils_2d.hpp"

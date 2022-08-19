@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2022, Ben Jilks <benjyjilks@gmail.com>
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #include "image_texture.hpp"
 #include "engine/assets/thread_pool.hpp"
 #include <GL/glew.h>

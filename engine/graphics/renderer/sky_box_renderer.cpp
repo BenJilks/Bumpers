@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2022, Ben Jilks <benjyjilks@gmail.com>
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 #include "sky_box_renderer.hpp"
 #include "engine/graphics/mesh/mesh.hpp"
 #include "engine/graphics/texture/texture.hpp"
