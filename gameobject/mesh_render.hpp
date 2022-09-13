@@ -11,6 +11,7 @@
 #include "component.hpp"
 #include <glm/glm.hpp>
 #include <memory>
+#include <utility>
 
 namespace Object
 {
@@ -20,18 +21,18 @@ namespace Object
         friend ComponentBase<MeshRender>;
 
     public:
-        inline const Engine::Mesh &mesh() const { return *m_mesh; }
-        inline const Engine::Renderer &renderer() const { return *m_renderer; }
-        inline const Engine::Material &material() const { return m_material; }
+        [[nodiscard]] inline const Engine::Mesh &mesh() const { return *m_mesh; }
+        [[nodiscard]] inline const Engine::Renderer &renderer() const { return *m_renderer; }
+        [[nodiscard]] inline const Engine::Material &material() const { return m_material; }
 
         inline Engine::Material &material() { return m_material; }
 
     private:
         MeshRender(const MeshRender&) = default;
         MeshRender(std::shared_ptr<Engine::Mesh> mesh, std::shared_ptr<Engine::Renderer> renderer, Engine::Material material)
-            : m_mesh(mesh)
-            , m_renderer(renderer)
-            , m_material(material)
+            : m_mesh(std::move(mesh))
+            , m_renderer(std::move(renderer))
+            , m_material(std::move(material))
         {
         }
 

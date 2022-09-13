@@ -26,9 +26,7 @@ namespace Object
         GameObject& add_child();
         GameObject& clone(GameObject &parent);
         
-        virtual ~GameObject()
-        {
-        }
+        virtual ~GameObject() = default;
 
         template<typename T, typename... Args>
         T& add_component(Args&&... args)
@@ -37,8 +35,8 @@ namespace Object
             return static_cast<T&>(*m_components.back());
         }
 
-        inline const GameObject* parent() const { return m_parent; }
-        inline bool enabled() const { return m_enabled; }
+        [[nodiscard]] inline const GameObject* parent() const { return m_parent; }
+        [[nodiscard]] inline bool enabled() const { return m_enabled; }
         inline void set_enabled(bool value) { m_enabled = value; }
 
         void update(float delta);

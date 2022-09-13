@@ -16,7 +16,7 @@ namespace Object
 	class World : public GameObject
 	{
 	public:
-		World() {}
+		World() = default;
 
 	};
 

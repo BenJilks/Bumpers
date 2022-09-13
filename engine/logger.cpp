@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+#ifdef LOGGER_ENABLED
+
 #include "logger.hpp"
 #include <vector>
 #include <chrono>
@@ -13,8 +15,6 @@
 #include <algorithm>
 using namespace Engine;
 using namespace std::chrono;
-
-#ifdef LOGGER_ENABLED
 
 static system_clock::time_point s_second_start;
 static system_clock::time_point s_frame_start;

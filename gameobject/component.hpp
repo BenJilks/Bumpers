@@ -18,9 +18,7 @@ namespace Object
         friend GameObject;
 
     public:
-        virtual ~Component()
-        {
-        }
+        virtual ~Component() = default;
         
         template<typename T>
         bool is()
@@ -28,7 +26,7 @@ namespace Object
             return type_id() == typeid(T).name();
         }
 
-        virtual const char *type_id() const = 0;
+        [[nodiscard]] virtual const char *type_id() const = 0;
         virtual void init(GameObject&) {}
         virtual void update(GameObject&, float delta) {}
         virtual void step_physics(GameObject&, float by) {}
@@ -44,7 +42,7 @@ namespace Object
         friend GameObject;
 
     public:
-        virtual const char* type_id() const final
+        [[nodiscard]] const char* type_id() const final
         {
             return typeid(T).name();
         }
@@ -56,7 +54,7 @@ namespace Object
             return std::unique_ptr<T>(new T(args...));
         }
 
-        virtual std::unique_ptr<Component> clone() final
+        std::unique_ptr<Component> clone() final
         {
             return std::unique_ptr<T>(new T(static_cast<const T&>(*this)));
         }

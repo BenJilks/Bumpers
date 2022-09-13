@@ -14,10 +14,10 @@ using namespace Object;
 using namespace Engine;
 using namespace glm;
 
-void AI::init(Object::GameObject &gameobject)
+void AI::init(Object::GameObject &game_object)
 {
-    m_engine = gameobject.first<CarEngine>();
-    m_transform = gameobject.first<Transform>();
+    m_engine = game_object.first<CarEngine>();
+    m_transform = game_object.first<Transform>();
 }
 
 void AI::update(Object::GameObject&, float delta)
@@ -42,7 +42,7 @@ void AI::update(Object::GameObject&, float delta)
         {
             m_engine->set_action(CarEngine::Action::TurnLeft, (std::rand() % 2) == 0);
             m_engine->set_action(CarEngine::Action::TurnRight, (std::rand() % 2) == 0);
-            m_timer_until_next_action = ((std::rand() % 100) / 100.0f) * 0.5f;
+            m_timer_until_next_action = (static_cast<float>(std::rand() % 100) / 100.0f) * 0.5f;
         }
     }
 }

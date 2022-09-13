@@ -18,15 +18,14 @@ namespace Object
         friend ComponentBase<Light>;
 
     public:
-        virtual ~Light() final 
-        {
-        }
+        ~Light() override = default;
 
-        inline const glm::vec3 &color() const { return m_color; }
+        [[nodiscard]] inline const glm::vec3 &color() const { return m_color; }
 
     private:
         Light(const Light&) = default;
-        Light(glm::vec3 color)
+
+        explicit Light(glm::vec3 color)
             : m_color(color)
         {
         }

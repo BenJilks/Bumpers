@@ -19,8 +19,8 @@ namespace Game
         friend Object::ComponentBase<CarEngine>;
 
     public:
-        virtual void init(Object::GameObject&) override;
-        virtual void update(Object::GameObject&, float delta) override;
+        void init(Object::GameObject&) override;
+        void update(Object::GameObject&, float delta) override;
 
         enum class Action
         {
@@ -38,7 +38,7 @@ namespace Game
         CarEngine(const CarEngine&) = default;
         CarEngine() = default;
 
-        inline bool is_action_enabled(Action action) const { return m_action_enabled[(size_t)action]; }
+        [[nodiscard]] inline bool is_action_enabled(Action action) const { return m_action_enabled[(size_t)action]; }
 
         float m_wheel_direction { 0 };
         std::array<bool, (size_t)Action::Count> m_action_enabled { };

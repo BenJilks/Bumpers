@@ -17,8 +17,8 @@ namespace Game
         friend Object::ComponentBase<PlayerController>;
 
     public:
-        virtual void init(Object::GameObject&) override;
-        virtual void update(Object::GameObject&, float delta) override;
+        void init(Object::GameObject&) override;
+        void update(Object::GameObject&, float delta) override;
 
     private:
         PlayerController(const PlayerController&) = default;

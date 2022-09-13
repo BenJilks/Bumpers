@@ -19,13 +19,13 @@ namespace Game
 		friend Object::ComponentBase<LookAtCamera>;
 
 	public:
-		virtual void init(Object::GameObject&) override;
-		virtual void update(Object::GameObject&, float delta) override;
+		void init(Object::GameObject&) override;
+		void update(Object::GameObject&, float delta) override;
 
 	private:
 		LookAtCamera(const LookAtCamera&) = default;
 
-		LookAtCamera(Object::GameObject *player)
+		explicit LookAtCamera(Object::GameObject *player)
             : m_player(player)
         {
         }

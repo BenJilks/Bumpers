@@ -18,11 +18,11 @@ namespace Object
 		friend ComponentBase<Attributes>;
 
 	public:
-		inline bool has(const std::string& attr) const { return m_attributes.contains(attr); }
+		[[nodiscard]] inline bool has(const std::string& attr) const { return m_attributes.contains(attr); }
 
 	private:
 		template<typename... Args>
-		Attributes(Args... args)
+		explicit Attributes(Args... args)
 			: m_attributes { args... }
 		{
 		}

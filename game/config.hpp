@@ -7,4 +7,5 @@
 #pragma once
 
 #define ASSETS std::string("../assets")
-
+// #define COLORED_LIGHTS
+// #define USE_SKYBOX

@@ -12,9 +12,7 @@ namespace Object
     class Scene
     {
     public:
-        virtual ~Scene()
-        {
-        }
+        virtual ~Scene() = default;
         
         virtual bool init() = 0;
         virtual void on_render(float delta) = 0;

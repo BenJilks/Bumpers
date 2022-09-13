@@ -13,9 +13,9 @@ using namespace Object;
 using namespace Game;
 using namespace glm;
 
-void InCarCamera::init(GameObject &gameobject)
+void InCarCamera::init(GameObject &game_object)
 {
-    m_transform = gameobject.first<Transform>();
+    m_transform = game_object.first<Transform>();
     m_player_transform = m_player->first<Transform>();
     m_player_body = m_player->first<PhysicsBody2D>();
     assert(m_transform);

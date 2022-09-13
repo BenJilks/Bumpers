@@ -8,15 +8,11 @@
 #include "gameobject.hpp"
 #include "engine/physics/collision_shape_utils_2d.hpp"
 #include "glm/gtx/string_cast.hpp"
-#include <iostream>
-#include <glm/gtx/transform.hpp>
 using namespace Engine;
 using namespace Object;
 using namespace glm;
 
-Transform::~Transform()
-{
-}
+Transform::~Transform() = default;
 
 mat4 Transform::local_transform() const
 {
@@ -45,32 +41,32 @@ mat4 Transform::local_inverse_transform() const
 	return transform;
 }
 
-static mat4 local_to_global(mat4 local, const GameObject &gameobject)
+static mat4 local_to_global(mat4 local, const GameObject &game_object)
 {
-	if (!gameobject.parent())
+	if (!game_object.parent())
 		return local;
 
-	const auto* parent_transform = gameobject.parent()->first<Transform>();
+	const auto* parent_transform = game_object.parent()->first<Transform>();
 	if (!parent_transform)
 		return local;
 
-	return parent_transform->global_transform(*gameobject.parent()) * local;
+	return parent_transform->global_transform(*game_object.parent()) * local;
 }
 
-mat4 Transform::global_transform(const GameObject &gameobject) const
+mat4 Transform::global_transform(const GameObject &game_object) const
 {
 	if (m_is_global_cache_dirty || m_is_local_cache_dirty)
 	{
-		m_global_transform_cache = local_to_global(local_transform(), gameobject);
+		m_global_transform_cache = local_to_global(local_transform(), game_object);
 		m_is_global_cache_dirty = false;
 	}
 
 	return m_global_transform_cache;
 }
 
-mat4 Transform::global_inverse_transform(const GameObject &gameobject) const
+mat4 Transform::global_inverse_transform(const GameObject &game_object) const
 {
-	return local_to_global(local_inverse_transform(), gameobject); 
+	return local_to_global(local_inverse_transform(), game_object);
 }
 
 Transform::Computed Transform::computed_transform() const
@@ -104,19 +100,19 @@ vec3 Transform::forward() const
 {
 	auto x = -std::sin(m_rotation.y);
 	auto z = -std::cos(m_rotation.y);
-	return vec3(x, 0, z);
+	return { x, 0, z };
 }
 
 glm::vec3 Transform::left() const
 {
 	auto x = -std::sin(m_rotation.y + glm::radians(90.0f));
 	auto z = -std::cos(m_rotation.y + glm::radians(90.0f));
-	return vec3(x, 0, z);
+	return { x, 0, z };
 }
 
-void Transform::init(GameObject &gameobject)
+void Transform::init(GameObject &game_object)
 {
-	m_gameobject = &gameobject;
+    m_game_object = &game_object;
 }
 
 void Transform::on_change(bool global_change)
@@ -124,11 +120,11 @@ void Transform::on_change(bool global_change)
 	if (!global_change)
 		m_is_local_cache_dirty = true;
 
-	if (m_is_global_cache_dirty || !m_gameobject)
+	if (m_is_global_cache_dirty || !m_game_object)
 		return;
 
 	m_is_global_cache_dirty = true;
-	m_gameobject->for_each_child([this](GameObject& child)
+	m_game_object->for_each_child([](GameObject& child)
 	{
 		auto* transform = child.first<Transform>();
 		if (transform)

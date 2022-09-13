@@ -10,16 +10,14 @@
 #include "glm/geometric.hpp"
 #include "glm/gtc/quaternion.hpp"
 #include "glm/gtx/vector_angle.hpp"
-#include <glm/ext/matrix_transform.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
 #include <cassert>
 using namespace Object;
 using namespace Game;
 using namespace glm;
 
-void LookAtCamera::init(GameObject &gameobject)
+void LookAtCamera::init(GameObject &game_object)
 {
-    m_transform = gameobject.first<Transform>();
+    m_transform = game_object.first<Transform>();
     m_player_transform = m_player->first<Transform>();
 }
 

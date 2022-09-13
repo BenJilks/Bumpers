@@ -19,13 +19,13 @@ namespace Game
 		friend Object::ComponentBase<InCarCamera>;
 
 	public:
-		virtual void init(Object::GameObject&) override;
-		virtual void update(Object::GameObject&, float delta) override;
+		void init(Object::GameObject&) override;
+		void update(Object::GameObject&, float delta) override;
 
 	private:
 		InCarCamera(const InCarCamera&) = default;
 
-		InCarCamera(Object::GameObject *player)
+		explicit InCarCamera(Object::GameObject *player)
             : m_player(player)
         {
         }

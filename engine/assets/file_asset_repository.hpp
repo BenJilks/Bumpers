@@ -15,11 +15,11 @@ namespace Engine
     {
     public:
         static FileAssetRepository construct(std::string directory);
-        virtual std::unique_ptr<std::istream> open(std::string_view name) const;
-        virtual std::shared_ptr<AssetRepository> copy() const;
+        [[nodiscard]] std::unique_ptr<std::istream> open(std::string_view name) const override;
+        [[nodiscard]] std::shared_ptr<AssetRepository> copy() const override;
 
     private:
-        FileAssetRepository(std::string directory);
+        explicit FileAssetRepository(std::string directory);
 
         std::string m_directory;
 

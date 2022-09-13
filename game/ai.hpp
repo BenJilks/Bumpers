@@ -18,8 +18,8 @@ namespace Game
         friend Object::ComponentBase<AI>;
 
     public:
-        virtual void init(Object::GameObject&) override;
-        virtual void update(Object::GameObject&, float delta) override;
+        void init(Object::GameObject&) override;
+        void update(Object::GameObject&, float delta) override;
 
     private:
         AI(const AI&) = default;

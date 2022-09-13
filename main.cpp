@@ -13,7 +13,7 @@ int main(int, char**)
     if (!Display::open("Roller-coaster", 800 * 3, 600 * 3))
         return 1;
 
-    Display::set_scene(std::make_unique<BumberCarsScene>());
+    Display::set_scene(std::make_unique<BumperCarsScene>());
     Display::start_main_loop();
     return 0;
 }

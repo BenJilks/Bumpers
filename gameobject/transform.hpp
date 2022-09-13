@@ -18,7 +18,7 @@ namespace Object
 		friend ComponentBase<Transform>;
 
 	public:
-        virtual ~Transform();
+        ~Transform() override;
         
 		struct Computed
 		{
@@ -38,8 +38,8 @@ namespace Object
 
 		glm::mat4 local_transform() const;
 		glm::mat4 local_inverse_transform() const;
-		glm::mat4 global_transform(const GameObject &gameobject) const;
-		glm::mat4 global_inverse_transform(const GameObject &gameobject) const;
+		glm::mat4 global_transform(const GameObject &game_object) const;
+		glm::mat4 global_inverse_transform(const GameObject &game_object) const;
 
 		Computed computed_transform() const;
 		Computed2D computed_transform_2d() const;
@@ -59,7 +59,7 @@ namespace Object
 		glm::vec3 forward() const;
 		glm::vec3 left() const;
 
-		virtual void init(GameObject&) override;
+		void init(GameObject&) override;
 
 	private:
 		Transform(const Transform&) = default;
@@ -78,7 +78,7 @@ namespace Object
 		glm::vec3 m_scale;
 		glm::vec3 m_rotation;
 
-		GameObject* m_gameobject { nullptr };
+		GameObject* m_game_object {nullptr };
 		mutable glm::mat4 m_global_transform_cache;
 		mutable glm::mat4 m_local_transform_cache;
 		mutable bool m_is_global_cache_dirty { true };

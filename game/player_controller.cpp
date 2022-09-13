@@ -12,9 +12,9 @@
 using namespace Game;
 using namespace Engine;
 
-void PlayerController::init(Object::GameObject &gameobject)
+void PlayerController::init(Object::GameObject &game_object)
 {
-    m_engine = gameobject.first<CarEngine>();
+    m_engine = game_object.first<CarEngine>();
 }
 
 void PlayerController::update(Object::GameObject&, float delta)

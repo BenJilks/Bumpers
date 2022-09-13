@@ -23,7 +23,6 @@
 #include "engine/graphics/shader.hpp"
 #include "engine/graphics/renderer/standard_renderer.hpp"
 #include "engine/graphics/renderer/sky_box_renderer.hpp"
-#include "engine/graphics/renderer/blur_renderer.hpp"
 #include "engine/graphics/renderer/bloom_renderer.hpp"
 #include "engine/physics/collision_shape_2d.hpp"
 #include "engine/physics/collision_resolver_2d.hpp"
@@ -31,7 +30,6 @@
 #include "gameobject/attributes.hpp"
 #include "gameobject/gameobject.hpp"
 #include "gameobject/physics/box_bounds_3d.hpp"
-#include "gameobject/forward.hpp"
 #include "gameobject/world.hpp"
 #include "gameobject/camera.hpp"
 #include "gameobject/transform.hpp"
@@ -41,6 +39,7 @@
 #include "gameobject/physics/collider_2d.hpp"
 #include <limits>
 #include <memory>
+#include <utility>
 using namespace Engine;
 using namespace Object;
 using namespace Game;
@@ -73,7 +72,10 @@ const std::vector<BoxBounds3D::Box> bounding_boxes =
     { vec3(0, 28.867, -0.626996), vec3(33.6523, 15.1126, 51.9021) },
 };
 
-Object::GameObject *BumberCarsScene::make_cameras(GameObject &player)
+BumperCarsScene::BumperCarsScene() = default;
+BumperCarsScene::~BumperCarsScene() = default;
+
+Object::GameObject *BumperCarsScene::make_cameras(GameObject &player)
 {
     auto &in_car_camera = m_world->add_child();
     in_car_camera.add_component<Transform>();
@@ -99,10 +101,10 @@ Object::GameObject *BumberCarsScene::make_cameras(GameObject &player)
     return &in_car_camera;
 }
 
-GameObject *BumberCarsScene::make_bumber_car(const AssetRepository &assets)
+GameObject *BumperCarsScene::make_bumper_car(const AssetRepository &assets)
 {
-    auto *bumber_car = ColladaLoader::open(*m_world, assets, "/models/bumper.dae",
-        [&](Object::GameObject &object, Engine::MeshBuilder &builder, ColladaLoader::ModelMetaData meta_data)
+    auto *bumper_car = ColladaLoader::open(*m_world, assets, "/models/bumper.dae",
+        [&](Object::GameObject &object, Engine::MeshBuilder &builder, const ColladaLoader::ModelMetaData& meta_data)
     {
         object.add_component<MeshRender>(builder.build(), m_renderer, meta_data.material);
         object.add_component<Attributes>(meta_data.name);
@@ -113,25 +115,25 @@ GameObject *BumberCarsScene::make_bumber_car(const AssetRepository &assets)
         transform.set_rotation(meta_data.rotation);
     });
 
-    if (!bumber_car)
+    if (!bumper_car)
         return nullptr;
 
     auto front_collider = std::make_shared<CollisionShapeCircle2D>(vec2(0, 2.02552), 1.65037);
     auto body_collider = std::make_shared<CollisionShapeOBB2D>(vec2(0), vec2(1.71153, 1.95445));
     auto back_collider = std::make_shared<CollisionShapeCircle2D>(vec2(0, -1.95445), 1.65037);
-    bumber_car->add_component<Transform>();
-    bumber_car->add_component<PhysicsBody2D>(vec2(6, 4), 1, 1, 0.2f);
-    bumber_car->add_component<Collider2D>(front_collider);
-    bumber_car->add_component<Collider2D>(body_collider);
-    bumber_car->add_component<Collider2D>(back_collider);
-    bumber_car->add_component<CarEngine>();
-    return bumber_car;
+    bumper_car->add_component<Transform>();
+    bumper_car->add_component<PhysicsBody2D>(vec2(6, 4), 1, 1, 0.2f);
+    bumper_car->add_component<Collider2D>(front_collider);
+    bumper_car->add_component<Collider2D>(body_collider);
+    bumper_car->add_component<Collider2D>(back_collider);
+    bumper_car->add_component<CarEngine>();
+    return bumper_car;
 }
 
-GameObject *BumberCarsScene::make_arena(const AssetRepository &assets)
+GameObject *BumperCarsScene::make_arena(const AssetRepository &assets)
 {
     auto *arena = ColladaLoader::open(*m_world, assets,"/models/arena.dae",
-        [&](Object::GameObject &object, Engine::MeshBuilder &builder, ColladaLoader::ModelMetaData meta_data)
+        [&](Object::GameObject &object, Engine::MeshBuilder &builder, const ColladaLoader::ModelMetaData& meta_data)
     {
         object.add_component<MeshRender>(builder.build(), m_renderer, meta_data.material);
 
@@ -162,6 +164,7 @@ GameObject *BumberCarsScene::make_arena(const AssetRepository &assets)
     add_collider(vec2(-21.1239, -39.0009), vec2(3.51, 31.6541), glm::radians(45.0f));
     add_collider(vec2(21.1239, -39.0009), vec2(3.51, 31.6541), glm::radians(-45.0f));
 
+#if COLORED_LIGHTS
     constexpr vec3 colors[] =
     {
         vec3(1.0f, 0.5f, 0.5f), vec3(0.5f, 1.0f, 0.5f),
@@ -170,15 +173,16 @@ GameObject *BumberCarsScene::make_arena(const AssetRepository &assets)
         vec3(1.0f, 1.0f, 1.0f), vec3(0.8f, 0.6f, 0.4f),
         vec3(1.0f, 0.8f, 0.8f), vec3(0.5f, 1.0f, 0.5f),
     };
+#endif
 
     constexpr auto z_offsets = std::array
     {
         -0.499666, 23.3924, 47.3231, -24.331, -48.2455,
     };
 
-    for (int i = 0; i < z_offsets.size(); i++)
+    for (double z_offset : z_offsets)
     {
-#if 0
+#ifdef COLORED_LIGHTS
         const auto &color_a = colors[i*2+0];
         const auto &color_b = colors[i*2+1];
 #else
@@ -189,37 +193,18 @@ GameObject *BumberCarsScene::make_arena(const AssetRepository &assets)
         auto &light_a = arena->add_child();
         auto &light_a_transform = light_a.add_component<Transform>();
         light_a.add_component<Light>(color_a);
-        light_a_transform.translate(vec3(-14.0093, 12.9745, z_offsets[i]));
+        light_a_transform.translate(vec3(-14.0093, 12.9745, z_offset));
         
         auto &light_b = arena->add_child();
         auto &light_b_transform = light_b.add_component<Transform>();
         light_b.add_component<Light>(color_b);
-        light_b_transform.translate(vec3(14.0093, 12.9745, z_offsets[i]));
+        light_b_transform.translate(vec3(14.0093, 12.9745, z_offset));
     }
 
     return arena;
 }
 
-Object::GameObject *BumberCarsScene::make_debug_cube(const AssetRepository &assets)
-{
-    auto *cube = ColladaLoader::open(*m_world, assets, "/models/cube.dae",
-        [&](Object::GameObject &object, Engine::MeshBuilder &builder, ColladaLoader::ModelMetaData meta_data)
-    {
-        object.add_component<MeshRender>(builder.build(), m_renderer, meta_data.material);
-
-        auto &transform = object.add_component<Transform>();
-        transform.set_position(meta_data.translation);
-        transform.set_scale(meta_data.scale);
-        transform.set_rotation(meta_data.rotation);
-    });
-
-    if (!cube)
-        return nullptr;    
-    else
-        return cube;
-}
-
-void BumberCarsScene::make_sky_box(std::shared_ptr<Texture> sky_box_texture)
+void BumperCarsScene::make_sky_box(std::shared_ptr<Texture> sky_box_texture)
 {
     auto skybox_mesh = MeshBuilder()
         .add_sky_box(6)
@@ -228,7 +213,7 @@ void BumberCarsScene::make_sky_box(std::shared_ptr<Texture> sky_box_texture)
     auto &skybox = m_world->add_child();
     skybox.add_component<Transform>();
     skybox.add_component<MeshRender>(skybox_mesh, m_sky_box_renderer, 
-        Material { .diffuse_map = sky_box_texture });
+        Material { .diffuse_map = std::move(sky_box_texture) });
 }
 
 static void set_bumper_car_color(GameObject &car, vec3 color)
@@ -249,7 +234,7 @@ static void set_bumper_car_color(GameObject &car, vec3 color)
     });
 }
 
-void BumberCarsScene::make_ai(GameObject &car_template, vec3 position, vec3 color)
+void BumperCarsScene::make_ai(GameObject &car_template, vec3 position, vec3 color)
 {
     auto &ai = car_template.clone(*m_world);
     ai.add_component<AI>();
@@ -257,7 +242,7 @@ void BumberCarsScene::make_ai(GameObject &car_template, vec3 position, vec3 colo
     set_bumper_car_color(ai, color);
 }
 
-bool BumberCarsScene::init()
+bool BumperCarsScene::init()
 {
     auto assets = FileAssetRepository::construct(ASSETS);
     auto skybox_texture = CubeMapTexture::construct(assets, "/textures/skybox/skybox");
@@ -283,8 +268,8 @@ bool BumberCarsScene::init()
     if (!arena)
         return false;
 
-    auto *bumber_car_template = make_bumber_car(assets);
-    if (!bumber_car_template)
+    auto *bumper_car_template = make_bumper_car(assets);
+    if (!bumper_car_template)
         return false;
 
     constexpr vec3 colors[] = 
@@ -294,9 +279,9 @@ bool BumberCarsScene::init()
     };
 
     for (int i = 0; i < 4; i++)
-        make_ai(*bumber_car_template, vec3((i - 2) * 5, 0, 10), colors[i]);
+        make_ai(*bumper_car_template, vec3((i - 2) * 5, 0, 10), colors[i]);
 
-    auto *player = bumber_car_template;
+    auto *player = bumper_car_template;
     player->add_component<PlayerController>();
     set_bumper_car_color(*player, vec3(1, 0.2, 0.2));
 
@@ -304,7 +289,9 @@ bool BumberCarsScene::init()
     if (!camera)
         return false;
 
-    // make_sky_box(skybox_texture);
+#ifdef USE_SKYBOX
+    make_sky_box(skybox_texture);
+#endif
 
     m_renderer->set_camera(*camera);
     m_renderer->on_world_updated(*m_world);
@@ -317,7 +304,7 @@ bool BumberCarsScene::init()
     return true;
 }
 
-void BumberCarsScene::on_render(float delta)
+void BumperCarsScene::on_render(float delta)
 {
     m_world->step_physics(delta);
     m_world->update(delta);
@@ -335,7 +322,7 @@ void BumberCarsScene::on_render(float delta)
         m_renderer->set_camera(*m_free_camera);
 }
 
-void BumberCarsScene::on_resize(int width, int height)
+void BumperCarsScene::on_resize(int width, int height)
 {
     m_view->resize(width, height);
     m_bloom_renderer->resize_viewport(width, height);

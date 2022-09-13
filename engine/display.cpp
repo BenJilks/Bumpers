@@ -5,7 +5,6 @@
  */
 
 #include "display.hpp"
-#include "engine/assets/thread_pool.hpp"
 #include "input.hpp"
 #include "gameobject/scene.hpp"
 #include <GL/glew.h>
@@ -45,7 +44,7 @@ static void display()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     auto now = std::chrono::system_clock::now();
-    float delta = std::chrono::duration_cast<std::chrono::milliseconds>(now - s_last_frame_time).count() / 1000.0f;
+    float delta = static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(now - s_last_frame_time).count()) / 1000.0f;
     s_last_frame_time = now;
 
     if (s_current_scene)
@@ -89,7 +88,7 @@ static void mouse_moved(int x, int y)
     Input::update_mouse_position(x, y);
 }
 
-bool Display::open(std::string_view title, int width, int height)
+bool Display::open(std::string_view, int width, int height)
 {
     s_width = width;
     s_height = height;

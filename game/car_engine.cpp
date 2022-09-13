@@ -21,13 +21,13 @@ using namespace glm;
 static constexpr float s_turn_speed = 15.0f;
 static constexpr float s_max_turn_direction = 2.0f;
 
-void CarEngine::init(Object::GameObject &gameobject)
+void CarEngine::init(Object::GameObject &game_object)
 {
-    m_physics_body = gameobject.first<PhysicsBody2D>();
-    m_transform = gameobject.first<Transform>();
-    m_collider = gameobject.first<Collider2D>();
+    m_physics_body = game_object.first<PhysicsBody2D>();
+    m_transform = game_object.first<Transform>();
+    m_collider = game_object.first<Collider2D>();
 
-    gameobject.for_each([this](GameObject &object)
+    game_object.for_each([this](GameObject &object)
     {
         auto *attributes = object.first<Attributes>();
         if (!attributes)

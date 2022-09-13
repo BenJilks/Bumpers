@@ -27,7 +27,7 @@ struct Source
 {
     std::string id;
     std::vector<float> data;
-    int stride;
+    int stride { 0 };
 };
 
 static std::vector<float> load_float_array(const pugi::xml_node &float_array_node)
@@ -99,26 +99,26 @@ template<unsigned int count>
 static vec<count, float> vec_at_index(
     uint32_t index, const std::vector<float> &points)
 {
-    vec<count, float> result_vec;
+    vec<count, float> result_vec {};
     for (int i = 0; i < count; i++)
         result_vec[i] = points[index * count + i];
 
     return result_vec;
-};
+}
 
 static void compute_tangents(
     MeshBuilder &builder,
-    const std::vector<float> &verticies,
+    const std::vector<float> &vertices,
     const std::vector<float> &texture_coords,
-    const std::vector<uint32_t> &indicies,
+    const std::vector<uint32_t> &indices,
     int index)
 {
-    auto pos0 = vec_at_index<3>(indicies[index + 3*0], verticies);
-    auto pos1 = vec_at_index<3>(indicies[index + 3*1], verticies);
-    auto pos2 = vec_at_index<3>(indicies[index + 3*2], verticies);
-    auto uv0 = vec_at_index<2>(indicies[index + 3*0 + 2], texture_coords);
-    auto uv1 = vec_at_index<2>(indicies[index + 3*1 + 2], texture_coords);
-    auto uv2 = vec_at_index<2>(indicies[index + 3*2 + 2], texture_coords);
+    auto pos0 = vec_at_index<3>(indices[index + 3*0], vertices);
+    auto pos1 = vec_at_index<3>(indices[index + 3*1], vertices);
+    auto pos2 = vec_at_index<3>(indices[index + 3*2], vertices);
+    auto uv0 = vec_at_index<2>(indices[index + 3*0 + 2], texture_coords);
+    auto uv1 = vec_at_index<2>(indices[index + 3*1 + 2], texture_coords);
+    auto uv2 = vec_at_index<2>(indices[index + 3*2 + 2], texture_coords);
 
     auto edge0 = pos1 - pos0;
     auto edge1 = pos2 - pos0;
@@ -140,7 +140,7 @@ static MeshBuilder load_mesh(const pugi::xml_node &mesh_node)
     MeshBuilder builder;
     auto sources = load_sources(mesh_node);
 
-    const std::vector<float> *verticies = nullptr;
+    const std::vector<float> *vertices = nullptr;
     const std::vector<float> *normals = nullptr;
     const std::vector<float> *texture_coords_0 = nullptr;
     const std::vector<float> *texture_coords_1 = nullptr;
@@ -152,7 +152,7 @@ static MeshBuilder load_mesh(const pugi::xml_node &mesh_node)
         int set = input_node.attribute("set").as_int();
         const auto &source = sources[parse_id_selector(input_node.attribute("source"))];
         if (semantic == "VERTEX")
-            verticies = &source.data;
+            vertices = &source.data;
         else if (semantic == "NORMAL")
             normals = &source.data;
         else if (semantic == "TEXCOORD" && set == 0)
@@ -168,7 +168,7 @@ static MeshBuilder load_mesh(const pugi::xml_node &mesh_node)
         for (int j = 0; j < 3; j++)
         {
             auto index = i + j*3;
-            builder.add_vertex(vec_at_index<3>(indicies[index + 0], *verticies));
+            builder.add_vertex(vec_at_index<3>(indicies[index + 0], *vertices));
             builder.add_normal(vec_at_index<3>(indicies[index + 1], *normals));
 
             auto uv0 = vec_at_index<2>(indicies[index + 2], *texture_coords_0);
@@ -179,7 +179,7 @@ static MeshBuilder load_mesh(const pugi::xml_node &mesh_node)
         }
 
         compute_tangents(builder,
-            *verticies, *texture_coords_0, indicies, i);
+            *vertices, *texture_coords_0, indicies, i);
 
         builder.add_indicies({ index_count, index_count + 1, index_count + 2 });
         index_count += 3;
@@ -430,29 +430,16 @@ static std::map<std::string, Material> load_materials(
     return materials;
 }
 
-static mat4 load_matrix(const pugi::xml_node &matrix_node)
-{
-    mat4 matrix;
-    auto float_array = load_float_array(matrix_node);
-    for (int i = 0; i < 4; i++)
-    {
-        for (int j = 0; j < 4; j++)
-            matrix[i][j] = float_array[j*4 + i];
-    }
-
-    return matrix;
-}
-
 static vec3 load_vec3(const pugi::xml_node &vec3_node)
 {
     auto float_array = load_float_array(vec3_node);
-    return vec3(float_array[0], float_array[1], float_array[2]);
+    return { float_array[0], float_array[1], float_array[2] };
 }
 
 static vec4 load_vec4(const pugi::xml_node &vec4_node)
 {
     auto float_array = load_float_array(vec4_node);
-    return vec4(float_array[0], float_array[1], float_array[2], float_array[3]);
+    return { float_array[0], float_array[1], float_array[2], float_array[3] };
 }
 
 static vec3 load_rotation(const pugi::xml_node &node_node)
@@ -504,8 +491,8 @@ GameObject *ColladaLoader::open(
             
             auto &mesh = mesh_library[parse_id_selector(mesh_id)];
             auto &material = material_library[parse_id_selector(material_id)];
-            auto &gameobject = model_object.add_child();
-            on_object(gameobject, mesh, ModelMetaData
+            auto &game_object = model_object.add_child();
+            on_object(game_object, mesh, ModelMetaData
             {
                 .name = name,
                 .material = material,

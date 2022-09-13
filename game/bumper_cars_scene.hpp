@@ -17,26 +17,20 @@
 namespace Game
 {
 
-    class BumberCarsScene : public Object::Scene
+    class BumperCarsScene final : public Object::Scene
     {
     public:
-        BumberCarsScene()
-        {
-        }
+        BumperCarsScene();
+        ~BumperCarsScene() final;
 
-        ~BumberCarsScene()
-        {
-        }
-
-        virtual bool init() final;
-        virtual void on_render(float delta) final;
-        virtual void on_resize(int width, int height) final;
+        bool init() final;
+        void on_render(float delta) final;
+        void on_resize(int width, int height) final;
 
     private:
         Object::GameObject *make_cameras(Object::GameObject &player);
-        Object::GameObject *make_bumber_car(const Engine::AssetRepository&);
+        Object::GameObject *make_bumper_car(const Engine::AssetRepository&);
         Object::GameObject *make_arena(const Engine::AssetRepository&);
-        Object::GameObject *make_debug_cube(const Engine::AssetRepository&);
         void make_ai(Object::GameObject &car_template, glm::vec3 position, glm::vec3 color);
         void make_sky_box(std::shared_ptr<Engine::Texture> sky_box_texture);
 
