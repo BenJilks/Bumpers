@@ -7,6 +7,7 @@
 #pragma once
 
 #include "texture.hpp"
+#include "engine/forward.hpp"
 #include <string>
 #include <vector>
 
@@ -16,7 +17,7 @@ namespace Engine
     class CubeMapTexture : public Texture
     {
     public:
-		static std::shared_ptr<CubeMapTexture> construct(const std::string &file_path);
+		static std::shared_ptr<CubeMapTexture> construct(const AssetRepository&, std::string_view name_prefix);
 
         virtual void bind(int slot) const final;
 

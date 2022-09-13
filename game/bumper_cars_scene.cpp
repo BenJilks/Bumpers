@@ -14,6 +14,7 @@
 #include "free_camera.hpp"
 #include "engine/assets/thread_pool.hpp"
 #include "engine/assets/collada_loader.hpp"
+#include "engine/assets/file_asset_repository.hpp"
 #include "engine/graphics/mesh/material.hpp"
 #include "engine/graphics/mesh/mesh_builder.hpp"
 #include "engine/graphics/texture/image_texture.hpp"
@@ -98,9 +99,9 @@ Object::GameObject *BumberCarsScene::make_cameras(GameObject &player)
     return &in_car_camera;
 }
 
-GameObject *BumberCarsScene::make_bumber_car()
+GameObject *BumberCarsScene::make_bumber_car(const AssetRepository &assets)
 {
-    auto *bumber_car = ColladaLoader::from_file(*m_world, ASSETS + "/models/bumper.dae", 
+    auto *bumber_car = ColladaLoader::open(*m_world, assets, "/models/bumper.dae",
         [&](Object::GameObject &object, Engine::MeshBuilder &builder, ColladaLoader::ModelMetaData meta_data)
     {
         object.add_component<MeshRender>(builder.build(), m_renderer, meta_data.material);
@@ -127,9 +128,9 @@ GameObject *BumberCarsScene::make_bumber_car()
     return bumber_car;
 }
 
-GameObject *BumberCarsScene::make_arena()
+GameObject *BumberCarsScene::make_arena(const AssetRepository &assets)
 {
-    auto *arena = ColladaLoader::from_file(*m_world, ASSETS + "/models/arena.dae", 
+    auto *arena = ColladaLoader::open(*m_world, assets,"/models/arena.dae",
         [&](Object::GameObject &object, Engine::MeshBuilder &builder, ColladaLoader::ModelMetaData meta_data)
     {
         object.add_component<MeshRender>(builder.build(), m_renderer, meta_data.material);
@@ -199,9 +200,9 @@ GameObject *BumberCarsScene::make_arena()
     return arena;
 }
 
-Object::GameObject *BumberCarsScene::make_debug_cube()
+Object::GameObject *BumberCarsScene::make_debug_cube(const AssetRepository &assets)
 {
-    auto *cube = ColladaLoader::from_file(*m_world, ASSETS + "/models/cube.dae",
+    auto *cube = ColladaLoader::open(*m_world, assets, "/models/cube.dae",
         [&](Object::GameObject &object, Engine::MeshBuilder &builder, ColladaLoader::ModelMetaData meta_data)
     {
         object.add_component<MeshRender>(builder.build(), m_renderer, meta_data.material);
@@ -258,12 +259,13 @@ void BumberCarsScene::make_ai(GameObject &car_template, vec3 position, vec3 colo
 
 bool BumberCarsScene::init()
 {
-    auto skybox_texture = CubeMapTexture::construct(ASSETS + "/textures/skybox/skybox");
+    auto assets = FileAssetRepository::construct(ASSETS);
+    auto skybox_texture = CubeMapTexture::construct(assets, "/textures/skybox/skybox");
 
-    auto shader = Shader::construct(ASSETS + "/shaders/default.glsl");
-    auto skybox_shader = Shader::construct(ASSETS + "/shaders/skybox.glsl");
-    auto bloom_shader = Shader::construct(ASSETS + "/shaders/bloom.glsl");
-    auto blur_shader = Shader::construct(ASSETS + "/shaders/blur.glsl");
+    auto shader = Shader::construct(*assets.open("/shaders/default.glsl"));
+    auto skybox_shader = Shader::construct(*assets.open("/shaders/skybox.glsl"));
+    auto bloom_shader = Shader::construct(*assets.open("/shaders/bloom.glsl"));
+    auto blur_shader = Shader::construct(*assets.open("/shaders/blur.glsl"));
 
     m_world = std::make_unique<World>();
     m_collision_resolver = std::make_unique<CollisionResolver2D>();
@@ -277,11 +279,11 @@ bool BumberCarsScene::init()
         bloom_shader, blur_shader,
         m_view->color_texture(0), m_view->color_texture(1));
 
-    auto *arena = make_arena();
+    auto *arena = make_arena(assets);
     if (!arena)
         return false;
 
-    auto *bumber_car_template = make_bumber_car();
+    auto *bumber_car_template = make_bumber_car(assets);
     if (!bumber_car_template)
         return false;
 

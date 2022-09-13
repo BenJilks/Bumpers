@@ -13,18 +13,12 @@
 #include <functional>
 #include <cassert>
 #include <glm/gtx/string_cast.hpp>
+#include <memory>
 using namespace Engine;
 using namespace glm;
 
-static std::map<GLuint, std::string> load_source(const std::string &file_path)
+static std::map<GLuint, std::string> load_source(std::istream &stream)
 {
-	std::ifstream stream(file_path);
-	if (!stream.good())
-	{
-		std::cerr << "Error opening file '" << file_path << "': " << strerror(errno) << "\n";
-		return {};
-	}
-
 	std::string line, current_source;
 	std::map<GLuint, std::string> source_map;
 	GLuint current_shader = 0;
@@ -94,10 +88,10 @@ static GLuint compile(std::string source, GLenum type)
 	return shader;
 }
 
-std::shared_ptr<Shader> Shader::construct(const std::string &file_path)
+std::shared_ptr<Shader> Shader::construct(std::istream &stream)
 {
-	auto shader = std::shared_ptr<Shader>(new Shader());
-	auto source = load_source(file_path);
+	auto shader = std::make_shared<Shader>();
+	auto source = load_source(stream);
 	if (source.find(GL_VERTEX_SHADER) == source.end() || source.find(GL_FRAGMENT_SHADER) == source.end())
 	{
 		std::cerr << "A shader needs both a vertex and fragment component\n";

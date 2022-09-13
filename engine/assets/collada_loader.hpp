@@ -26,9 +26,9 @@ namespace Engine::ColladaLoader
         glm::vec3 rotation { 0, 0, 0 };
     };
 
-    Object::GameObject *from_file(
-        Object::GameObject &parent, const std::string &file_path,
-        std::function<void(Object::GameObject&, Engine::MeshBuilder&, ModelMetaData)> on_object);
+    Object::GameObject *open(
+        Object::GameObject &parent, const AssetRepository&, std::string_view name,
+        const std::function<void(Object::GameObject&, Engine::MeshBuilder&, ModelMetaData)> &on_object);
     
 }
 

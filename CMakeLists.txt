@@ -54,6 +54,8 @@ set(ENGINE_SOURCES
     engine/physics/broad_phase_collision_2d.cpp engine/physics/broad_phase_collision_2d.hpp
     engine/assets/collada_loader.cpp engine/assets/collada_loader.hpp
     engine/assets/thread_pool.cpp engine/assets/thread_pool.hpp
+    engine/assets/file_asset_repository.cpp engine/assets/file_asset_repository.hpp
+    engine/assets/asset_repository.hpp
     engine/input.cpp engine/input.hpp
     engine/display.cpp engine/display.hpp
     engine/logger.cpp engine/logger.hpp

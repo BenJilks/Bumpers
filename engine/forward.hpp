@@ -9,6 +9,7 @@
 namespace Engine
 {
 
+    class AssetRepository;
     class MeshBuilder;
     class Mesh;
     class DynamicData;

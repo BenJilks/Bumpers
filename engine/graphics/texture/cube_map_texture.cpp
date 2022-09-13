@@ -6,6 +6,7 @@
 
 #include "cube_map_texture.hpp"
 #include "engine/assets/thread_pool.hpp"
+#include "engine/assets/asset_repository.hpp"
 #include <array>
 #include <cstdint>
 #include <cstring>
@@ -27,7 +28,7 @@ constexpr std::array s_face_names =
     "positive_z", "negative_z",
 };
 
-std::shared_ptr<CubeMapTexture> CubeMapTexture::construct(const std::string &file_path_prefix)
+std::shared_ptr<CubeMapTexture> CubeMapTexture::construct(const AssetRepository &assets, std::string_view name_prefix)
 {
     GLuint texture_id;
     glGenTextures(1, &texture_id);
@@ -42,27 +43,35 @@ std::shared_ptr<CubeMapTexture> CubeMapTexture::construct(const std::string &fil
     auto texture = std::shared_ptr<CubeMapTexture>(new CubeMapTexture(texture_id));
     auto texture_weak = std::weak_ptr<CubeMapTexture>(texture);
 
-    // FIXME: We leak a little bit of memory here, as Windows doesn't like freeing 
-    //        memory from a non-main thread.
-    char* file_path_prefix_copy = new char[file_path_prefix.size() + 1];
-    strcpy(file_path_prefix_copy, file_path_prefix.c_str());
-
-    ThreadPool::queue_task([file_path_prefix_copy, texture_weak]()
+    ThreadPool::queue_task([name_prefix = std::string(name_prefix), assets = assets.copy(), texture_weak]()
     {
         std::vector<std::tuple<uint8_t*, int, int>> faces;
         for (int i = 0; i < s_face_names.size(); i++)
         {
-            auto file_path = std::string(file_path_prefix_copy) + "_" + s_face_names[i] + ".jpg";
+            auto name = std::string(name_prefix) + "_" + std::string(s_face_names[i]) + ".jpg";
+            auto stream = std::move(assets->open(name));
+            stream->seekg(0, std::ios::end);
+            auto size = static_cast<long>(stream->tellg());
+            stream->seekg(0, std::ios::beg);
 
-            int width, height, channels;
-            uint8_t *data = stbi_load(file_path.c_str(), &width, &height, &channels, 0);
-            if (!data)
+            std::vector<char> buffer(size);
+            if (!stream->read(buffer.data(), size))
             {
-                std::cerr << "Error loading texture '" << file_path << "': " << std::strerror(errno) << "\n";
+                std::cerr << "Error: Unable to read texture " << name << "\n";
                 return;
             }
 
-            faces.push_back(std::make_tuple(data, width, height));
+            int width, height, channels;
+            auto stbi_buffer = reinterpret_cast<const stbi_uc *>(buffer.data());
+            auto stbi_size = static_cast<int>(size);
+            uint8_t *data = stbi_load_from_memory(stbi_buffer, stbi_size, &width, &height, &channels, 0);
+            if (!data)
+            {
+                std::cerr << "Error loading texture '" << name << "': " << std::strerror(errno) << "\n";
+                return;
+            }
+
+            faces.emplace_back(data, width, height);
         }
         
         auto texture = texture_weak.lock();

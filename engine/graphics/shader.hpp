@@ -25,7 +25,7 @@ namespace Engine
 	class Shader
 	{
 	public:
-		static std::shared_ptr<Shader> construct(const std::string &file_path);
+		static std::shared_ptr<Shader> construct(std::istream &stream);
 		~Shader();
 
 		void bind();

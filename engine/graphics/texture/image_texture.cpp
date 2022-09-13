@@ -6,6 +6,7 @@
 
 #include "image_texture.hpp"
 #include "engine/assets/thread_pool.hpp"
+#include "engine/assets/asset_repository.hpp"
 #include <GL/glew.h>
 #include <iostream>
 #include <memory>
@@ -17,7 +18,7 @@ using namespace Engine;
 #include <Windows.h>
 #endif
 
-std::shared_ptr<ImageTexture> ImageTexture::construct(const std::string &file_path)
+std::shared_ptr<ImageTexture> ImageTexture::construct(const AssetRepository &assets, std::string_view name)
 {
     GLuint texture_id;
     glGenTextures(1, &texture_id);
@@ -27,20 +28,29 @@ std::shared_ptr<ImageTexture> ImageTexture::construct(const std::string &file_pa
 
     auto texture = std::shared_ptr<ImageTexture>(new ImageTexture(texture_id));
     auto texture_weak = std::weak_ptr<ImageTexture>(texture);
-    texture->m_name = file_path;
+    texture->m_name = name;
 
-    // FIXME: We leak a little bit of memory here, as Windows doesn't like freeing 
-    //        memory from a non-main thread.
-    char *file_path_copy = new char[file_path.size() + 1];
-    strcpy(file_path_copy, file_path.c_str());
-
-    ThreadPool::queue_task([file_path_copy, texture_weak]()
+    ThreadPool::queue_task([assets = assets.copy(), name = std::string(name), texture_weak]()
     {
-        int width, height, components;
-        uint8_t* data = stbi_load(file_path_copy, &width, &height, &components, 4);
+        auto stream = std::move(assets->open(name));
+        stream->seekg(0, std::ios::end);
+        auto size = static_cast<long>(stream->tellg());
+        stream->seekg(0, std::ios::beg);
+
+        std::vector<char> buffer(size);
+        if (!stream->read(buffer.data(), size))
+        {
+            std::cerr << "Error: Unable to read texture " << name << "\n";
+            return;
+        }
+
+        int width, height, channels;
+        auto stbi_buffer = reinterpret_cast<const stbi_uc *>(buffer.data());
+        auto stbi_size = static_cast<int>(size);
+        uint8_t *data = stbi_load_from_memory(stbi_buffer, stbi_size, &width, &height, &channels, 4);
         if (!data)
         {
-            std::cerr << "Error loading texture '" << file_path_copy << "': " << strerror(errno) << "\n";
+            std::cerr << "Error loading texture '" << name << "': " << strerror(errno) << "\n";
             return;
         }
 

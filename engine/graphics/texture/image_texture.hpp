@@ -7,6 +7,7 @@
 #pragma once
 
 #include "texture.hpp"
+#include "engine/forward.hpp"
 #include <string>
 
 namespace Engine
@@ -15,7 +16,7 @@ namespace Engine
     class ImageTexture : public Texture
     {
     public:
-		static std::shared_ptr<ImageTexture> construct(const std::string &file_path);
+		static std::shared_ptr<ImageTexture> construct(const AssetRepository&, std::string_view name);
 
         virtual void bind(int slot) const final;
 

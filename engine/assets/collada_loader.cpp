@@ -5,16 +5,15 @@
  */
 
 #include "collada_loader.hpp"
+#include "asset_repository.hpp"
 #include "engine/graphics/mesh/mesh_builder.hpp"
 #include "engine/graphics/texture/image_texture.hpp"
 #include "gameobject/gameobject.hpp"
-#include "game/config.hpp"
 #include <pugixml.hpp>
 #include <iostream>
 #include <memory>
 #include <map>
 #include <glm/glm.hpp>
-#include <glm/gtx/string_cast.hpp>
 using namespace Engine;
 using namespace Object;
 using namespace glm;
@@ -204,6 +203,7 @@ static std::map<std::string, MeshBuilder> load_meshes(
 }
 
 static std::map<std::string, std::shared_ptr<Texture>> load_images(
+    const AssetRepository &assets,
     const pugi::xml_node &images_node)
 {
     std::map<std::string, std::shared_ptr<Texture>> images;
@@ -211,7 +211,7 @@ static std::map<std::string, std::shared_ptr<Texture>> load_images(
     {
         auto id = image_node.attribute("id").as_string();
         auto file_path = image_node.child("init_from").text().as_string();
-        auto texture = ImageTexture::construct(ASSETS + file_path);
+        auto texture = ImageTexture::construct(assets, file_path);
         images[id] = texture;
     }
 
@@ -264,10 +264,11 @@ static std::map<std::string, std::shared_ptr<Texture>> load_textures(
 static vec3 load_color(const pugi::xml_node &color_node)
 {
     auto float_array = load_float_array(color_node);
-    return vec3(float_array[0], float_array[1], float_array[2]);
+    return { float_array[0], float_array[1], float_array[2] };
 }
 
 static void load_lambert(
+    const AssetRepository &assets,
     Material &material,
     std::map<std::string, std::shared_ptr<Texture>> texture_library,
     const pugi::xml_node &lambert_node)
@@ -288,7 +289,7 @@ static void load_lambert(
     else if (diffuse_node.child("color"))
     {
         // FIXME: Extremely hacky
-        material.diffuse_map = ImageTexture::construct(ASSETS + "/textures/bumper/white.jpg");
+        material.diffuse_map = ImageTexture::construct(assets, "/textures/bumper/white.jpg");
         material.color = load_color(diffuse_node
             .child("color"));
     }
@@ -378,6 +379,7 @@ static void load_extra(
 }
 
 static std::map<std::string, Material> load_effects(
+    const AssetRepository &assets,
     const std::map<std::string, std::shared_ptr<Texture>> &image_library,
     const pugi::xml_node &effects_node)
 {
@@ -393,7 +395,7 @@ static std::map<std::string, Material> load_effects(
 
         if (technique_node.child("lambert"))
         {
-            load_lambert(material, texture_library, 
+            load_lambert(assets, material, texture_library,
                 technique_node.child("lambert"));
         }
 
@@ -465,13 +467,13 @@ static vec3 load_rotation(const pugi::xml_node &node_node)
     return rotation;
 }
 
-GameObject *ColladaLoader::from_file(
-    GameObject &parent, const std::string &file_path,
-    std::function<void(GameObject&, Engine::MeshBuilder&, ModelMetaData)> on_object)
+GameObject *ColladaLoader::open(
+    GameObject &parent, const AssetRepository &assets, std::string_view model_name,
+    const std::function<void(GameObject&, Engine::MeshBuilder&, ModelMetaData)> &on_object)
 {
     pugi::xml_document doc;
     
-    auto result = doc.load_file(file_path.c_str());
+    auto result = doc.load(*assets.open(model_name));
     if (!result)
     {
         std::cerr << "Error: Parsing Collada file: " << result.description() << "\n";
@@ -479,8 +481,8 @@ GameObject *ColladaLoader::from_file(
     }
 
     const auto &root = doc.child("COLLADA");
-    auto image_library = load_images(root.child("library_images"));
-    auto effect_library = load_effects(image_library, root.child("library_effects"));
+    auto image_library = load_images(assets, root.child("library_images"));
+    auto effect_library = load_effects(assets, image_library, root.child("library_effects"));
     auto material_library = load_materials(effect_library, root.child("library_materials"));
     auto mesh_library = load_meshes(root.child("library_geometries"));
 
