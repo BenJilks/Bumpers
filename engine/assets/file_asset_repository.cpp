@@ -14,7 +14,7 @@ using namespace Engine;
 
 FileAssetRepository FileAssetRepository::construct(std::string directory)
 {
-    return { std::move(directory) };
+    return FileAssetRepository(std::move(directory));
 }
 
 std::unique_ptr<std::istream> FileAssetRepository::open(std::string_view name) const

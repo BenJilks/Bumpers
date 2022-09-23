@@ -12,9 +12,9 @@
 #include "in_car_camera.hpp"
 #include "look_at_camera.hpp"
 #include "free_camera.hpp"
+#include "embedded_assets.hpp"
 #include "engine/assets/thread_pool.hpp"
 #include "engine/assets/collada_loader.hpp"
-#include "engine/assets/file_asset_repository.hpp"
 #include "engine/graphics/mesh/material.hpp"
 #include "engine/graphics/mesh/mesh_builder.hpp"
 #include "engine/graphics/texture/image_texture.hpp"
@@ -244,7 +244,7 @@ void BumperCarsScene::make_ai(GameObject &car_template, vec3 position, vec3 colo
 
 bool BumperCarsScene::init()
 {
-    auto assets = FileAssetRepository::construct(ASSETS);
+    auto assets = EmbeddedAssetRepository::construct();
     auto skybox_texture = CubeMapTexture::construct(assets, "/textures/skybox/skybox");
 
     auto shader = Shader::construct(*assets.open("/shaders/default.glsl"));

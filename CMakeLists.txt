@@ -4,6 +4,7 @@ project(bumpers)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(EMBEDDED_ASSETS ON)
 add_definitions(-DHAVE_STDINT_H -D_XBOX -DHAVE_STAT)
 
 if (WIN32)
@@ -88,10 +89,71 @@ SET(GAME_SOURCES
     game/ai.cpp game/ai.hpp
 )
 
+SET(ASSET_LIST
+    models/bumper.dae
+    models/arena.dae
+    textures/bumper/PaintWork.jpg
+    textures/bumper/NormalMap.jpg
+    textures/bumper/cart_ambient_occlusion.jpg
+    textures/bumper/white.jpg
+    textures/bumper/metal_normal.jpg
+    textures/bumper/cart_floor_ambient_occlusion.jpg
+    textures/metal/diamond-metal-siding_albedo.jpg
+    textures/metal/worn-shiny-metal-albedo.jpg
+    textures/metal/steelplate1_normal-ogl.jpg
+    textures/metal/steelplate1_albedo.jpg
+    textures/metal/worn-shiny-metal-Normal-ogl.jpg
+    textures/metal/diamond-metal-siding_normal-ogl.jpg
+    textures/wood/wood.jpg
+    textures/wood/wood_normal.jpg
+    textures/roof/ledge_lightmap.jpg
+    textures/roof/roof.jpg
+    textures/roof/support_normal.jpg
+    textures/roof/Grass001_2K_NormalGL.jpg
+    textures/roof/support.jpg
+    textures/roof/support_lightmap.jpg
+    textures/roof/Asphalt007_2K_NormalGL.jpg
+    textures/roof/floor_lightmap.jpg
+    textures/roof/agedplanks1-normal4-unity.jpg
+    textures/roof/agedplanks1-albedo.jpg
+    textures/roof/roof_lightmap.jpg
+    textures/roof/Grass001_2K_Color.jpg
+    textures/roof/Asphalt007_2K_Color.jpg
+    textures/skybox/skybox_negative_y.jpg
+    textures/skybox/skybox_negative_x.jpg
+    textures/skybox/skybox_positive_y.jpg
+    textures/skybox/skybox_negative_z.jpg
+    textures/skybox/skybox_positive_x.jpg
+    textures/skybox/skybox_positive_z.jpg
+    shaders/default.glsl
+    shaders/bloom.glsl
+    shaders/skybox.glsl
+    shaders/blur.glsl
+)
+
+if (EMBEDDED_ASSETS)
+    foreach(x ${ASSET_LIST})
+        configure_file(assets/${x} assets/${x} COPYONLY)
+    endforeach()
+    configure_file(tools/asset_generator.py tools/asset_generator.py COPYONLY)
+
+    message(STATUS "Generating embedded assets")
+    execute_process(COMMAND
+        ${CMAKE_CURRENT_SOURCE_DIR}/tools/asset_generator.py
+            --output-dir ${CMAKE_BINARY_DIR}
+            --asset-dir ${CMAKE_CURRENT_SOURCE_DIR}/assets
+            ${ASSET_LIST}
+    )
+
+    include(${CMAKE_BINARY_DIR}/assets/cmake_file_list.txt)
+    include_directories(${CMAKE_BINARY_DIR})
+endif()
+
 SET(SOURCES
     ${ENGINE_SOURCES}
     ${GAMEOBJECT_SOURCES}
     ${GAME_SOURCES}
+    ${ASSET_SOURCES}
     main.cpp
 )
 
@@ -106,3 +168,4 @@ if (WIN32)
 else()
     target_link_libraries(bumpers libglew_static freeglut_static pugixml-static pthread)
 endif()
+
