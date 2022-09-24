@@ -13,14 +13,27 @@
 #include <vector>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <map>
 using namespace Engine;
 
 #ifdef WIN32
 #include <Windows.h>
 #endif
 
+std::map<std::string, std::weak_ptr<ImageTexture>> s_loaded_textures;
+
 std::shared_ptr<ImageTexture> ImageTexture::construct(const AssetRepository &assets, std::string_view name)
 {
+    auto loaded_texture_index = s_loaded_textures.find(std::string(name));
+    if (loaded_texture_index != s_loaded_textures.end())
+    {
+        auto loaded_texture = loaded_texture_index->second;
+        if (!loaded_texture.expired())
+            return loaded_texture.lock();
+
+        s_loaded_textures.erase(loaded_texture_index);
+    }
+
     GLuint texture_id;
     glGenTextures(1, &texture_id);
     glBindTexture(GL_TEXTURE_2D, texture_id);
@@ -31,6 +44,7 @@ std::shared_ptr<ImageTexture> ImageTexture::construct(const AssetRepository &ass
     auto texture = std::shared_ptr<ImageTexture>(new ImageTexture(texture_id));
     auto texture_weak = std::weak_ptr<ImageTexture>(texture);
     texture->m_name = name;
+    s_loaded_textures.insert(std::make_pair(std::string(name), texture));
 
     ThreadPool::queue_task([assets = assets.copy(), name = std::string(name), texture_weak]()
     {

@@ -14,7 +14,7 @@ using namespace Engine;
 
 #ifdef WEBASSEMBLY
 
-void ThreadPool::queue_task(std::function<void()> task)
+void ThreadPool::queue_task(const std::function<void()> &task)
 {
     task();
 }
