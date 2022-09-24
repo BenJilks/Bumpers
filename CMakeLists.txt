@@ -4,10 +4,13 @@ project(bumpers)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(EMBEDDED_ASSETS ON)
+option(EMBEDDED_ASSETS "Include assets in binary" ON)
+option(WEBASSEMBLY "Configure for webassembly build" OFF)
 add_definitions(-DHAVE_STDINT_H -D_XBOX -DHAVE_STAT)
 
-if (WIN32)
+if (WEBASSEMBLY)
+    add_definitions(-DWEBASSEMBLY)
+elseif (WIN32)
     add_definitions(-DHAVE_SLEEP -DHAVE_WINDOWS_H)
 else()
     add_definitions(-DHAVE_NANOSLEEP -DHAVE_TIME_H)
@@ -21,13 +24,44 @@ set(PUGIXML 3rdparty/pugixml)
 
 set(LIBTYPE STATIC)
 set(FREEGLUT_BUILD_DEMOS OFF CACHE BOOL "Build FreeGLUT demos." FORCE)
-add_subdirectory(${GLEW})
-add_subdirectory(${FREEGLUT})
-add_subdirectory(${PUGIXML})
 
+if (WEBASSEMBLY)
+    set(ENGINE_PLATFORM_SOURCE
+        engine/webassembly/wasm_display.cpp engine/display.hpp
+    )
+
+    set(PLATFORM_ASSET_LIST
+        shaders/webassembly/wasm_default.glsl
+        shaders/webassembly/wasm_bloom.glsl
+        shaders/webassembly/wasm_skybox.glsl
+        shaders/webassembly/wasm_blur.glsl
+    )
+
+    set(CMAKE_EXE_LINKER_FLAGS "-s TOTAL_MEMORY=1310720000 -s GL_PREINITIALIZED_CONTEXT")
+else()
+    set(ENGINE_PLATFORM_SOURCE
+        engine/display.cpp engine/display.hpp
+        engine/assets/file_asset_repository.cpp engine/assets/file_asset_repository.hpp
+    )
+
+    set(PLATFORM_ASSET_LIST
+        shaders/default.glsl
+        shaders/bloom.glsl
+        shaders/skybox.glsl
+        shaders/blur.glsl
+    )
+
+    add_subdirectory(${GLEW})
+    add_subdirectory(${FREEGLUT})
+
+    include_directories(
+        ${FREEGLUT}/include
+        ${GLEW}/include
+    )
+endif()
+
+add_subdirectory(${PUGIXML})
 include_directories(
-    ${FREEGLUT}/include
-    ${GLEW}/include 
     ${GLM} 
     ${STB}
     ${PUGIXML}/src
@@ -35,6 +69,7 @@ include_directories(
 )
 
 set(ENGINE_SOURCES
+    ${ENGINE_PLATFORM_SOURCE}
     engine/graphics/shader.cpp engine/graphics/shader.hpp
     engine/graphics/mesh/mesh_builder.cpp engine/graphics/mesh/mesh_builder.hpp
     engine/graphics/mesh/mesh.cpp engine/graphics/mesh/mesh.hpp
@@ -55,10 +90,8 @@ set(ENGINE_SOURCES
     engine/physics/broad_phase_collision_2d.cpp engine/physics/broad_phase_collision_2d.hpp
     engine/assets/collada_loader.cpp engine/assets/collada_loader.hpp
     engine/assets/thread_pool.cpp engine/assets/thread_pool.hpp
-    engine/assets/file_asset_repository.cpp engine/assets/file_asset_repository.hpp
-    engine/assets/asset_repository.hpp
     engine/input.cpp engine/input.hpp
-    engine/display.cpp engine/display.hpp
+    engine/assets/asset_repository.hpp
     engine/logger.cpp engine/logger.hpp
     engine/forward.hpp
 )
@@ -90,6 +123,7 @@ SET(GAME_SOURCES
 )
 
 SET(ASSET_LIST
+    ${PLATFORM_ASSET_LIST}
     models/bumper.dae
     models/arena.dae
     textures/bumper/PaintWork.jpg
@@ -125,10 +159,6 @@ SET(ASSET_LIST
     textures/skybox/skybox_negative_z.jpg
     textures/skybox/skybox_positive_x.jpg
     textures/skybox/skybox_positive_z.jpg
-    shaders/default.glsl
-    shaders/bloom.glsl
-    shaders/skybox.glsl
-    shaders/blur.glsl
 )
 
 if (EMBEDDED_ASSETS)
@@ -163,7 +193,9 @@ source_group("game" FILES ${GAME_SOURCES})
 
 add_executable(bumpers ${SOURCES})
 
-if (WIN32)
+if (WEBASSEMBLY)
+    target_link_libraries(bumpers pugixml-static)
+elseif (WIN32)
     target_link_libraries(bumpers libglew_static freeglut_static pugixml-static)
 else()
     target_link_libraries(bumpers libglew_static freeglut_static pugixml-static pthread)

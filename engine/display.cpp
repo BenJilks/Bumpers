@@ -59,22 +59,92 @@ static void idle()
     glutPostRedisplay();
 }
 
+static Input::Key char_to_key(unsigned char c)
+{
+    switch (std::toupper(c))
+    {
+        case 'A': return Input::Key::A;
+        case 'B': return Input::Key::B;
+        case 'C': return Input::Key::C;
+        case 'D': return Input::Key::D;
+        case 'E': return Input::Key::E;
+        case 'F': return Input::Key::F;
+        case 'G': return Input::Key::G;
+        case 'H': return Input::Key::H;
+        case 'I': return Input::Key::I;
+        case 'J': return Input::Key::J;
+        case 'K': return Input::Key::K;
+        case 'L': return Input::Key::L;
+        case 'M': return Input::Key::M;
+        case 'N': return Input::Key::N;
+        case 'O': return Input::Key::O;
+        case 'P': return Input::Key::P;
+        case 'Q': return Input::Key::Q;
+        case 'R': return Input::Key::R;
+        case 'S': return Input::Key::S;
+        case 'T': return Input::Key::T;
+        case 'U': return Input::Key::U;
+        case 'V': return Input::Key::V;
+        case 'W': return Input::Key::W;
+        case 'X': return Input::Key::X;
+        case 'Y': return Input::Key::Y;
+        case 'Z': return Input::Key::Z;
+
+        case '0': return Input::Key::Zero;
+        case '1': return Input::Key::One;
+        case '2': return Input::Key::Two;
+        case '3': return Input::Key::Three;
+        case '4': return Input::Key::Four;
+        case '5': return Input::Key::Five;
+        case '6': return Input::Key::Six;
+        case '7': return Input::Key::Seven;
+        case '8': return Input::Key::Eight;
+        case '9': return Input::Key::Nine;
+
+        case ' ': return Input::Key::Space;
+        case '\n': return Input::Key::Enter;
+        case '\t': return Input::Key::Tab;
+        default: return Input::Key::None;
+    }
+}
+
 static void keyboard(unsigned char c, int, int)
 {
-    Input::update_key_state(std::tolower(c), true);
+    Input::update_key_state(char_to_key(c), true);
 }
 static void keyboard_up(unsigned char c, int, int)
 {
-    Input::update_key_state(std::tolower(c), false);
+    Input::update_key_state(char_to_key(c), false);
 }
 
-static void special(int key, int, int)
+static Input::Key glut_keycode_to_key(int keycode)
 {
-    Input::update_key_state(key << 8, true);
+    switch (keycode)
+    {
+        case GLUT_KEY_UP: return Input::Key::Up;
+        case GLUT_KEY_DOWN: return Input::Key::Down;
+        case GLUT_KEY_LEFT: return Input::Key::Left;
+        case GLUT_KEY_RIGHT: return Input::Key::Right;
+
+        // TODO: BackSpace Escape CapsLock
+        case GLUT_KEY_SHIFT_L: return Input::Key::LeftShift;
+        case GLUT_KEY_SHIFT_R: return Input::Key::RightShift;
+        case GLUT_KEY_CTRL_L: return Input::Key::LeftControl;
+        case GLUT_KEY_CTRL_R: return Input::Key::RightControl;
+        case GLUT_KEY_ALT_L: return Input::Key::LeftAlt;
+        case GLUT_KEY_ALT_R: return Input::Key::RightAlt;
+
+        default: return Input::Key::None;
+    }
 }
-static void special_up(int key, int, int)
+
+static void special(int keycode, int, int)
 {
-    Input::update_key_state(key << 8, false);
+    Input::update_key_state(glut_keycode_to_key(keycode), true);
+}
+static void special_up(int keycode, int, int)
+{
+    Input::update_key_state(glut_keycode_to_key(keycode), false);
 }
 
 static void mouse_button(int button, int state, int, int)

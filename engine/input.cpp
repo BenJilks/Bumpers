@@ -10,20 +10,15 @@
 #include <cassert>
 using namespace Engine;
 
-static std::unordered_set<int> s_keys_down;
+static std::unordered_set<Input::Key> s_keys_down;
 static std::array<bool, 3> s_mouse_button_down;
 static std::array<bool, 3> s_mouse_button_click;
 static int s_mouse_x { 0 };
 static int s_mouse_y { 0 };
 
-bool Input::is_key_down(char key)
+bool Input::is_key_down(Input::Key key)
 {
 	return s_keys_down.contains(key);
-}
-
-bool Input::is_key_down(int special)
-{
-	return s_keys_down.contains(special << 8);
 }
 
 bool Input::is_mouse_button_down(MouseButton button)
@@ -46,7 +41,7 @@ int Input::mouse_y()
 	return s_mouse_y;
 }
 
-void Input::update_key_state(int key_code, bool state)
+void Input::update_key_state(Input::Key key_code, bool state)
 {
 	if (state)
 		s_keys_down.insert(key_code);

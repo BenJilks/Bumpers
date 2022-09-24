@@ -5,7 +5,9 @@
  */
 
 #include "render_texture.hpp"
+#include <iostream>
 #include <cassert>
+#include <utility>
 #include <GL/glew.h>
 using namespace Engine;
 
@@ -33,7 +35,7 @@ std::shared_ptr<RenderTexture> RenderTexture::construct(
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depth_texture, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    return std::shared_ptr<RenderTexture>(new RenderTexture(pipeline, fbo, color_texture, depth_texture));
+    return std::shared_ptr<RenderTexture>(new RenderTexture(std::move(pipeline), fbo, color_texture, depth_texture));
 }
 
 void RenderTexture::add_color_texture()
@@ -45,7 +47,7 @@ void RenderTexture::add_color_texture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_texture_width, m_texture_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
     m_color_textures.push_back(texture);
 
     auto index = m_color_textures.size() - 1;
@@ -86,21 +88,39 @@ void RenderTexture::render()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+static int next_power_of_two(int value)
+{
+    int power = 1;
+    while (power < value)
+        power *= 2;
+
+    return power;
+}
+
 void RenderTexture::resize(int width, int height)
 {
-    m_width = width;
-    m_height = height;
+    m_viewport_width = width;
+    m_viewport_height = height;
+
+#ifdef WEBASSEMBLY
+    m_texture_width = next_power_of_two(width);
+    m_texture_height = next_power_of_two(height);
+#else
+    m_texture_width = width;
+    m_texture_height = height;
+#endif
+
     for (auto &renderer : m_pipeline)
-        renderer->resize_viewport(width, height);
+        renderer->resize_viewport(m_viewport_width, m_viewport_height);
 
     for (auto texture : m_color_textures)
     {
         glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_texture_width, m_texture_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     glBindTexture(GL_TEXTURE_2D, m_depth_texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_texture_width, m_texture_height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
     glBindTexture(GL_TEXTURE_2D, 0);
 }

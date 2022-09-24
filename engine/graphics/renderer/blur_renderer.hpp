@@ -20,14 +20,17 @@ namespace Engine
 		BlurRenderer(std::shared_ptr<Shader> shader, 
             std::shared_ptr<Texture> view, glm::vec2 direction);
 
-        virtual ~BlurRenderer();
+        ~BlurRenderer() override;
+
+        void resize_view(int width, int height);
 
 	protected:
-		virtual void bind_inputs() final;
-		virtual void on_resize(int width, int height) final;
+		void bind_inputs() final;
+        void on_resize(int width, int height) final;
 
 		std::shared_ptr<Texture> m_view;
 		glm::vec2 m_direction;
+        glm::vec2 m_view_scale { 1, 1 };
 
 	};
 

@@ -9,6 +9,7 @@
 #include "engine/forward.hpp"
 #include "gameobject/forward.hpp"
 #include <memory>
+#include <utility>
 #include <vector>
 #include <glm/glm.hpp>
 
@@ -18,8 +19,8 @@ namespace Engine
 	class Renderer
 	{
 	public:
-		Renderer(std::shared_ptr<Shader> shader)
-			: m_shader(shader)
+		explicit Renderer(std::shared_ptr<Shader> shader)
+			: m_shader(std::move(shader))
 		{
 		}
 
@@ -37,9 +38,9 @@ namespace Engine
 		virtual void on_render() = 0;
 
 		std::shared_ptr<Shader> m_shader;
-		glm::mat4 m_projection_matrix;
-		glm::mat4 m_view;
-		glm::vec3 m_camera_position;
+		glm::mat4 m_projection_matrix{};
+		glm::mat4 m_view{};
+		glm::vec3 m_camera_position{};
 
 		inline int width() const { return m_width; }
 		inline int height() const { return m_height; }

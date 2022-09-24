@@ -9,7 +9,21 @@
 #include <optional>
 #include <functional>
 #include <cstdlib>
+#include <vector>
 using namespace Engine;
+
+#ifdef WEBASSEMBLY
+
+void ThreadPool::queue_task(std::function<void()> task)
+{
+    task();
+}
+
+void ThreadPool::finished_loading()
+{
+}
+
+#else
 
 #ifdef WIN32
 
@@ -148,7 +162,11 @@ static void start_threads_if_needed()
     if (s_has_threads_started)
         return;
 
-#ifdef WIN32
+#if defined(WEBASSEMBLY)
+
+// No threading support
+
+#elif defined(WIN32)
     s_task_queue_mutex = CreateMutex(NULL, FALSE, NULL);
     s_should_shutdown_mutex = CreateMutex(NULL, FALSE, NULL);
 
@@ -176,3 +194,6 @@ void ThreadPool::finished_loading()
     MUTEX_GUARD(s_should_shutdown_mutex);
     s_shutdown_on_completed = true;
 }
+
+#endif
+

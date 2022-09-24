@@ -8,10 +8,10 @@
 #include "gameobject/gameobject.hpp"
 #include "gameobject/transform.hpp"
 #include "engine/input.hpp"
-#include <GL/freeglut.h>
 #include <cassert>
 using namespace Object;
 using namespace Game;
+using namespace Engine;
 using namespace glm;
 
 void FreeCamera::init(GameObject &game_object)
@@ -36,20 +36,20 @@ void FreeCamera::update(GameObject&, float delta)
     m_last_mouse_y = Engine::Input::mouse_y();
 
     auto forward = m_transform->forward();
-    if (Engine::Input::is_key_down('w'))
+    if (Engine::Input::is_key_down(Input::Key::W))
         m_transform->translate(forward * speed);
-    if (Engine::Input::is_key_down('s'))
+    if (Engine::Input::is_key_down(Input::Key::S))
         m_transform->translate(-forward * speed);
 
     auto left = m_transform->left();
-    if (Engine::Input::is_key_down('a'))
+    if (Engine::Input::is_key_down(Input::Key::A))
         m_transform->translate(left * speed);
-    if (Engine::Input::is_key_down('d'))
+    if (Engine::Input::is_key_down(Input::Key::D))
         m_transform->translate(-left * speed);
 
-    if (Engine::Input::is_key_down(' '))
+    if (Engine::Input::is_key_down(Input::Key::Space))
         m_transform->translate(vec3(0, speed, 0));
-    if (Engine::Input::is_key_down(GLUT_KEY_SHIFT_L))
+    if (Engine::Input::is_key_down(Input::Key::LeftShift))
         m_transform->translate(vec3(0, -speed, 0));
 }
 

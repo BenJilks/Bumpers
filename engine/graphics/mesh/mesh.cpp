@@ -56,7 +56,12 @@ static void vertex_attrib_pointer(int index, GLuint data_type, int size)
             glVertexAttribPointer(index, size, data_type, GL_FALSE, 0, 0);
             break;
         case GL_INT:
+#ifdef WEBASSEMBLY
+            std::cerr << "Int vertex attributes not supported on webassembly\n";
+            assert(false);
+#else
             glVertexAttribIPointer(index, size, data_type, 0, 0);
+#endif
             break;
     }
 }

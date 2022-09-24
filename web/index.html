@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <title>Bumpers</title>
+        <script defer>
+            var Module = {};
+
+            function start_app()
+            {
+                if(window.WebAssembly === undefined) {
+                    alert('WebAssembly not supported :(');
+                }
+
+                var canvas = document.querySelector('canvas');
+                canvas.width = 800 * 2;
+                canvas.height = 600 * 2;
+                Module.canvas = canvas;
+                Module.preinitializedWebGLContext = canvas.getContext("webgl2");
+
+                var r = new XMLHttpRequest();
+                r.open('GET', 'bumpers.wasm', true);
+                r.responseType = 'arraybuffer';
+                r.onload = function() 
+                {
+                    Module.wasmBinary = r.response;
+                    var script = document.createElement('script');
+                    script.src = 'bumpers.js';
+                    document.body.appendChild(script);
+                };
+                r.send();
+            }
+
+            start_app();
+        </script>
+    </head>
+    <body>
+        <canvas></canvas>
+    </body>
+</html>
+

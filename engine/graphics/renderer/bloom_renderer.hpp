@@ -18,20 +18,24 @@ namespace Engine
 	{
 	public:
 		BloomRenderer(std::shared_ptr<Shader> shader, 
-			std::shared_ptr<Shader> blur_shader,
+			const std::shared_ptr<Shader>& blur_shader,
             std::shared_ptr<Texture> standard_view,
-			std::shared_ptr<Texture> light_view);
+			const std::shared_ptr<Texture>& light_view);
 
-        virtual ~BloomRenderer();
-		virtual void pre_render();
+        ~BloomRenderer() override;
+		void pre_render() override;
 
 	protected:
-		virtual void bind_inputs() final;
-		virtual void on_resize(int width, int height) final;
+		void bind_inputs() final;
+		void on_resize(int width, int height) final;
 
 		std::shared_ptr<Texture> m_standard_view;
+
+        std::shared_ptr<BlurRenderer> m_blur_horizontal_renderer;
 		std::shared_ptr<RenderTexture> m_blur_horizontal_view;
-		std::shared_ptr<RenderTexture> m_blur_virtual_view;
+
+        std::shared_ptr<BlurRenderer> m_blur_vertical_renderer;
+		std::shared_ptr<RenderTexture> m_blur_vertical_view;
 
 	};
 

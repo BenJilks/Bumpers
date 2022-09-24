@@ -10,6 +10,7 @@
 #include <GL/glew.h>
 #include <iostream>
 #include <memory>
+#include <vector>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 using namespace Engine;
@@ -22,6 +23,7 @@ std::shared_ptr<ImageTexture> ImageTexture::construct(const AssetRepository &ass
 {
     GLuint texture_id;
     glGenTextures(1, &texture_id);
+    glBindTexture(GL_TEXTURE_2D, texture_id);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);

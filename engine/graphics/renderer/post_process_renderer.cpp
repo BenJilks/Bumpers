@@ -5,6 +5,8 @@
  */
 
 #include "post_process_renderer.hpp"
+
+#include <utility>
 #include "engine/graphics/mesh/mesh.hpp"
 #include "engine/graphics/mesh/mesh_builder.hpp"
 #include "engine/graphics/texture/texture.hpp"
@@ -13,16 +15,14 @@ using namespace Engine;
 using namespace glm;
 
 PostProcessRenderer::PostProcessRenderer(std::shared_ptr<Shader> shader)
-    : Renderer(shader)
+    : Renderer(std::move(shader))
 {
     m_full_screen_quad = MeshBuilder()
         .add_quad(vec2(1), true)
         .build();
 }
 
-PostProcessRenderer::~PostProcessRenderer()
-{    
-}
+PostProcessRenderer::~PostProcessRenderer() = default;
 
 glm::mat4 PostProcessRenderer::projection_matrix(int width, int height)
 {

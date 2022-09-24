@@ -103,6 +103,8 @@ Object::GameObject *BumperCarsScene::make_cameras(GameObject &player)
 
 GameObject *BumperCarsScene::make_bumper_car(const AssetRepository &assets)
 {
+    std::cout << " -> Bumper car\n";
+
     auto *bumper_car = ColladaLoader::open(*m_world, assets, "/models/bumper.dae",
         [&](Object::GameObject &object, Engine::MeshBuilder &builder, const ColladaLoader::ModelMetaData& meta_data)
     {
@@ -132,6 +134,8 @@ GameObject *BumperCarsScene::make_bumper_car(const AssetRepository &assets)
 
 GameObject *BumperCarsScene::make_arena(const AssetRepository &assets)
 {
+    std::cout << " -> Arena\n";
+
     auto *arena = ColladaLoader::open(*m_world, assets,"/models/arena.dae",
         [&](Object::GameObject &object, Engine::MeshBuilder &builder, const ColladaLoader::ModelMetaData& meta_data)
     {
@@ -245,12 +249,22 @@ void BumperCarsScene::make_ai(GameObject &car_template, vec3 position, vec3 colo
 bool BumperCarsScene::init()
 {
     auto assets = EmbeddedAssetRepository::construct();
-    auto skybox_texture = CubeMapTexture::construct(assets, "/textures/skybox/skybox");
 
+    std::cout << "Compiling shaders\n";
+#ifdef WEBASSEMBLY
+    auto shader = Shader::construct(*assets.open("/shaders/webassembly/wasm_default.glsl"));
+    auto skybox_shader = Shader::construct(*assets.open("/shaders/webassembly/wasm_skybox.glsl"));
+    auto bloom_shader = Shader::construct(*assets.open("/shaders/webassembly/wasm_bloom.glsl"));
+    auto blur_shader = Shader::construct(*assets.open("/shaders/webassembly/wasm_blur.glsl"));
+#else
     auto shader = Shader::construct(*assets.open("/shaders/default.glsl"));
     auto skybox_shader = Shader::construct(*assets.open("/shaders/skybox.glsl"));
     auto bloom_shader = Shader::construct(*assets.open("/shaders/bloom.glsl"));
     auto blur_shader = Shader::construct(*assets.open("/shaders/blur.glsl"));
+#endif
+
+    std::cout << "Loading skybox\n";
+    auto skybox_texture = CubeMapTexture::construct(assets, "/textures/skybox/skybox");
 
     m_world = std::make_unique<World>();
     m_collision_resolver = std::make_unique<CollisionResolver2D>();
@@ -264,6 +278,7 @@ bool BumperCarsScene::init()
         bloom_shader, blur_shader,
         m_view->color_texture(0), m_view->color_texture(1));
 
+    std::cout << "Loading objects\n";
     auto *arena = make_arena(assets);
     if (!arena)
         return false;
@@ -299,8 +314,11 @@ bool BumperCarsScene::init()
     m_sky_box_renderer->set_camera(*camera);
     m_sky_box_renderer->on_world_updated(*m_world);
 
+    std::cout << "Initializing world\n";
     m_world->init();
     ThreadPool::finished_loading();
+
+    std::cout << "Finished loading\n";
     return true;
 }
 
@@ -310,20 +328,22 @@ void BumperCarsScene::on_render(float delta)
     m_world->update(delta);
     m_collision_resolver->resolve(*m_world);
 
+//    m_renderer->render();
     m_view->render();
     m_bloom_renderer->pre_render();
     m_bloom_renderer->render();
 
-    if (Input::is_key_down('1'))
+    if (Input::is_key_down(Input::Key::One))
         m_renderer->set_camera(*m_in_car_camera);
-    if (Input::is_key_down('2'))
+    if (Input::is_key_down(Input::Key::Two))
         m_renderer->set_camera(*m_look_at_camera);
-    if (Input::is_key_down('3'))
+    if (Input::is_key_down(Input::Key::Three))
         m_renderer->set_camera(*m_free_camera);
 }
 
 void BumperCarsScene::on_resize(int width, int height)
 {
+//    m_renderer->resize_viewport(width, height);
     m_view->resize(width, height);
     m_bloom_renderer->resize_viewport(width, height);
 }
