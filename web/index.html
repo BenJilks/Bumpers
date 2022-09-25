@@ -21,6 +21,12 @@
                 }
             }
 
+            function update_loading_status(status)
+            {
+                const status_text = document.querySelector('#status');
+                status_text.innerHTML = status;
+            }
+
             function start_app()
             {
                 if(window.WebAssembly === undefined) {
@@ -36,18 +42,18 @@
                 r.open('GET', 'bumpers.wasm', true);
                 r.responseType = 'arraybuffer';
                 r.onload = () => {
+                    update_loading_status(`Initializing WASM Module`);
+
                     Module.wasmBinary = r.response;
                     const script = document.createElement('script');
                     script.src = 'bumpers.js';
                     document.body.appendChild(script);
                 };
+                r.onprogress = (event) => {
+                    const progress = Math.round(event.loaded / event.total * 100);
+                    update_loading_status(`Downloading Game: ${ progress }%`);
+                };
                 r.send();
-            }
-
-            function update_loading_status(status)
-            {
-                const status_text = document.querySelector('#status');
-                status_text.innerHTML = status;
             }
 
             function finished_loading()

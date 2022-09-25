@@ -2,6 +2,10 @@
 # Bumpers
 A simple game engine and game, all written in C++.
 
+## WebAssembly Demo
+An online version of the project compiled to WebAssembly, is available here:
+<https://bumpers-wasm.glitch.me/>
+
 ![Bumpers](https://raw.githubusercontent.com/BenJilks/Bumpers/master/screenshots/bumpers.png)
 
 ## Build
