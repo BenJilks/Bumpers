@@ -45,6 +45,7 @@ namespace Game
         Object::GameObject *m_in_car_camera { nullptr };
         Object::GameObject *m_look_at_camera { nullptr };
         Object::GameObject *m_free_camera { nullptr };
+        bool m_finished_loading { false };
 
     };
 

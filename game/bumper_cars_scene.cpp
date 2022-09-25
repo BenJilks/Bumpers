@@ -45,6 +45,20 @@ using namespace Object;
 using namespace Game;
 using namespace glm;
 
+#ifdef WEBASSEMBLY
+
+#define LOAD_SECTION_START ThreadPool::queue_task([this, assets]() {
+#define FINAL_SECTION_START ThreadPool::on_tasks_finished([this]() {
+#define LOAD_SECTION_END return true; });
+
+#else
+
+#define LOAD_SECTION_START ;
+#define FINAL_SECTION_START ;
+#define LOAD_SECTION_END ;
+
+#endif
+
 const std::vector<BoxBounds3D::Box> bounding_boxes =
 {
     { vec3(27.2268, 2.78474, 0), vec3(1.044855, 4.06174, 32.9089) },
@@ -279,56 +293,71 @@ bool BumperCarsScene::init()
         m_view->color_texture(0), m_view->color_texture(1));
 
     std::cout << "Loading objects\n";
-    auto *arena = make_arena(assets);
-    if (!arena)
-        return false;
 
-    auto *bumper_car_template = make_bumper_car(assets);
-    if (!bumper_car_template)
-        return false;
+    LOAD_SECTION_START
+        auto *arena = make_arena(assets);
+        if (!arena)
+            return false;
+    LOAD_SECTION_END
 
-    constexpr vec3 colors[] = 
-    { 
-        vec3(0.2, 1.0, 0.2), vec3(0.8, 0.5, 1.0),
-        vec3(1.0, 1.0, 0.2), vec3(0.2, 1.0, 1.0),
-    };
+    LOAD_SECTION_START
+        auto *bumper_car_template = make_bumper_car(assets);
+        if (!bumper_car_template)
+            return false;
 
-    for (int i = 0; i < 4; i++)
-        make_ai(*bumper_car_template, vec3((i - 2) * 5, 0, 10), colors[i]);
+        constexpr vec3 colors[] =
+        {
+            vec3(0.2, 1.0, 0.2), vec3(0.8, 0.5, 1.0),
+            vec3(1.0, 1.0, 0.2), vec3(0.2, 1.0, 1.0),
+        };
 
-    auto *player = bumper_car_template;
-    player->add_component<PlayerController>();
-    set_bumper_car_color(*player, vec3(1, 0.2, 0.2));
+        for (int i = 0; i < 4; i++)
+            make_ai(*bumper_car_template, vec3((i - 2) * 5, 0, 10), colors[i]);
 
-    auto *camera = make_cameras(*player);
-    if (!camera)
-        return false;
+        auto *player = bumper_car_template;
+        player->add_component<PlayerController>();
+        set_bumper_car_color(*player, vec3(1, 0.2, 0.2));
+
+        auto *camera = make_cameras(*player);
+        if (!camera)
+            return false;
+
+        m_renderer->set_camera(*camera);
+        m_sky_box_renderer->set_camera(*camera);
+    LOAD_SECTION_END
 
 #ifdef USE_SKYBOX
-    make_sky_box(skybox_texture);
+    LOAD_SECTION_START
+        make_sky_box(skybox_texture);
+    LOAD_SECTION_END
 #endif
 
-    m_renderer->set_camera(*camera);
-    m_renderer->on_world_updated(*m_world);
+    FINAL_SECTION_START
+        std::cout << "Initializing world\n";
+        m_renderer->on_world_updated(*m_world);
+        m_sky_box_renderer->on_world_updated(*m_world);
+        m_world->init();
 
-    m_sky_box_renderer->set_camera(*camera);
-    m_sky_box_renderer->on_world_updated(*m_world);
+        m_finished_loading = true;
+        std::cout << "Finished loading\n";
+    LOAD_SECTION_END
 
-    std::cout << "Initializing world\n";
-    m_world->init();
     ThreadPool::finished_loading();
-
-    std::cout << "Finished loading\n";
     return true;
 }
 
 void BumperCarsScene::on_render(float delta)
 {
+    if (!m_finished_loading)
+    {
+        std::cout << "Extra frame for loading\n";
+        return;
+    }
+
     m_world->step_physics(delta);
     m_world->update(delta);
     m_collision_resolver->resolve(*m_world);
 
-//    m_renderer->render();
     m_view->render();
     m_bloom_renderer->pre_render();
     m_bloom_renderer->render();
@@ -343,7 +372,6 @@ void BumperCarsScene::on_render(float delta)
 
 void BumperCarsScene::on_resize(int width, int height)
 {
-//    m_renderer->resize_viewport(width, height);
     m_view->resize(width, height);
     m_bloom_renderer->resize_viewport(width, height);
 }
