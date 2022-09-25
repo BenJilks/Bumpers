@@ -51,11 +51,33 @@ using namespace glm;
 #define FINAL_SECTION_START ThreadPool::on_tasks_finished([this]() {
 #define LOAD_SECTION_END return true; });
 
+#include <emscripten/emscripten.h>
+
+static void update_loading_status(const std::string &status)
+{
+    auto script = "update_loading_status('" + status + "')";
+    emscripten_run_script(script.c_str());
+}
+
+static void on_finished_loading()
+{
+    emscripten_run_script("finished_loading()");
+}
+
 #else
 
 #define LOAD_SECTION_START ;
 #define FINAL_SECTION_START ;
 #define LOAD_SECTION_END ;
+
+static void update_loading_status(const std::string &status)
+{
+    std::cout << status << "\n";
+}
+
+static void on_finished_loading()
+{
+}
 
 #endif
 
@@ -117,7 +139,7 @@ Object::GameObject *BumperCarsScene::make_cameras(GameObject &player)
 
 GameObject *BumperCarsScene::make_bumper_car(const AssetRepository &assets)
 {
-    std::cout << " -> Bumper car\n";
+    update_loading_status("Loading Object: Bumper Car");
 
     auto *bumper_car = ColladaLoader::open(*m_world, assets, "/models/bumper.dae",
         [&](Object::GameObject &object, Engine::MeshBuilder &builder, const ColladaLoader::ModelMetaData& meta_data)
@@ -148,7 +170,7 @@ GameObject *BumperCarsScene::make_bumper_car(const AssetRepository &assets)
 
 GameObject *BumperCarsScene::make_arena(const AssetRepository &assets)
 {
-    std::cout << " -> Arena\n";
+    update_loading_status("Loading Object: Arena");
 
     auto *arena = ColladaLoader::open(*m_world, assets,"/models/arena.dae",
         [&](Object::GameObject &object, Engine::MeshBuilder &builder, const ColladaLoader::ModelMetaData& meta_data)
@@ -264,7 +286,7 @@ bool BumperCarsScene::init()
 {
     auto assets = EmbeddedAssetRepository::construct();
 
-    std::cout << "Compiling shaders\n";
+    update_loading_status("Compiling shaders");
 #ifdef WEBASSEMBLY
     auto shader = Shader::construct(*assets.open("/shaders/webassembly/wasm_default.glsl"));
     auto skybox_shader = Shader::construct(*assets.open("/shaders/webassembly/wasm_skybox.glsl"));
@@ -277,7 +299,7 @@ bool BumperCarsScene::init()
     auto blur_shader = Shader::construct(*assets.open("/shaders/blur.glsl"));
 #endif
 
-    std::cout << "Loading skybox\n";
+    update_loading_status("Loading skybox");
     auto skybox_texture = CubeMapTexture::construct(assets, "/textures/skybox/skybox");
 
     m_world = std::make_unique<World>();
@@ -292,7 +314,7 @@ bool BumperCarsScene::init()
         bloom_shader, blur_shader,
         m_view->color_texture(0), m_view->color_texture(1));
 
-    std::cout << "Loading objects\n";
+    update_loading_status("Loading objects");
 
     LOAD_SECTION_START
         auto *arena = make_arena(assets);
@@ -333,13 +355,14 @@ bool BumperCarsScene::init()
 #endif
 
     FINAL_SECTION_START
-        std::cout << "Initializing world\n";
+        update_loading_status("Initializing World");
         m_renderer->on_world_updated(*m_world);
         m_sky_box_renderer->on_world_updated(*m_world);
         m_world->init();
 
         m_finished_loading = true;
-        std::cout << "Finished loading\n";
+        on_finished_loading();
+        update_loading_status("Finishing");
     LOAD_SECTION_END
 
     ThreadPool::finished_loading();
@@ -349,10 +372,7 @@ bool BumperCarsScene::init()
 void BumperCarsScene::on_render(float delta)
 {
     if (!m_finished_loading)
-    {
-        std::cout << "Extra frame for loading\n";
         return;
-    }
 
     m_world->step_physics(delta);
     m_world->update(delta);
