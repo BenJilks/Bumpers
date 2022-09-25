@@ -14,5 +14,7 @@ namespace Engine::ThreadPool
     void queue_task(const std::function<void()>& task);
     void finished_loading();
 
+    void on_tasks_finished(const std::function<void()>&);
+
 }
 

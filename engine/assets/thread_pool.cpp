@@ -12,11 +12,45 @@
 #include <vector>
 using namespace Engine;
 
+
 #ifdef WEBASSEMBLY
+
+#include <emscripten/html5.h>
+
+static std::vector<std::function<void()>> s_task_queue;
+static bool s_on_animation_request_loop_started = false;
+
+static std::function<void()> on_tasks_finished_callback;
+
+static int on_animation_request_loop(double, void*)
+{
+    if (s_task_queue.empty())
+        return false;
+
+    auto task = s_task_queue.back();
+    s_task_queue.pop_back();
+
+    task();
+
+    if (s_task_queue.empty() && on_tasks_finished_callback)
+        on_tasks_finished_callback();
+    return true;
+}
 
 void ThreadPool::queue_task(const std::function<void()> &task)
 {
-    task();
+    s_task_queue.push_back(task);
+
+    if (!s_on_animation_request_loop_started)
+    {
+        emscripten_request_animation_frame_loop(on_animation_request_loop, nullptr);
+        s_on_animation_request_loop_started = true;
+    }
+}
+
+void ThreadPool::on_tasks_finished(const std::function<void()> &callback)
+{
+    on_tasks_finished_callback = callback;
 }
 
 void ThreadPool::finished_loading()
@@ -77,6 +111,8 @@ static bool s_should_shutdown = false;
 static bool s_shutdown_on_completed = false;
 static bool s_has_threads_started { false };
 
+static std::function<void()> on_tasks_finished_callback;
+
 static std::function<void()> next_task()
 {
     MUTEX_GUARD(s_task_queue_mutex);
@@ -120,6 +156,13 @@ static void worker_thread()
         }
 
         task();
+
+        if (on_tasks_finished_callback)
+        {
+            MUTEX_GUARD(s_task_queue_mutex);
+            if (s_task_queue.empty())
+                on_tasks_finished_callback();
+        }
     }
 
 #ifdef WIN32
@@ -181,12 +224,17 @@ static void start_threads_if_needed()
     s_has_threads_started = true;
 }
 
-void ThreadPool::queue_task(std::function<void()> task)
+void ThreadPool::queue_task(const std::function<void()> &task)
 {
     start_threads_if_needed();
 
     MUTEX_GUARD(s_task_queue_mutex);
     s_task_queue.insert(s_task_queue.begin(), task);
+}
+
+void ThreadPool::on_tasks_finished(const std::function<void()> &callback)
+{
+    on_tasks_finished_callback = callback;
 }
 
 void ThreadPool::finished_loading()
