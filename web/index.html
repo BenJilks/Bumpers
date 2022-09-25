@@ -2,7 +2,24 @@
     <head>
         <title>Bumpers</title>
         <script defer>
-            var Module = {};
+            window.Module = {};
+            let has_finished_loading = false;
+            let resize_display = null;
+
+            Module['onRuntimeInitialized'] = () => {
+                resize_display = Module.cwrap('resize_display', 'void', ['number', 'number']);
+            };
+
+            function update_canvas_size()
+            {
+                const canvas = document.querySelector('canvas');
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+
+                if (resize_display != null) {
+                    resize_display(window.innerWidth, window.innerHeight);
+                }
+            }
 
             function start_app()
             {
@@ -13,12 +30,12 @@
                 const canvas = document.querySelector('canvas');
                 Module.canvas = canvas;
                 Module.preinitializedWebGLContext = canvas.getContext("webgl2");
+                update_canvas_size();
 
                 const r = new XMLHttpRequest();
                 r.open('GET', 'bumpers.wasm', true);
                 r.responseType = 'arraybuffer';
-                r.onload = function() 
-                {
+                r.onload = () => {
                     Module.wasmBinary = r.response;
                     const script = document.createElement('script');
                     script.src = 'bumpers.js';
@@ -40,12 +57,30 @@
 
                 const canvas = document.querySelector('canvas');
                 canvas.focus();
+
+                has_finished_loading = true;
+                update_canvas_size();
             }
+
+            window.addEventListener('resize', () => {
+                if (!has_finished_loading) {
+                    return;
+                }
+
+                requestAnimationFrame(() => {
+                    update_canvas_size();
+                });
+            });
 
             window.onload = () => start_app();
         </script>
 
         <style>
+            body {
+                margin: 0;
+                background: black;
+            }
+
             .loading {
                 display: flex;
                 flex-direction: column;
@@ -54,8 +89,8 @@
                 gap: 2em;
 
                 position: absolute;
-                width: 1600px;
-                height: 1200px;
+                width: 100%;
+                height: 100%;
                 z-index: 1;
 
                 background-color: black;
@@ -63,8 +98,7 @@
 
             .loading h1 {
                 display: inline-block;
-                margin: 0px;
-                margin-right: 32px;
+                margin: 0 32px 0 0;
 
                 font-size: 8em;
                 font-family: monospace;

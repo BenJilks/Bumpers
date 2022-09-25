@@ -18,6 +18,17 @@ static auto s_last_frame_time = std::chrono::system_clock::now();
 static int s_width;
 static int s_height;
 
+extern "C"
+{
+
+    void resize_display(int width, int height)
+    {
+        if (s_current_scene)
+            s_current_scene->on_resize(width, height);
+    }
+
+}
+
 static void display()
 {
     if (s_new_scene)

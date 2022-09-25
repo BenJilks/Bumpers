@@ -36,8 +36,6 @@ if (WEBASSEMBLY)
         shaders/webassembly/wasm_skybox.glsl
         shaders/webassembly/wasm_blur.glsl
     )
-
-    set(CMAKE_EXE_LINKER_FLAGS "-s TOTAL_MEMORY=1310720000 -s GL_PREINITIALIZED_CONTEXT")
 else()
     set(ENGINE_PLATFORM_SOURCE
         engine/display.cpp engine/display.hpp
@@ -195,6 +193,10 @@ add_executable(bumpers ${SOURCES})
 
 if (WEBASSEMBLY)
     target_link_libraries(bumpers pugixml-static)
+    target_link_options(bumpers PRIVATE -sEXPORTED_FUNCTIONS=['_main','_resize_display'])
+    target_link_options(bumpers PRIVATE -sEXPORTED_RUNTIME_METHODS=['ccall','cwrap'])
+    target_link_options(bumpers PRIVATE -sTOTAL_MEMORY=1310720000)
+    target_link_options(bumpers PRIVATE -sGL_PREINITIALIZED_CONTEXT)
 elseif (WIN32)
     target_link_libraries(bumpers libglew_static freeglut_static pugixml-static)
 else()
