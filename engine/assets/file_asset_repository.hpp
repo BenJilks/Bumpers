@@ -8,21 +8,18 @@
 
 #include "asset_repository.hpp"
 
-namespace Engine
-{
+namespace Engine {
 
-    class FileAssetRepository final : public AssetRepository
-    {
-    public:
-        static FileAssetRepository construct(std::string directory);
-        [[nodiscard]] std::unique_ptr<std::istream> open(std::string_view name) const override;
-        [[nodiscard]] std::shared_ptr<AssetRepository> copy() const override;
+class FileAssetRepository final : public AssetRepository {
+public:
+    static FileAssetRepository construct(std::string directory);
+    [[nodiscard]] std::unique_ptr<std::istream> open(std::string_view name) const override;
+    [[nodiscard]] std::shared_ptr<AssetRepository> copy() const override;
 
-    private:
-        explicit FileAssetRepository(std::string directory);
+private:
+    explicit FileAssetRepository(std::string directory);
 
-        std::string m_directory;
-
-    };
+    std::string m_directory;
+};
 
 }

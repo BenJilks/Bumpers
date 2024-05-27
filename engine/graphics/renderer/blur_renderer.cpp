@@ -6,12 +6,10 @@
 
 #include "blur_renderer.hpp"
 
-#include <utility>
-#include "engine/graphics/texture/texture.hpp"
-#include "engine/graphics/texture/render_texture.hpp"
 #include "engine/graphics/shader.hpp"
+#include "engine/graphics/texture/texture.hpp"
+#include <utility>
 using namespace Engine;
-using namespace glm;
 
 constexpr int blur_amount = 8;
 
@@ -27,15 +25,16 @@ BlurRenderer::~BlurRenderer() = default;
 static int next_power_of_two(int value)
 {
     int power = 1;
-    while (power < value)
+    while (power < value) {
         power *= 2;
+    }
 
     return power;
 }
 
 void BlurRenderer::bind_inputs()
 {
-    m_shader->load_vec2("screen_size", vec2(width(), height()));
+    m_shader->load_vec2("screen_size", glm::vec2(width(), height()));
     m_shader->load_vec2("direction", m_direction);
     m_shader->load_int("texture", 0);
 
@@ -50,7 +49,7 @@ void BlurRenderer::resize_view(int width, int height)
 #ifdef WEBASSEMBLY
     auto texture_width = next_power_of_two(width);
     auto texture_height = next_power_of_two(height);
-    m_view_scale = vec2((float)width / (float)texture_width,(float)height / (float)texture_height);
+    m_view_scale = glm::vec2((float)width / (float)texture_width, (float)height / (float)texture_height);
 #endif
 }
 

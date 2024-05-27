@@ -8,17 +8,14 @@
 
 #include "component.hpp"
 
-namespace Object
-{
+namespace Object {
 
-    class Camera : public ComponentBase<Camera>
-    {
-        friend ComponentBase<Camera>;
+class Camera : public ComponentBase<Camera> {
+    friend ComponentBase<Camera>;
 
-    public:
-
-    private:
-        Camera() = default;
-    };
+public:
+private:
+    Camera() = default;
+};
 
 }

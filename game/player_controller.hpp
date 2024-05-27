@@ -6,27 +6,23 @@
 
 #pragma once
 
-#include "gameobject/component.hpp"
 #include "car_engine.hpp"
+#include "gameobject/component.hpp"
 
-namespace Game
-{
+namespace Game {
 
-    class PlayerController : public Object::ComponentBase<PlayerController>
-    {
-        friend Object::ComponentBase<PlayerController>;
+class PlayerController : public Object::ComponentBase<PlayerController> {
+    friend Object::ComponentBase<PlayerController>;
 
-    public:
-        void init(Object::GameObject&) override;
-        void update(Object::GameObject&, float delta) override;
+public:
+    void init(Object::GameObject&) override;
+    void update(Object::GameObject&, float delta) override;
 
-    private:
-        PlayerController(const PlayerController&) = default;
-        PlayerController() = default;
+private:
+    PlayerController(PlayerController const&) = default;
+    PlayerController() = default;
 
-        CarEngine *m_engine { nullptr };
-
-    };
+    CarEngine* m_engine { nullptr };
+};
 
 }
-

@@ -5,10 +5,10 @@
  */
 
 #include "file_asset_repository.hpp"
-#include <utility>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
-#include <cstring>
+#include <utility>
 
 using namespace Engine;
 
@@ -24,8 +24,7 @@ std::unique_ptr<std::istream> FileAssetRepository::open(std::string_view name) c
     path += name;
 
     auto stream = std::make_unique<std::ifstream>(path);
-    if (!stream->good())
-    {
+    if (!stream->good()) {
         std::cerr << "Error opening file '" << name << "': " << strerror(errno) << "\n";
         return {};
     }

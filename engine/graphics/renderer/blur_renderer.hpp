@@ -7,31 +7,26 @@
 #pragma once
 
 #include "engine/forward.hpp"
-#include "gameobject/forward.hpp"
 #include "post_process_renderer.hpp"
-#include <vector>
 
-namespace Engine
-{
+namespace Engine {
 
-	class BlurRenderer : public PostProcessRenderer
-	{
-	public:
-		BlurRenderer(std::shared_ptr<Shader> shader, 
-            std::shared_ptr<Texture> view, glm::vec2 direction);
+class BlurRenderer : public PostProcessRenderer {
+public:
+    BlurRenderer(std::shared_ptr<Shader> shader,
+        std::shared_ptr<Texture> view, glm::vec2 direction);
 
-        ~BlurRenderer() override;
+    ~BlurRenderer() override;
 
-        void resize_view(int width, int height);
+    void resize_view(int width, int height);
 
-	protected:
-		void bind_inputs() final;
-        void on_resize(int width, int height) final;
+protected:
+    void bind_inputs() final;
+    void on_resize(int width, int height) final;
 
-		std::shared_ptr<Texture> m_view;
-		glm::vec2 m_direction;
-        glm::vec2 m_view_scale { 1, 1 };
-
-	};
+    std::shared_ptr<Texture> m_view;
+    glm::vec2 m_direction;
+    glm::vec2 m_view_scale { 1, 1 };
+};
 
 }

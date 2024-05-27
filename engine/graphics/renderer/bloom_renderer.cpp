@@ -6,27 +6,26 @@
 
 #include "bloom_renderer.hpp"
 
-#include <utility>
 #include "blur_renderer.hpp"
-#include "engine/graphics/texture/texture.hpp"
-#include "engine/graphics/texture/render_texture.hpp"
 #include "engine/graphics/shader.hpp"
+#include "engine/graphics/texture/render_texture.hpp"
+#include "engine/graphics/texture/texture.hpp"
+#include <utility>
 using namespace Engine;
-using namespace glm;
 
 constexpr int blur_scale = 3;
 
-BloomRenderer::BloomRenderer(std::shared_ptr<Shader> shader, 
-                             const std::shared_ptr<Shader> &blur_shader,
-                             std::shared_ptr<Texture> standard_view,
-                             const std::shared_ptr<Texture> &light_view)
+BloomRenderer::BloomRenderer(std::shared_ptr<Shader> shader,
+    std::shared_ptr<Shader> const& blur_shader,
+    std::shared_ptr<Texture> standard_view,
+    std::shared_ptr<Texture> const& light_view)
     : PostProcessRenderer(std::move(shader))
     , m_standard_view(std::move(standard_view))
 {
-    m_blur_horizontal_renderer = std::make_shared<BlurRenderer>(blur_shader, light_view, vec2(1, 0));
+    m_blur_horizontal_renderer = std::make_shared<BlurRenderer>(blur_shader, light_view, glm::vec2(1, 0));
     m_blur_horizontal_view = RenderTexture::construct({ m_blur_horizontal_renderer });
 
-    m_blur_vertical_renderer = std::make_shared<BlurRenderer>(blur_shader, m_blur_horizontal_view, vec2(0, 1));
+    m_blur_vertical_renderer = std::make_shared<BlurRenderer>(blur_shader, m_blur_horizontal_view, glm::vec2(0, 1));
     m_blur_vertical_view = RenderTexture::construct({ m_blur_vertical_renderer });
 }
 
@@ -41,8 +40,9 @@ void BloomRenderer::pre_render()
 static int next_power_of_two(int value)
 {
     int power = 1;
-    while (power < value)
+    while (power < value) {
         power *= 2;
+    }
 
     return power;
 }
@@ -55,13 +55,9 @@ void BloomRenderer::bind_inputs()
 #ifdef WEBASSEMBLY
     auto standard_texture_width = next_power_of_two(width());
     auto standard_texture_height = next_power_of_two(height());
-    m_shader->load_vec2("standard_view_scale", vec2(
-        (float)width() / (float)standard_texture_width,
-        (float)height() / (float)standard_texture_height));
+    m_shader->load_vec2("standard_view_scale", glm::vec2((float)width() / (float)standard_texture_width, (float)height() / (float)standard_texture_height));
 
-    m_shader->load_vec2("light_only_view_scale", vec2(
-        (float)m_blur_vertical_view->width() / (float)m_blur_vertical_view->texture_width(),
-        (float)m_blur_horizontal_view->height() / (float)m_blur_horizontal_view->texture_height()));
+    m_shader->load_vec2("light_only_view_scale", glm::vec2((float)m_blur_vertical_view->width() / (float)m_blur_vertical_view->texture_width(), (float)m_blur_horizontal_view->height() / (float)m_blur_horizontal_view->texture_height()));
 #endif
 
     m_standard_view->bind(0);

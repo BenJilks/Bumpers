@@ -6,34 +6,32 @@
 
 #pragma once
 
-namespace Engine
-{
+namespace Engine {
 
-    class AssetRepository;
-    class MeshBuilder;
-    class Mesh;
-    class DynamicData;
-    class Texture;
-    class ImageTexture;
-    class RenderTexture;
-    class Shader;
-    class Renderer;
-    class StandardRenderer;
-    class SkyBoxRenderer;
-    class BlurRenderer;
-    class BloomRenderer;
-    class ParticalDriver;
-    class ParticalRenderer;
-    class GuiRenderer;
+class AssetRepository;
+class MeshBuilder;
+class Mesh;
+class DynamicData;
+class Texture;
+class ImageTexture;
+class RenderTexture;
+class Shader;
+class Renderer;
+class StandardRenderer;
+class SkyBoxRenderer;
+class BlurRenderer;
+class BloomRenderer;
+class ParticalDriver;
+class ParticalRenderer;
+class GuiRenderer;
 
-    class CollisionResolver2D;
-    class CollisionShape2D;
+class CollisionResolver2D;
+class CollisionShape2D;
 
-    namespace Audio
-    {
+namespace Audio {
 
-        class Source;
+class Source;
 
-    }
+}
 
 }

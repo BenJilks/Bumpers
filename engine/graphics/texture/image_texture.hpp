@@ -6,33 +6,29 @@
 
 #pragma once
 
-#include "texture.hpp"
 #include "engine/forward.hpp"
+#include "texture.hpp"
 #include <string>
 
-namespace Engine
-{
+namespace Engine {
 
-    class ImageTexture : public Texture
+class ImageTexture : public Texture {
+public:
+    static std::shared_ptr<ImageTexture> construct(AssetRepository const&, std::string_view name);
+
+    virtual void bind(int slot) const final;
+
+private:
+    ImageTexture(int texture)
+        : Texture(texture)
     {
-    public:
-		static std::shared_ptr<ImageTexture> construct(const AssetRepository&, std::string_view name);
+    }
 
-        virtual void bind(int slot) const final;
+    std::string m_name;
 
-    private:
-        ImageTexture(int texture)
-            : Texture(texture)
-        {
-        }
-
-        std::string m_name;
-
-        mutable uint8_t *m_data { nullptr };
-        int m_width { 0 };
-        int m_height { 0 };
-
-    };
+    mutable uint8_t* m_data { nullptr };
+    int m_width { 0 };
+    int m_height { 0 };
+};
 
 }
-

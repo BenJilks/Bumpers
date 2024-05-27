@@ -6,30 +6,26 @@
 
 #pragma once
 
-#include "gameobject/forward.hpp"
-#include "gameobject/component.hpp"
 #include "car_engine.hpp"
+#include "gameobject/component.hpp"
+#include "gameobject/forward.hpp"
 
-namespace Game
-{
+namespace Game {
 
-    class AI : public Object::ComponentBase<AI>
-    {
-        friend Object::ComponentBase<AI>;
+class AI : public Object::ComponentBase<AI> {
+    friend Object::ComponentBase<AI>;
 
-    public:
-        void init(Object::GameObject&) override;
-        void update(Object::GameObject&, float delta) override;
+public:
+    void init(Object::GameObject&) override;
+    void update(Object::GameObject&, float delta) override;
 
-    private:
-        AI(const AI&) = default;
-        AI() = default;
+private:
+    AI(const AI&) = default;
+    AI() = default;
 
-        CarEngine *m_engine { nullptr };
-        Object::Transform *m_transform { nullptr };
-        float m_timer_until_next_action { 0 };
-
-    };
+    CarEngine* m_engine { nullptr };
+    Object::Transform* m_transform { nullptr };
+    float m_timer_until_next_action { 0 };
+};
 
 }
-

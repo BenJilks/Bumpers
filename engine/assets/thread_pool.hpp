@@ -8,13 +8,11 @@
 
 #include <functional>
 
-namespace Engine::ThreadPool
-{
+namespace Engine::ThreadPool {
 
-    void queue_task(const std::function<void()>& task);
-    void finished_loading();
+void queue_task(std::function<void()> const& task);
+void finished_loading();
 
-    void on_tasks_finished(const std::function<void()>&);
+void on_tasks_finished(std::function<void()> const&);
 
 }
-

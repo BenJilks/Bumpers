@@ -6,27 +6,24 @@
 
 #pragma once
 
-namespace Object
-{
+namespace Object {
 
-    class GameObject;
-    class Component;
-    class Transform;
-    class MeshRender;
-    class Camera;
-    class World;
-    class Scene;
-    class Light;
-    class Collider2D;
-    class PhysicsBody2D;
+class GameObject;
+class Component;
+class Transform;
+class MeshRender;
+class Camera;
+class World;
+class Scene;
+class Light;
+class Collider2D;
+class PhysicsBody2D;
 
-    namespace Gui
-    {
+namespace Gui {
 
-        class Control;
-        class Button;
-
-    }
+class Control;
+class Button;
 
 }
 
+}

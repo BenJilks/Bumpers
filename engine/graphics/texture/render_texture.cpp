@@ -5,10 +5,9 @@
  */
 
 #include "render_texture.hpp"
-#include <iostream>
+#include <GL/glew.h>
 #include <cassert>
 #include <utility>
-#include <GL/glew.h>
 using namespace Engine;
 
 std::shared_ptr<RenderTexture> RenderTexture::construct(
@@ -54,9 +53,10 @@ void RenderTexture::add_color_texture()
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, GL_TEXTURE_2D, texture, 0);
 
-    std::vector<GLuint> attachments;
-    for (int i = 0; i < m_color_textures.size(); i++)
-        attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
+    std::vector<GLuint> attachments(m_color_textures.size());
+    for (int i = 0; i < m_color_textures.size(); i++) {
+        attachments[i] = GL_COLOR_ATTACHMENT0 + i;
+    }
     glDrawBuffers(attachments.size(), attachments.data());
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -76,14 +76,16 @@ std::shared_ptr<Texture> RenderTexture::color_texture(int index)
 
 void RenderTexture::render()
 {
-    for (auto &renderer : m_pipeline)
+    for (auto& renderer : m_pipeline) {
         renderer->pre_render();
+    }
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (auto &renderer : m_pipeline)
+    for (auto& renderer : m_pipeline) {
         renderer->render();
+    }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -91,8 +93,9 @@ void RenderTexture::render()
 static int next_power_of_two(int value)
 {
     int power = 1;
-    while (power < value)
+    while (power < value) {
         power *= 2;
+    }
 
     return power;
 }
@@ -110,11 +113,11 @@ void RenderTexture::resize(int width, int height)
     m_texture_height = height;
 #endif
 
-    for (auto &renderer : m_pipeline)
+    for (auto& renderer : m_pipeline) {
         renderer->resize_viewport(m_viewport_width, m_viewport_height);
+    }
 
-    for (auto texture : m_color_textures)
-    {
+    for (auto texture : m_color_textures) {
         glBindTexture(GL_TEXTURE_2D, texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_texture_width, m_texture_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
         glBindTexture(GL_TEXTURE_2D, 0);

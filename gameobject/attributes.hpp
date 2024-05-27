@@ -7,30 +7,27 @@
 #pragma once
 
 #include "component.hpp"
-#include <string>
 #include <set>
+#include <string>
 
-namespace Object
-{
+namespace Object {
 
-	class Attributes : public ComponentBase<Attributes>
-	{
-		friend ComponentBase<Attributes>;
+class Attributes : public ComponentBase<Attributes> {
+    friend ComponentBase<Attributes>;
 
-	public:
-		[[nodiscard]] inline bool has(const std::string& attr) const { return m_attributes.contains(attr); }
+public:
+    [[nodiscard]] inline bool has(std::string const& attr) const { return m_attributes.contains(attr); }
 
-	private:
-		template<typename... Args>
-		explicit Attributes(Args... args)
-			: m_attributes { args... }
-		{
-		}
+private:
+    template<typename... Args>
+    explicit Attributes(Args... args)
+        : m_attributes { args... }
+    {
+    }
 
-		Attributes(const Attributes&) = default;
+    Attributes(Attributes const&) = default;
 
-		std::set<std::string> m_attributes;
-
-	};
+    std::set<std::string> m_attributes;
+};
 
 }

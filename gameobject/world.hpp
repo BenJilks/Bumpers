@@ -6,18 +6,13 @@
 
 #pragma once
 
-#include <memory>
-#include <vector>
 #include "gameobject.hpp"
 
-namespace Object
-{
+namespace Object {
 
-	class World : public GameObject
-	{
-	public:
-		World() = default;
-
-	};
+class World : public GameObject {
+public:
+    World() = default;
+};
 
 }

@@ -6,12 +6,10 @@
 
 #include "thread_pool.hpp"
 #include <chrono>
-#include <optional>
-#include <functional>
 #include <cstdlib>
+#include <functional>
 #include <vector>
 using namespace Engine;
-
 
 #ifdef WEBASSEMBLY
 
@@ -37,18 +35,17 @@ static int on_animation_request_loop(double, void*)
     return true;
 }
 
-void ThreadPool::queue_task(const std::function<void()> &task)
+void ThreadPool::queue_task(std::function<void()> const& task)
 {
     s_task_queue.push_back(task);
 
-    if (!s_on_animation_request_loop_started)
-    {
+    if (!s_on_animation_request_loop_started) {
         emscripten_request_animation_frame_loop(on_animation_request_loop, nullptr);
         s_on_animation_request_loop_started = true;
     }
 }
 
-void ThreadPool::on_tasks_finished(const std::function<void()> &callback)
+void ThreadPool::on_tasks_finished(std::function<void()> const& callback)
 {
     on_tasks_finished_callback = callback;
 }
@@ -67,8 +64,7 @@ static HANDLE s_task_queue_mutex;
 static HANDLE s_should_shutdown_mutex;
 static std::vector<HANDLE> s_threads;
 
-class WindowsMutexGuard
-{
+class WindowsMutexGuard {
 public:
     WindowsMutexGuard(HANDLE mutex)
         : m_mutex(mutex)
@@ -83,7 +79,6 @@ public:
 
 private:
     HANDLE m_mutex;
-
 };
 
 #define MUTEX_GUARD(mutex) \
@@ -91,8 +86,8 @@ private:
 
 #else
 
-#include <thread>
 #include <mutex>
+#include <thread>
 
 static std::mutex s_task_queue_mutex;
 static std::mutex s_should_shutdown_mutex;
@@ -116,8 +111,9 @@ static std::function<void()> on_tasks_finished_callback;
 static std::function<void()> next_task()
 {
     MUTEX_GUARD(s_task_queue_mutex);
-    if (s_task_queue.empty())
+    if (s_task_queue.empty()) {
         return {};
+    }
 
     auto task = s_task_queue.back();
     s_task_queue.pop_back();
@@ -130,22 +126,22 @@ static DWORD WINAPI worker_thread(__in LPVOID)
 static void worker_thread()
 #endif
 {
-    for (;;)
-    {
+    for (;;) {
         bool shutdown_on_completed;
 
         {
             MUTEX_GUARD(s_should_shutdown_mutex);
-            if (s_should_shutdown)
+            if (s_should_shutdown) {
                 break;
+            }
             shutdown_on_completed = s_shutdown_on_completed;
         }
 
         auto task = next_task();
-        if (!task)
-        {
-            if (shutdown_on_completed)
+        if (!task) {
+            if (shutdown_on_completed) {
                 break;
+            }
 
 #ifdef WIN32
             Sleep(TIMEOUT);
@@ -157,11 +153,11 @@ static void worker_thread()
 
         task();
 
-        if (on_tasks_finished_callback)
-        {
+        if (on_tasks_finished_callback) {
             MUTEX_GUARD(s_task_queue_mutex);
-            if (s_task_queue.empty())
+            if (s_task_queue.empty()) {
                 on_tasks_finished_callback();
+            }
         }
     }
 
@@ -172,8 +168,9 @@ static void worker_thread()
 
 static void shutdown()
 {
-    if (!s_has_threads_started)
+    if (!s_has_threads_started) {
         return;
+    }
 
     {
         MUTEX_GUARD(s_should_shutdown_mutex);
@@ -184,14 +181,14 @@ static void shutdown()
     CloseHandle(s_task_queue_mutex);
     CloseHandle(s_should_shutdown_mutex);
 
-    for (auto& thread : s_threads)
-    {
+    for (auto& thread : s_threads) {
         WaitForSingleObject(thread, INFINITE);
         CloseHandle(thread);
     }
 #else
-    for (auto &thread : s_threads)
+    for (auto& thread : s_threads) {
         thread.join();
+    }
 #endif
 
     s_threads.clear();
@@ -202,29 +199,32 @@ static void shutdown()
 
 static void start_threads_if_needed()
 {
-    if (s_has_threads_started)
+    if (s_has_threads_started) {
         return;
+    }
 
 #if defined(WEBASSEMBLY)
 
-// No threading support
+    // No threading support
 
 #elif defined(WIN32)
     s_task_queue_mutex = CreateMutex(NULL, FALSE, NULL);
     s_should_shutdown_mutex = CreateMutex(NULL, FALSE, NULL);
 
-    for (int i = 0; i < THREAD_COUNT; i++)
+    for (int i = 0; i < THREAD_COUNT; i++) {
         s_threads.push_back(CreateThread(0, 0, worker_thread, 0, 0, NULL));
+    }
 #else
-    for (int i = 0; i < THREAD_COUNT; i++)
+    for (int i = 0; i < THREAD_COUNT; i++) {
         s_threads.push_back(std::thread(worker_thread));
+    }
 #endif
 
     std::atexit(shutdown);
     s_has_threads_started = true;
 }
 
-void ThreadPool::queue_task(const std::function<void()> &task)
+void ThreadPool::queue_task(std::function<void()> const& task)
 {
     start_threads_if_needed();
 
@@ -232,7 +232,7 @@ void ThreadPool::queue_task(const std::function<void()> &task)
     s_task_queue.insert(s_task_queue.begin(), task);
 }
 
-void ThreadPool::on_tasks_finished(const std::function<void()> &callback)
+void ThreadPool::on_tasks_finished(std::function<void()> const& callback)
 {
     on_tasks_finished_callback = callback;
 }
@@ -244,4 +244,3 @@ void ThreadPool::finished_loading()
 }
 
 #endif
-

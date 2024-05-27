@@ -11,7 +11,6 @@
 #include <GL/glew.h>
 using namespace Engine;
 using namespace Object;
-using namespace glm;
 
 void Renderer::resize_viewport(int width, int height)
 {
@@ -20,24 +19,26 @@ void Renderer::resize_viewport(int width, int height)
     m_height = height;
 }
 
-void Renderer::view_matrix(const GameObject &camera)
+void Renderer::view_matrix(GameObject const& camera)
 {
-	const auto* transform = camera.first<Transform>();
-	if (!transform)
-		return;
+    auto const* transform = camera.first<Transform>();
+    if (!transform) {
+        return;
+    }
 
-	m_view = transform->global_inverse_transform(camera);
-	m_camera_position = transform->position();
+    m_view = transform->global_inverse_transform(camera);
+    m_camera_position = transform->position();
 }
 
 void Renderer::render()
 {
-	glViewport(0, 0, m_width, m_height);
+    glViewport(0, 0, m_width, m_height);
 
-    if (m_camera)
-		view_matrix(*m_camera);
-	else
-		m_view = mat4(1);
+    if (m_camera) {
+        view_matrix(*m_camera);
+    } else {
+        m_view = glm::mat4(1);
+    }
 
     m_shader->bind();
     on_start_frame();

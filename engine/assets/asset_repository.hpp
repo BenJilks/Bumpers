@@ -7,22 +7,19 @@
 #pragma once
 
 #include <iostream>
-#include <string_view>
 #include <memory>
+#include <string_view>
 
-namespace Engine
-{
+namespace Engine {
 
-    class AssetRepository
-    {
-    public:
-        virtual ~AssetRepository() = default;
-        virtual std::unique_ptr<std::istream> open(std::string_view name) const = 0;
-        virtual std::shared_ptr<AssetRepository> copy() const = 0;
+class AssetRepository {
+public:
+    virtual ~AssetRepository() = default;
+    virtual std::unique_ptr<std::istream> open(std::string_view name) const = 0;
+    virtual std::shared_ptr<AssetRepository> copy() const = 0;
 
-    protected:
-        AssetRepository() = default;
-
-    };
+protected:
+    AssetRepository() = default;
+};
 
 }
